@@ -13,6 +13,9 @@ import modelo.Sexo;
 
 public class PokemonCrud {
 
+	
+	
+	
 	public static void guardarPokemon(Connection con, int numPokedex, Entrenador ent, String mote) throws SQLException {
 		
 		//Este es el insert para meter un pokemon en la tabla

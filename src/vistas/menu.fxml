@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MenuController">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+         <children>
+            <ImageView fitHeight="563.0" fitWidth="1115.0" layoutX="-78.0" layoutY="-12.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/FondoMenu.png" />
+               </image>
+            </ImageView>
+            <Button fx:id="btnCombate" layoutX="364.0" layoutY="163.0" mnemonicParsing="false" onAction="#abrirCombate" prefHeight="9.0" prefWidth="148.0" text="Combate" />
+            <Button fx:id="btnEntrenamiento" layoutX="364.0" layoutY="198.0" mnemonicParsing="false" onAction="#abrirEntrenamiento" prefHeight="9.0" prefWidth="148.0" text="Entrenamiento" />
+            <Button fx:id="btnEquipo" layoutX="364.0" layoutY="232.0" mnemonicParsing="false" onAction="#abrirEquipo" prefHeight="9.0" prefWidth="148.0" text="Equipo" />
+            <Button fx:id="btnCaptura" layoutX="364.0" layoutY="266.0" mnemonicParsing="false" onAction="#abrirCaptura" prefHeight="9.0" prefWidth="148.0" text="Captura" />
+            <Button fx:id="btnSalir" layoutX="364.0" layoutY="369.0" mnemonicParsing="false" onAction="#cerrarAplicacion" prefHeight="9.0" prefWidth="148.0" text="Salir" />
+            <Button fx:id="btnCasino" layoutX="364.0" layoutY="300.0" mnemonicParsing="false" onAction="#abrirCasino" prefHeight="9.0" prefWidth="148.0" text="Casino" />
+            <Button fx:id="btnHospital" layoutX="364.0" layoutY="335.0" mnemonicParsing="false" onAction="#abrirHospital" prefHeight="9.0" prefWidth="148.0" text="Hospital" />
+            <ImageView fitHeight="225.0" fitWidth="257.0" layoutX="698.0" layoutY="376.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_v2rjaxv2rjaxv2rj-Photoroom.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSonido" fitHeight="150.0" fitWidth="200.0" layoutX="727.0" layoutY="391.0" onMouseClicked="#apagarEncenderMusica" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/MeloettaTriste.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="225.0" fitWidth="455.0" layoutX="-67.0" layoutY="257.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/Recuadro.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblEntrenador" alignment="CENTER" layoutX="66.0" layoutY="327.0" prefHeight="18.0" prefWidth="136.0" text="Entrenador" textAlignment="CENTER" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblPokedollars" alignment="CENTER" layoutX="66.0" layoutY="395.0" prefHeight="18.0" prefWidth="136.0" text="Pokedollars" textAlignment="CENTER" textFill="RED">
+               <font>
+                  <Font name="System Bold" size="23.0" />
+               </font>
+            </Label>
+         </children>
+    </AnchorPane>
+  </children>
+</VBox>

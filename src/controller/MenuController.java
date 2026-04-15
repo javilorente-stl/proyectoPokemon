@@ -1,0 +1,189 @@
+package controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import dao.ConexionBD;
+import dao.PokemonCrud;
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+import javafx.stage.Stage;
+import modelo.Entrenador;
+
+public class MenuController {
+
+	private LoginController loginController;
+	private Stage stage;
+	public Entrenador e;
+	private boolean sonido=false;
+	private MediaPlayer mediaPlayer;
+	
+    @FXML
+    private Button btnCaptura;
+
+    @FXML
+    private Button btnCasino;
+
+    @FXML
+    private Button btnCombate;
+
+    @FXML
+    private Button btnEntrenamiento;
+
+    @FXML
+    private Button btnEquipo;
+
+    @FXML
+    private Button btnHospital;
+
+    @FXML
+    private Button btnSalir;
+
+    @FXML
+    private Label lblEntrenador;
+
+    @FXML
+    private Label lblPokedollars;
+
+    @FXML
+    private ImageView imgSonido;
+
+    @FXML
+    void abrirCaptura(ActionEvent event) {
+    	try {
+			cerrarMenutoCaptura();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+    }
+
+    @FXML
+    void abrirCasino(ActionEvent event) {
+
+    }
+
+    @FXML
+    void abrirCombate(ActionEvent event) {
+
+    }
+
+    @FXML
+    void abrirEntrenamiento(ActionEvent event) {
+
+    }
+
+    @FXML
+    void abrirEquipo(ActionEvent event) {
+
+    }
+
+    @FXML
+    void abrirHospital(ActionEvent event) {
+
+    }
+
+    @FXML
+    void apagarEncenderMusica(MouseEvent event) {
+    	sonido();
+    }
+
+    public void sonido() {
+    	String sonido="./son/musicaMenu.mp3";
+    	Media sound = new Media(new File(sonido).toURI().toString());
+    	mediaPlayer = new MediaPlayer(sound);
+    	mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+    	
+    	if(!this.sonido) {
+    	mediaPlayer.play();
+    	imgSonido.setImage(new Image(new File("./img/MeloettaFeliz.png").toURI().toString()));
+    	
+    	this.sonido=true;
+    	}else {
+    		mediaPlayer.stop();
+    		this.sonido=false;
+    		imgSonido.setImage(new Image(new File("./img/MeloettaTriste.png").toURI().toString()));
+    	}
+    }
+    
+    
+    @FXML
+    void cerrarAplicacion(ActionEvent event) {
+    	try {
+			cerrarMenutoLoguin();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+    
+    public void cerrarMenutoLoguin() throws IOException {
+    	// Cargamos el FXML del Login
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Login.fxml"));
+        Parent root = loader.load();
+        
+
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        Scene scene = new Scene(root);
+        
+     
+        stage.setScene(scene);
+
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        stage.show();
+        mediaPlayer.stop();
+    }
+    
+    public void cerrarMenutoCaptura() throws IOException {
+    	// Cargamos el FXML del Login
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Captura.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        CapturaController controller = loader.getController();
+        controller.recibirDatos(this.e);
+        
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        stage.show();
+        mediaPlayer.stop();
+    }
+
+    public void init(Entrenador ent, Stage stage, LoginController loginController) {
+		lblEntrenador.setText(ent.getNombre());
+		lblPokedollars.setText(Integer.toString(ent.getPokedollars()));
+		this.loginController=loginController;
+		this.stage=stage;
+		this.e=ent;
+		
+		ConexionBD con = new ConexionBD();
+		Connection conexion = con.getConnection();
+		/*
+		try {
+			PokemonCrud.obtenerPokemon(conexion, ent, this.e);
+		} catch (SQLException e) {
+			System.out.println(e.getMessage());
+		}*/
+    }
+
+
+    
+}

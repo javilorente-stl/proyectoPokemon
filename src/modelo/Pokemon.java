@@ -1,6 +1,7 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Pokemon {
@@ -16,6 +17,7 @@ public class Pokemon {
 	private Sexo sexo;
 	private Estado estado;
 	private int vitalidad;
+	private int vitalidadMax;
 	private int ataque;
 	private int defensa;
 	private int ataqueEspecial;
@@ -26,14 +28,14 @@ public class Pokemon {
 	private int experiencia;
 	private Tipo tipo1;
 	private Tipo tipo2;
-	private ArrayList<Movimiento> movimientos;
-	private ArrayList<Movimiento> movimientosPosibles;
+	private LinkedList<Movimiento> movimientos;
+	private LinkedList<Movimiento> movimientosPosibles;
 	private Objeto objeto;
 	private int caja;
 
 	public Pokemon(int num_pokedex, String mote, int nivel, int fertilidad, Sexo sexo, Estado estado, int vitalidad,
-			int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, int estamina,
-			int experiencia, Tipo tipo1, Tipo tipo2, ArrayList<Movimiento> movimientos, Objeto objeto, int caja) {
+			int vitalidadMax ,int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, int estamina,
+			int experiencia, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> movimientos, Objeto objeto, int caja) {
 		super();
 		this.num_pokedex = num_pokedex;
 		this.mote = mote;
@@ -42,6 +44,7 @@ public class Pokemon {
 		this.sexo = sexo;
 		this.estado = estado;
 		this.vitalidad = vitalidad;
+		this.vitalidadMax = vitalidadMax;
 		this.ataque = ataque;
 		this.defensa = defensa;
 		this.ataqueEspecial = ataqueEspecial;
@@ -59,14 +62,15 @@ public class Pokemon {
 	
 	
 
-	public Pokemon(String mote, Tipo tipo1, Tipo tipo2, ArrayList<Movimiento> movimientos, int vitalidad, int ataque,
+	public Pokemon(String mote, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> ataquesHijo, int vitalidad, int vitalidadMax, int ataque,
 			int defensa, int ataqueEspecial, int defensaEspecial, int velocidad) {
 
 		this.mote = mote;
 		this.tipo1 = tipo1;
 		this.tipo1 = tipo2;
-		this.movimientos = movimientos;
+		this.movimientos = ataquesHijo;
 		this.vitalidad = vitalidad;
+		this.vitalidadMax = vitalidadMax;
 		this.ataque = ataque;
 		this.defensa = defensa;
 		this.ataqueEspecial = ataqueEspecial;
@@ -81,7 +85,7 @@ public class Pokemon {
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 		this.estaminaMax = 100;
 		this.estamina = this.estaminaMax;
-		this.movimientosPosibles = new ArrayList<>();
+		this.movimientosPosibles = new LinkedList<>();
 		this.num_pokedex = 0;
 		//La caja por defecto es la 2
 		this.caja=2;
@@ -89,7 +93,8 @@ public class Pokemon {
 	
 	public Pokemon() {
 
-		this.vitalidad = (int)(Math.random() * 5) + 1;
+		this.vitalidadMax = (int)(Math.random() * 5) + 1;
+		this.vitalidad=vitalidadMax;
 	    this.ataque = (int)(Math.random() * 5) + 1;
 	    this.defensa = (int)(Math.random() * 5) + 1;
 	    this.ataqueEspecial = (int)(Math.random() * 5) + 1;
@@ -103,7 +108,7 @@ public class Pokemon {
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 		this.estaminaMax = 100;
 		this.estamina = this.estaminaMax;
-		this.movimientosPosibles = new ArrayList<>();
+		this.movimientosPosibles = new LinkedList<>();
 		this.num_pokedex = 0;
 		this.caja=2;
 	}
@@ -114,7 +119,7 @@ public class Pokemon {
 		// 1. Asignamos los valores heredados por crianza
 		this.mote = mote;
 		this.tipo1 = tipo1;
-		this.tipo1 = tipo2;
+		this.tipo2 = tipo2;
 		this.vitalidad = (int)(Math.random() * 5) + 1;
 	    this.ataque = (int)(Math.random() * 5) + 1;
 	    this.defensa = (int)(Math.random() * 5) + 1;
@@ -132,7 +137,7 @@ public class Pokemon {
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 		this.estaminaMax = 100;
 		this.estamina = this.estaminaMax;
-		this.movimientosPosibles = new ArrayList<>();
+		this.movimientosPosibles = new LinkedList<>();
 		// esto hay que arreglarlo
 		this.num_pokedex = 0;
 	}
@@ -298,11 +303,11 @@ public class Pokemon {
 		this.tipo2 = tipo2;
 	}
 
-	public ArrayList<Movimiento> getMovimientos() {
+	public LinkedList<Movimiento> getMovimientos() {
 		return movimientos;
 	}
 
-	public void setMovimientos(ArrayList<Movimiento> movimientos) {
+	public void setMovimientos(LinkedList<Movimiento> movimientos) {
 		this.movimientos = movimientos;
 	}
 
@@ -314,11 +319,11 @@ public class Pokemon {
 		this.objeto = objeto;
 	}
 
-	public ArrayList<Movimiento> getMovimientosPosibles() {
+	public LinkedList<Movimiento> getMovimientosPosibles() {
 		return movimientosPosibles;
 	}
 
-	public void setMovimientosPosibles(ArrayList<Movimiento> movimientosPosibles) {
+	public void setMovimientosPosibles(LinkedList<Movimiento> movimientosPosibles) {
 		this.movimientosPosibles = movimientosPosibles;
 	}
 	

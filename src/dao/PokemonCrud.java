@@ -8,8 +8,10 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import modelo.Entrenador;
+import modelo.Movimiento;
 import modelo.Pokemon;
 import modelo.Sexo;
+import modelo.Tipo;
 
 public class PokemonCrud {
 
@@ -96,7 +98,7 @@ public class PokemonCrud {
 		
 	}
 	 
-	private static void obtenerPokemon(Connection conexion, Entrenador e, int caja) throws SQLException {
+	public static void obtenerPokemon(Connection conexion, Entrenador e, int caja) throws SQLException {
 		String sql = "SELECT P.ID_POKEMON,\r\n"
 				+ "		PX.NUM_POKEDEX,\r\n"
 				+ "		PX.NOM_POKEMON,\r\n"
@@ -138,6 +140,80 @@ public class PokemonCrud {
 			p.setId_pokemon(rs.getInt("ID_POKEMON"));
 			
 		}
+	}
+	
+	public static void obtenerPokemon1(Connection conexion, Entrenador e) throws SQLException {
+		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
+	            + "P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
+	            + "P.NIVEL, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
+	            + "PX.TIPO1, PX.TIPO2 "
+	            + "FROM POKEMON P "
+	            + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
+	            + "WHERE P.ID_ENTRENADOR = ? AND P.CAJA BETWEEN 1 AND 6 "
+	            + "ORDER BY P.CAJA ASC";
+
+	    String sqlMovs = "SELECT M.ID_MOVIMIENTO, M.NOMBRE, PM.NUM_PP, PM.ACTIVO "
+	            + "FROM POKEMON_MOVIMIENTO PM "
+	            + "INNER JOIN MOVIMIENTO M ON PM.ID_MOVIMIENTO = M.ID_MOVIMIENTO "
+	            + "WHERE PM.ID_POKEMON = ?";
+
+	    PreparedStatement ps = conexion.prepareStatement(sql);
+	    ps.setInt(1, 1); 
+	    
+	    
+	    ResultSet rs = ps.executeQuery();
+	    LinkedList<Pokemon> listadoPokemon = new LinkedList<Pokemon>();
+
+	    while (rs.next()) {
+	        Pokemon p = new Pokemon();
+	        int idPkmn = rs.getInt("ID_POKEMON");
+
+	        // Seteo de datos básicos
+	        p.setId_pokemon(idPkmn);
+	        p.setNombre(rs.getString("NOM_POKEMON"));
+	        p.setMote(rs.getString("MOTE"));
+	        p.setVitalidad(rs.getInt("VITALIDAD"));
+	        p.setAtaque(rs.getInt("ATAQUE"));
+	        p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
+	        p.setDefensa(rs.getInt("DEFENSA"));
+	        p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
+	        p.setVelocidad(rs.getInt("VELOCIDAD"));
+	        p.setNivel(rs.getInt("NIVEL"));
+	        if (rs.getString("TIPO1") != null) {
+	            p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
+	        }
+	        
+	        if (rs.getString("TIPO2") != null) {
+	            p.setTipo2(Tipo.valueOf(rs.getString("TIPO2").toUpperCase()));
+	        }
+
+	        // --- CARGA DE MOVIMIENTOS ---
+	        LinkedList<Movimiento> listaMovs = new LinkedList<Movimiento>();
+	        PreparedStatement psMov = conexion.prepareStatement(sqlMovs);
+	        psMov.setInt(1, idPkmn);
+	        ResultSet rsMov = psMov.executeQuery();
+
+	        while (rsMov.next()) {
+	            Movimiento m = new Movimiento();
+	            m.setIdMovimiento(rsMov.getInt("ID_MOVIMIENTO"));
+	            m.setNombre(rsMov.getString("NOMBRE"));
+	            m.setNumPP(rsMov.getInt("NUM_PP"));
+	            //m.setActivo(rsMov.getInt("ACTIVO") == 1);
+	            listaMovs.add(m);
+	        }
+	        
+	        p.setMovimientos(listaMovs);
+	        listadoPokemon.add(p);
+	        
+	        rsMov.close();
+	        psMov.close();
+	    }
+
+	    // Guardar la lista en el entrenador (ajusta según el nombre de tu setter)
+	    e.setEquipo1(listadoPokemon); 
+
+	    rs.close();
+	    ps.close();
 	}
 	
 	//Dejando el primero en un lugar inaccesible y luego actualizadolo

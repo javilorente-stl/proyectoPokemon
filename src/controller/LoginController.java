@@ -275,7 +275,7 @@ public class LoginController {
     
     	
     }*/
-    private void abrirMenuPrincipal(Entrenador ent) throws IOException {
+    private void abrirMenuPrincipal(Entrenador ent) throws IOException, SQLException {
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
         Parent root = loader.load();

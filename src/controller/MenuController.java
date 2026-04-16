@@ -86,8 +86,13 @@ public class MenuController {
 
     @FXML
     void abrirEquipo(ActionEvent event) {
-
+    	try {
+			cerrarMenutoEquipo();
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
     }
+    
 
     @FXML
     void abrirHospital(ActionEvent event) {
@@ -167,21 +172,43 @@ public class MenuController {
         mediaPlayer.stop();
     }
 
-    public void init(Entrenador ent, Stage stage, LoginController loginController) {
-		lblEntrenador.setText(ent.getNombre());
-		lblPokedollars.setText(Integer.toString(ent.getPokedollars()));
-		this.loginController=loginController;
-		this.stage=stage;
-		this.e=ent;
-		
-		ConexionBD con = new ConexionBD();
-		Connection conexion = con.getConnection();
-		/*
-		try {
-			PokemonCrud.obtenerPokemon(conexion, ent, this.e);
-		} catch (SQLException e) {
-			System.out.println(e.getMessage());
-		}*/
+    public void cerrarMenutoEquipo() throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Equipo.fxml"));
+        Parent root = loader.load();
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        EquipoController controller = loader.getController();
+        controller.recibirDatos(this.e);
+        
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        stage.show();
+        
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
+    
+    public void init(Entrenador ent, Stage stage, LoginController loginController) throws SQLException {
+        this.e = ent;
+        this.stage = stage;
+        this.loginController = loginController;
+        
+        lblEntrenador.setText(e.getNombre());
+        lblPokedollars.setText(Integer.toString(e.getPokedollars()));
+        
+        ConexionBD con = new ConexionBD();
+        Connection conexion = con.getConnection();
+        
+        PokemonCrud.obtenerPokemon1(conexion, e);
+        
+        if (conexion != null) {
+            conexion.close();
+        }
     }
 
 

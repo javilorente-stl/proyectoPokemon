@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.Glow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EquipoController">
+  <children>
+    <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
+      <children>
+            <ImageView fitHeight="750.0" fitWidth="1350.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/Gemini_Generated_Image_7309vz7309vz7309%20(1).png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="216.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="418.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="519.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ImageView fitHeight="131.0" fitWidth="578.0" layoutX="-5.0" layoutY="620.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/seleccionado.png" />
+               </image>
+               <effect>
+                  <Glow level="0.38" />
+               </effect>
+            </ImageView>
+            <ProgressBar fx:id="barPokemon1" layoutX="150.0" layoutY="158.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="barPokemon2" layoutX="150.0" layoutY="258.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="barPokemon3" layoutX="150.0" layoutY="359.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="barPokemon4" layoutX="150.0" layoutY="459.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="barPokemon5" layoutX="150.0" layoutY="561.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="barPokemon6" layoutX="150.0" layoutY="661.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <Label fx:id="LblPokemon1" layoutX="150.0" layoutY="129.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon1">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblPokemon2" layoutX="150.0" layoutY="229.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon2">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblPokemon3" layoutX="150.0" layoutY="331.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon3">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblPokemon4" layoutX="150.0" layoutY="430.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon4">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblPokemon5" layoutX="150.0" layoutY="530.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon5">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblPokemon6" layoutX="150.0" layoutY="631.0" prefHeight="18.0" prefWidth="107.0" text="LblPokemon6">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida1" layoutX="150.0" layoutY="182.0" prefHeight="18.0" prefWidth="107.0" text="LblVida1">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida2" layoutX="150.0" layoutY="282.0" prefHeight="18.0" prefWidth="107.0" text="LblVida2">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida3" layoutX="150.0" layoutY="384.0" prefHeight="18.0" prefWidth="107.0" text="LblVida3">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida4" layoutX="150.0" layoutY="483.0" prefHeight="18.0" prefWidth="107.0" text="LblVida4">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida5" layoutX="150.0" layoutY="583.0" prefHeight="18.0" prefWidth="107.0" text="LblVida5">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblVida6" layoutX="150.0" layoutY="684.0" prefHeight="18.0" prefWidth="107.0" text="LblVida6">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel1" layoutX="303.0" layoutY="182.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel1">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel2" layoutX="303.0" layoutY="282.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel2">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel3" layoutX="303.0" layoutY="384.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel3">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel4" layoutX="303.0" layoutY="483.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel4">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel5" layoutX="303.0" layoutY="583.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel5">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="LblNivel6" layoutX="303.0" layoutY="684.0" prefHeight="18.0" prefWidth="107.0" text="LblNivel6">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgPokemon1" fitHeight="39.0" fitWidth="36.0" layoutX="90.0" layoutY="154.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="534.2">
+               <image>
+                  <Image url="@../../img/pokemon/front/142.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon2" fitHeight="39.0" fitWidth="36.0" layoutX="91.0" layoutY="255.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/43.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon3" fitHeight="39.0" fitWidth="36.0" layoutX="90.0" layoutY="359.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/101.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon4" fitHeight="39.0" fitWidth="36.0" layoutX="90.0" layoutY="458.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/118.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon5" fitHeight="39.0" fitWidth="36.0" layoutX="90.0" layoutY="556.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/148.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemon6" fitHeight="39.0" fitWidth="36.0" layoutX="90.0" layoutY="665.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/63.gif" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgPokemonSelect" fitHeight="188.0" fitWidth="222.0" layoutX="976.0" layoutY="74.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/pokemon/front/142.gif" />
+               </image>
+            </ImageView>
+            <ProgressBar fx:id="vitalidadBar" layoutX="1017.0" layoutY="325.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="ataqueBar" layoutX="1017.0" layoutY="359.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="defensaBar" layoutX="1017.0" layoutY="392.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="defensaSpBar" layoutX="1017.0" layoutY="456.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="ataqueSpBar" layoutX="1017.0" layoutY="424.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <ProgressBar fx:id="velocidadBar" layoutX="1017.0" layoutY="492.0" prefHeight="18.0" prefWidth="237.0" progress="0.0" />
+            <Label layoutX="899.0" layoutY="324.0" prefHeight="21.0" prefWidth="77.0" text="Vitalidad:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="910.0" layoutY="358.0" prefHeight="21.0" prefWidth="77.0" text="Ataque:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="904.0" layoutY="391.0" prefHeight="21.0" prefWidth="77.0" text="Defensa:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="889.0" layoutY="423.0" prefHeight="21.0" prefWidth="77.0" text="Ataque Sp:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="883.0" layoutY="455.0" prefHeight="21.0" prefWidth="85.0" text="Defensa Sp:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="893.0" layoutY="491.0" prefHeight="21.0" prefWidth="77.0" text="Velocidad:">
+               <font>
+                  <Font size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="statVitalidadLbl" alignment="CENTER" layoutX="966.0" layoutY="324.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statDefensaLbl" alignment="CENTER" layoutX="966.0" layoutY="391.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statAtaqueLbl" alignment="CENTER" layoutX="966.0" layoutY="358.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statAtaqueSpLbl" alignment="CENTER" layoutX="966.0" layoutY="423.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statDefensaSpLbl" alignment="CENTER" layoutX="966.0" layoutY="455.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Label fx:id="statVelocidadLbl" alignment="CENTER" layoutX="966.0" layoutY="491.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="987.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/planta.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="59.0" fitWidth="283.0" layoutX="1008.0" layoutY="538.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgTipo2" fitHeight="18.0" fitWidth="85.0" layoutX="1093.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/veneno.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgMovimiento2" fitHeight="17.0" fitWidth="65.0" layoutX="1038.0" layoutY="562.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/lucha.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="59.0" fitWidth="283.0" layoutX="1008.0" layoutY="602.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgMovimiento4" fitHeight="17.0" fitWidth="65.0" layoutX="1040.0" layoutY="625.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/psiquico.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="59.0" fitWidth="283.0" layoutX="767.0" layoutY="539.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgMovimiento1" fitHeight="17.0" fitWidth="65.0" layoutX="797.0" layoutY="563.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/planta.png" />
+               </image>
+            </ImageView>
+            <ImageView fitHeight="59.0" fitWidth="283.0" layoutX="767.0" layoutY="603.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgMovimiento3" fitHeight="17.0" fitWidth="65.0" layoutX="799.0" layoutY="626.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/tipos/fuego.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMovimiento1" alignment="CENTER" layoutX="878.0" layoutY="554.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblMovimiento3" alignment="CENTER" layoutX="878.0" layoutY="617.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblMovimiento2" alignment="CENTER" layoutX="1125.0" layoutY="553.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblMovimiento4" alignment="CENTER" layoutX="1125.0" layoutY="616.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover1" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="155.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover1" layoutX="519.0" layoutY="159.0" text="mover">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover2" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="255.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover2" layoutX="519.0" layoutY="259.0" text="mover" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover3" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="356.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover3" layoutX="519.0" layoutY="360.0" text="mover" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover4" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="456.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover4" layoutX="519.0" layoutY="460.0" text="mover" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover5" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="558.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover5" layoutX="519.0" layoutY="562.0" text="mover" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <ImageView fx:id="imgMover6" fitHeight="77.0" fitWidth="115.0" layoutX="480.0" layoutY="658.0" pickOnBounds="true" preserveRatio="true" visible="false">
+               <image>
+                  <Image url="@../../img/equipo/movimientos.png" />
+               </image>
+            </ImageView>
+            <Label fx:id="lblMover6" layoutX="519.0" layoutY="662.0" text="mover" visible="false">
+               <font>
+                  <Font name="System Bold" size="12.0" />
+               </font>
+            </Label>
+            <Button fx:id="botonCaja" layoutX="1056.0" layoutY="673.0" mnemonicParsing="false" opacity="0.0" prefHeight="52.0" prefWidth="293.0" text="Button" />
+            <Button fx:id="botonMovimiento1" layoutX="790.0" layoutY="544.0" mnemonicParsing="false" onAction="#abrirMovimiento1" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
+            <Button fx:id="botonMovimiento2" layoutX="1030.0" layoutY="544.0" mnemonicParsing="false" onAction="#abrirMovimiento2" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
+            <Button fx:id="botonMovimiento4" layoutX="1030.0" layoutY="607.0" mnemonicParsing="false" onAction="#abrirMovimiento4" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
+            <Button fx:id="botonMovimiento3" layoutX="789.0" layoutY="607.0" mnemonicParsing="false" onAction="#abrirMovimiento3" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
+            <Button fx:id="botonPokemon1" layoutX="55.0" layoutY="120.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon2" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon3" layoutX="55.0" layoutY="322.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon4" layoutX="55.0" layoutY="423.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon5" layoutX="55.0" layoutY="523.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon6" layoutX="56.0" layoutY="625.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonMover1" disable="true" layoutX="486.0" layoutY="153.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover2" disable="true" layoutX="486.0" layoutY="255.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover3" disable="true" layoutX="487.0" layoutY="356.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover4" disable="true" layoutX="486.0" layoutY="456.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover5" disable="true" layoutX="487.0" layoutY="558.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover6" disable="true" layoutX="487.0" layoutY="658.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <ImageView fitHeight="70.0" fitWidth="237.0" layoutX="1133.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/equipo/volver.png" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" layoutX="1195.0" layoutY="8.0" prefHeight="52.0" prefWidth="130.0" text="Volver">
+               <font>
+                  <Font name="Corbel Bold" size="28.0" />
+               </font>
+            </Label>
+            <Button fx:id="botonVolver" layoutX="1140.0" mnemonicParsing="false" onAction="#VolverMenu" opacity="0.0" prefHeight="70.0" prefWidth="209.0" text="Button" />
+      </children>
+    </AnchorPane>
+  </children>
+</VBox>

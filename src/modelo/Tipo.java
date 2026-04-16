@@ -28,11 +28,20 @@ public enum Tipo {
     }
     
     public static Tipo convertirTpoDesdeString(String tipoString) {
-    	for(Tipo tipo:Tipo.values()) {
-    		if(tipo.getNombreBD().toUpperCase().equals(tipoString)) {
-    			return tipo;
-    		}
-    	}
-    	return null;
+    	if (tipoString == null) return null;
+        
+        String busqueda = tipoString.trim().toUpperCase();
+
+        for (Tipo tipo : Tipo.values()) {
+            if (tipo.name().toUpperCase().equals(busqueda) || 
+                tipo.getNombreBD().toUpperCase().equals(busqueda)) {
+                return tipo;
+            }
+        }
+        
+        // Si llegamos aquí y no se encontró, devolvemos null o un tipo por defecto
+        // para que la aplicación no se cierre.
+        System.out.println("ADVERTENCIA: No se encontró el tipo para: " + tipoString);
+        return null;
     }
 }

@@ -71,7 +71,7 @@ public class CapturaController {
     }
     
     @FXML
-    void volverMenu(ActionEvent event) throws IOException {
+    void volverMenu(ActionEvent event) throws IOException, SQLException {
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
         Parent root = loader.load();
         

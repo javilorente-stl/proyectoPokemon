@@ -1,6 +1,7 @@
 package modelo;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Entrenador {
 	private int idEntrenador;
@@ -9,15 +10,15 @@ public class Entrenador {
 	private int pokedollars;
 	private String imagenEntrenador;
 	private int claseEntrenador;
-	private ArrayList<Pokemon> equipo1;
-	private ArrayList<Pokemon> equipo2;
-	private ArrayList<Objeto> mochila;
+	private LinkedList<Pokemon> equipo1;
+	private LinkedList<Pokemon> equipo2;
+	private LinkedList<Objeto> mochila;
 
 	
 	
 	
-	public Entrenador(String nombre, String password, ArrayList<Pokemon> equipo1, ArrayList<Pokemon> equipo2,
-			int pokedollars, ArrayList<Objeto> mochila) {
+	public Entrenador(String nombre, String password, LinkedList<Pokemon> equipo1, LinkedList<Pokemon> equipo2,
+			int pokedollars, LinkedList<Objeto> mochila) {
 		super();
 		this.nombre = nombre;
 		this.password = password;
@@ -91,28 +92,28 @@ public class Entrenador {
 		this.claseEntrenador = claseEntrenador;
 	}
 
-	public ArrayList<Pokemon> getEquipo1() {
+	public LinkedList<Pokemon> getEquipo1() {
 		return equipo1;
 	}
 
 
 
 
-	public void setEquipo1(ArrayList<Pokemon> equipo1) {
+	public void setEquipo1(LinkedList<Pokemon> equipo1) {
 		this.equipo1 = equipo1;
 	}
 
 
 
 
-	public ArrayList<Pokemon> getEquipo2() {
+	public LinkedList<Pokemon> getEquipo2() {
 		return equipo2;
 	}
 
 
 
 
-	public void setEquipo2(ArrayList<Pokemon> equipo2) {
+	public void setEquipo2(LinkedList<Pokemon> equipo2) {
 		this.equipo2 = equipo2;
 	}
 
@@ -133,14 +134,14 @@ public class Entrenador {
 
 
 
-	public ArrayList<Objeto> getMochila() {
+	public LinkedList<Objeto> getMochila() {
 		return mochila;
 	}
 
 
 
 
-	public void setMochila(ArrayList<Objeto> mochila) {
+	public void setMochila(LinkedList<Objeto> mochila) {
 		this.mochila = mochila;
 	}
 
@@ -251,7 +252,7 @@ public class Entrenador {
 	        System.out.println("No tienes suficiente dinero. Coste necesario: " + costeTotal);
 	    }
 	}
-	
+	/*
 	public Pokemon criar(Pokemon padre, Pokemon madre) {
 	    //Verificación de seguridad (Fertilidad)
 	    if (padre.getFertilidad() <= 0 || madre.getFertilidad() <= 0) {
@@ -274,7 +275,7 @@ public class Entrenador {
 
 	    //Ataques: Se mantiene ArrayList si tu clase Pokemon aún usa listas para ataques
 	    // (Si también quieres cambiar ataques a variables fijas, avísame).
-	    ArrayList<Movimiento> ataquesHijo = new ArrayList<>();
+	    LinkedList<Movimiento> ataquesHijo = new LinkedList<>();
 	    for (int i = 0; i < 2; i++) {
 	        ataquesHijo.add(padre.getMovimientos().get((int)(Math.random() * padre.getMovimientos().size())));
 	        ataquesHijo.add(madre.getMovimientos().get((int)(Math.random() * madre.getMovimientos().size())));
@@ -313,6 +314,6 @@ public class Entrenador {
 	    //Creamos el nuevo Pokémon con los nuevos parámetros
 	    return new Pokemon(nuevoMote, tipo1Hijo, tipo2Hijo, ataquesHijo, vitalidadHijo, 
 	                       ataqueHijo, defensaHijo, atkEspHijo, defEspHijo, velocidadHijo);
-	}
+	}*/
 	
 }

@@ -172,7 +172,7 @@ public class MenuController {
         mediaPlayer.stop();
     }
 
-    public void cerrarMenutoEquipo() throws IOException {
+    public void cerrarMenutoEquipo() throws IOException, SQLException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Equipo.fxml"));
         Parent root = loader.load();
         Stage stage = (Stage) btnSalir.getScene().getWindow();

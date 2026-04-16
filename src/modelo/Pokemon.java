@@ -23,8 +23,6 @@ public class Pokemon {
 	private int ataqueEspecial;
 	private int defensaEspecial;
 	private int velocidad;
-	private int estamina;
-	private int estaminaMax;
 	private int experiencia;
 	private Tipo tipo1;
 	private Tipo tipo2;
@@ -34,7 +32,7 @@ public class Pokemon {
 	private int caja;
 
 	public Pokemon(int num_pokedex, String mote, int nivel, int fertilidad, Sexo sexo, Estado estado, int vitalidad,
-			int vitalidadMax ,int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, int estamina,
+			int vitalidadMax ,int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad,
 			int experiencia, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> movimientos, Objeto objeto, int caja) {
 		super();
 		this.num_pokedex = num_pokedex;
@@ -50,7 +48,6 @@ public class Pokemon {
 		this.ataqueEspecial = ataqueEspecial;
 		this.defensaEspecial = defensaEspecial;
 		this.velocidad = velocidad;
-		this.estamina = estamina;
 		this.experiencia = experiencia;
 		this.tipo1 = tipo1;
 		this.tipo1 = tipo2;
@@ -83,8 +80,6 @@ public class Pokemon {
 		this.objeto = null; 
 		this.estado = Estado.VIVO; 
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
-		this.estaminaMax = 100;
-		this.estamina = this.estaminaMax;
 		this.movimientosPosibles = new LinkedList<>();
 		this.num_pokedex = 0;
 		//La caja por defecto es la 2
@@ -92,25 +87,15 @@ public class Pokemon {
 	}
 	
 	public Pokemon() {
-
-		this.vitalidadMax = (int)(Math.random() * 5) + 1;
-		this.vitalidad=vitalidadMax;
-	    this.ataque = (int)(Math.random() * 5) + 1;
-	    this.defensa = (int)(Math.random() * 5) + 1;
-	    this.ataqueEspecial = (int)(Math.random() * 5) + 1;
-	    this.defensaEspecial = (int)(Math.random() * 5) + 1;
-	    this.velocidad = (int)(Math.random() * 5) + 1;
-		this.nivel = 1;
-		this.experiencia = 0;
-		this.fertilidad = 5; 
-		this.objeto = null; 
-		this.estado = Estado.VIVO; 
-		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
-		this.estaminaMax = 100;
-		this.estamina = this.estaminaMax;
-		this.movimientosPosibles = new LinkedList<>();
-		this.num_pokedex = 0;
-		this.caja=2;
+	    this.movimientos = new LinkedList<>(); 
+	    this.movimientosPosibles = new LinkedList<>();
+	    this.nivel = 1;
+	    this.experiencia = 0;
+	    this.fertilidad = 5;
+	    this.estado = Estado.VIVO;
+	    this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
+	    this.vitalidadMax = 20; 
+	    this.vitalidad = 20;
 	}
 	
 	
@@ -135,8 +120,6 @@ public class Pokemon {
 		this.objeto = null;
 		this.estado = Estado.VIVO;
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
-		this.estaminaMax = 100;
-		this.estamina = this.estaminaMax;
 		this.movimientosPosibles = new LinkedList<>();
 		// esto hay que arreglarlo
 		this.num_pokedex = 0;
@@ -156,6 +139,14 @@ public class Pokemon {
 	}
 
 
+	public int getVitalidadMax() {
+		return vitalidadMax;
+	}
+
+
+	public void setVitalidadMax(int vitalidadMax) {
+		this.vitalidadMax = vitalidadMax;
+	}
 
 
 	public int getNum_pokedex() {
@@ -173,14 +164,6 @@ public class Pokemon {
 	
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
-	}
-
-	public int getEstaminaMax() {
-		return estaminaMax;
-	}
-
-	public void setEstaminaMax(int estaminaMax) {
-		this.estaminaMax = estaminaMax;
 	}
 
 	public String getMote() {
@@ -271,13 +254,6 @@ public class Pokemon {
 		this.velocidad = velocidad;
 	}
 
-	public int getEstamina() {
-		return estamina;
-	}
-
-	public void setEstamina(int estamina) {
-		this.estamina = estamina;
-	}
 
 	public int getExperiencia() {
 		return experiencia;
@@ -603,14 +579,6 @@ public class Pokemon {
 	}
 
 	public void descansar() {
-		// Igualamos la estamina actual a la máxima directamente
-		this.estamina = this.estaminaMax;
 
-		// Mostramos un mensaje por consola para que el jugador sepa qué ha pasado
-		System.out.println("------------------------------------------");
-		System.out.println(this.nombre + " ha descansado profundamente.");
-		System.out.println("¡Estamina totalmente recuperada! (" + this.estamina + "/" + this.estaminaMax + ")");
-		System.out.println("------------------------------------------");
 	}
-
 }

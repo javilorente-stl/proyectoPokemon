@@ -28,19 +28,32 @@ public enum Tipo {
     }
     
     public static Tipo convertirTpoDesdeString(String tipoString) {
-    	if (tipoString == null) return null;
+        if (tipoString == null) return null;
         
-        String busqueda = tipoString.trim().toUpperCase();
+        // Normalizamos la entrada: quitamos espacios, pasamos a mayúsculas
+        // y podrías añadir .replace("É", "E") aquí si quieres ser específico
+        String busqueda = tipoString.trim().toUpperCase()
+                                    .replace("É", "E")
+                                    .replace("Í", "I")
+                                    .replace("Á", "A")
+                                    .replace("Ó", "O")
+                                    .replace("Ú", "U");
 
         for (Tipo tipo : Tipo.values()) {
-            if (tipo.name().toUpperCase().equals(busqueda) || 
-                tipo.getNombreBD().toUpperCase().equals(busqueda)) {
+            // Hacemos lo mismo con el nombre del Enum y el nombre de la BD
+            String nombreEnum = tipo.name().toUpperCase();
+            String nombreBD = tipo.getNombreBD().toUpperCase()
+                                                .replace("É", "E")
+                                                .replace("Í", "I")
+                                                .replace("Á", "A")
+                                                .replace("Ó", "O")
+                                                .replace("Ú", "U");
+
+            if (nombreEnum.equals(busqueda) || nombreBD.equals(busqueda)) {
                 return tipo;
             }
         }
         
-        // Si llegamos aquí y no se encontró, devolvemos null o un tipo por defecto
-        // para que la aplicación no se cierre.
         System.out.println("ADVERTENCIA: No se encontró el tipo para: " + tipoString);
         return null;
     }

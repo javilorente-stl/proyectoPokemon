@@ -211,8 +211,7 @@ public class CapturaController {
             entrada = entrada.trim();
 
             if (entrada.isEmpty()) {
-                JOptionPane.showMessageDialog(null, "El mote no puede estar vacío.");
-                continue;
+                return nombrePokemon;
             }
             // [a-zA-ZáéíóúÁÉÍÓÚñÑ] permite letras y tildes
             if (!entrada.matches("^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ]+$")) {

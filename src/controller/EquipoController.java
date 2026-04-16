@@ -1,6 +1,7 @@
 package controller;
 
-	import java.sql.Connection;
+	import java.io.File;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 
@@ -11,12 +12,17 @@ import javafx.event.ActionEvent;
 	import javafx.scene.control.Button;
 	import javafx.scene.control.Label;
 	import javafx.scene.control.ProgressBar;
-	import javafx.scene.image.ImageView;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import modelo.Entrenador;
 import modelo.Movimiento;
 import modelo.Pokemon;
+import modelo.Tipo;
+import javafx.animation.FadeTransition;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
 
 public class EquipoController {
 		
@@ -25,6 +31,7 @@ public class EquipoController {
 	public Entrenador e;
 	private boolean sonido=false;
 	private MediaPlayer mediaPlayer;
+	private FadeTransition animacionActiva;
 	
 	
 	    @FXML
@@ -221,6 +228,27 @@ public class EquipoController {
 
 	    @FXML
 	    private ImageView imgTipo2;
+	    
+	    @FXML
+	    private ImageView imgSelect1;
+
+	    @FXML
+	    private ImageView imgSelect2;
+
+	    @FXML
+	    private ImageView imgSelect3;
+
+	    @FXML
+	    private ImageView imgSelect4;
+
+	    @FXML
+	    private ImageView imgSelect5;
+
+	    @FXML
+	    private ImageView imgSelect6;
+	    
+	    @FXML
+	    private Label lblACaja;
 
 	    @FXML
 	    private Label lblMover1;
@@ -276,6 +304,74 @@ public class EquipoController {
 	    @FXML
 	    private ProgressBar vitalidadBar;
 
+
+	    @FXML
+	    void mover1(ActionEvent event) {
+	    	//PokemonCrud.moverPokemon(conexion, e, 1, 0);
+	    	lblACaja.setVisible(true);
+	    }
+
+	    @FXML
+	    void mover2(ActionEvent event) {
+
+	    }
+
+	    @FXML
+	    void mover3(ActionEvent event) {
+
+	    }
+
+	    @FXML
+	    void mover4(ActionEvent event) {
+
+	    }
+
+	    @FXML
+	    void mover5(ActionEvent event) {
+
+	    }
+
+	    @FXML
+	    void mover6(ActionEvent event) {
+
+	    }
+	    
+	    @FXML
+	    void pokemonSeleccionado1(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(1);
+	    	activarMover(1);
+	    }
+
+	    @FXML
+	    void pokemonSeleccionado2(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(2);
+	    	activarMover(2);
+	    }
+
+	    @FXML
+	    void pokemonSeleccionado3(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(3);
+	    	activarMover(3);
+	    }
+
+	    @FXML
+	    void pokemonSeleccionado4(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(4);
+	    	activarMover(4);
+	    }
+
+	    @FXML
+	    void pokemonSeleccionado5(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(5);
+	    	activarMover(5);
+	    }
+
+	    @FXML
+	    void pokemonSeleccionado6(ActionEvent event) {
+	    	aplicarParpadeoSeleccion(6);
+	    	activarMover(6);
+	    }
+	    
 	    @FXML
 	    void VolverMenu(ActionEvent event) {
 
@@ -301,52 +397,31 @@ public class EquipoController {
 
 	    }
 
-	    public void init(Entrenador ent, Stage stage, MenuController menuController) throws SQLException {
-	        this.e = ent;
-	        this.stage = stage;
-	        this.menuController = menuController;
-	        
-	        ConexionBD con = new ConexionBD();
-	        Connection conexion = con.getConnection();
-	        
-	        PokemonCrud.obtenerPokemon1(conexion, e);
-	        
-	        if (conexion != null) {
-	            conexion.close();
-	        }
-	        
-	        rellenarDatosEquipo();
-	    }
-	    
-	    public void recibirDatos(Entrenador ent) {
+	    public void recibirDatos(Entrenador ent) throws SQLException {
 	        this.e = ent;
 	        
-	        // 1. Instanciamos tu clase de conexión
 	        ConexionBD conBD = new ConexionBD();
-	        
-	        // 2. Obtenemos el objeto Connection llamando a tu método
-	        Connection conexion = conBD.getConnection();
-	        
-	        try {
+	        try (Connection conexion = conBD.getConnection()) {
 	            if (conexion != null) {
-	                // 3. Ahora sí, pasamos la conexión al método que arreglamos al principio
+	                PokemonCrud.compactarEquipo(conexion, e.getIdEntrenador());
 	                PokemonCrud.obtenerPokemon1(conexion, this.e);
-	                
-	                // 4. Cerramos la conexión al terminar
-	                conexion.close();
 	            }
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
 	        }
 	        
 	        rellenarDatosEquipo();
-	        if (!e.getEquipo1().isEmpty()) {
+	        
+	        if (e.getEquipo1() != null && !e.getEquipo1().isEmpty()) {
 	            mostrarStats(e.getEquipo1().get(0));
 	        }
 	    }
 	    
 	    public void rellenarDatosEquipo() {
-	        Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
+	        //Por defecto es el 1
+	    	aplicarParpadeoSeleccion(1);
+	    	activarMover(1);
+	    	lblACaja.setStyle("-fx-background-color: white;");
+	    	
+	    	Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
 	        Label[] niveles = {LblNivel1, LblNivel2, LblNivel3, LblNivel4, LblNivel5, LblNivel6};
 	        Label[] vidas = {LblVida1, LblVida2, LblVida3, LblVida4, LblVida5, LblVida6};
 	        ProgressBar[] barrasVida = {barPokemon1, barPokemon2, barPokemon3, barPokemon4, barPokemon5, barPokemon6};
@@ -369,14 +444,57 @@ public class EquipoController {
 	                
 	                nombres[i].setText(nombreAMostrar);
 	                niveles[i].setText("Nv. " + p.getNivel());
-	                vidas[i].setText(p.getVitalidad() + "/100"); 
-	                barrasVida[i].setProgress(p.getVitalidad() / 100.0);
+	                vidas[i].setText(p.getVitalidad() +"/"+ p.getVitalidadMax()); 
+	                
+	                barrasVida[i].setProgress(p.getVitalidad() / p.getVitalidadMax());
 
+	                try {
+	                    //Construimos la ruta relativa desde la raíz del proyecto
+	                    String rutaFisica = "img/pokemon/front/" + p.getNum_pokedex() + ".gif";
+	                    
+	                    //Creamos un objeto File
+	                    File archivo = new File(rutaFisica);
+
+	                    if (archivo.exists()) {
+	                        //Convertimos el archivo a una URI que Image pueda entender
+	                        Image img = new Image(archivo.toURI().toString());
+	                        imagenes[i].setImage(img);
+	                    } else {
+	                        System.out.println("No existe el archivo físico en: " + archivo.getAbsolutePath());
+	                    }
+	                } catch (Exception ex) {
+	                    ex.printStackTrace();
+	                }
+	                
+	                if(i==0) {
+	                	
+	                	String rutaFisica = "img/pokemon/front/" + p.getNum_pokedex() + ".gif";
+	                	File archivo = new File(rutaFisica);
+
+	                	if (archivo.exists() && !archivo.isDirectory()) {
+	                	    try {
+	                	        imgPokemonSelect.setImage(new Image(archivo.toURI().toString()));
+	                	    } catch (Exception e) {
+	                	        System.err.println("Error al procesar el archivo: " + rutaFisica);
+	                	    }
+	                	}
+	                	
+	                	//Método para cargar las imágenes de los tipos del pokemon seleccionado
+	                	cargarImagenesTipos(p);
+	                	
+	               
+	                }
+	                	
+	                
 	                // SetVisible(true) para mostrar el slot ocupado
 	                botones[i].setVisible(true);
 	                nombres[i].setVisible(true);
 	                niveles[i].setVisible(true);
 	                vidas[i].setVisible(true);
+	                //Tratamos la barras
+	                double porcentajeVida = (double) p.getVitalidad() / p.getVitalidadMax();
+	                barrasVida[i].setProgress(porcentajeVida);
+	                actualizarColorBarraVida(barrasVida[i], porcentajeVida);   
 	                barrasVida[i].setVisible(true);
 	                imagenes[i].setVisible(true);
 	            } else {
@@ -396,23 +514,28 @@ public class EquipoController {
 	    }
 
 	    private void mostrarStats(Pokemon p) {
-	        statAtaqueLbl.setText(String.valueOf(p.getAtaque()));
-	        ataqueBar.setProgress(p.getAtaque() / 200.0); // Normalizado sobre 200 por ejemplo
+	    	
+	    	double maxStatGeneral = p.getNivel() * 5.0;
+	    	
+	    	double maxVidaSegunNivel = 15.0 + (p.getNivel() * 5.0);
+	    	
+	    	statVitalidadLbl.setText(p.getVitalidadMax() + "/" + (int)maxVidaSegunNivel);
+	        vitalidadBar.setProgress(p.getVitalidadMax() / maxVidaSegunNivel);
+	    	
+	    	statAtaqueLbl.setText(String.valueOf(p.getAtaque()));
+	        ataqueBar.setProgress(p.getAtaque() / maxStatGeneral);
 	        
 	        statAtaqueSpLbl.setText(String.valueOf(p.getAtaqueEspecial()));
-	        ataqueSpBar.setProgress(p.getAtaqueEspecial() / 200.0);
+	        ataqueSpBar.setProgress(p.getAtaqueEspecial() / maxStatGeneral);
 	        
 	        statDefensaLbl.setText(String.valueOf(p.getDefensa()));
-	        defensaBar.setProgress(p.getDefensa() / 200.0);
+	        defensaBar.setProgress(p.getDefensa() / maxStatGeneral);
 	        
 	        statDefensaSpLbl.setText(String.valueOf(p.getDefensaEspecial()));
-	        defensaSpBar.setProgress(p.getDefensaEspecial() / 200.0);
+	        defensaSpBar.setProgress(p.getDefensaEspecial() / maxStatGeneral);
 	        
 	        statVelocidadLbl.setText(String.valueOf(p.getVelocidad()));
-	        velocidadBar.setProgress(p.getVelocidad() / 200.0);
-	        
-	        statVitalidadLbl.setText(String.valueOf(p.getVitalidad()));
-	        vitalidadBar.setProgress(p.getVitalidad() / 200.0);
+	        velocidadBar.setProgress(p.getVelocidad() / maxStatGeneral);
 	        
 	        // Movimientos del pokemon seleccionado
 	        LinkedList<Movimiento> movs = p.getMovimientos();
@@ -427,5 +550,145 @@ public class EquipoController {
 	        }
 	    }
 	    
+	    private void cargarImagenesTipos(Pokemon p) {
+	        // Array de ImageViews para iterar
+	        ImageView[] ivs = {imgTipo1, imgTipo2};
+	        
+	        // Obtenemos los Enums del objeto Pokemon
+	        Tipo tipo1 = p.getTipo1();
+	        Tipo tipo2 = p.getTipo2();
+	        Tipo[] tipos = {tipo1, tipo2};
+
+	        for (int i = 0; i < ivs.length; i++) {
+	            Tipo t = tipos[i];
+	            ImageView iv = ivs[i];
+
+	            // Verificamos que el enum no sea null
+	            if (t != null) {
+	                try {
+	                    // t.name() nos da el nombre exacto del Enum (ej: "FUEGO")
+	                    String nombreArchivo = t.name().toLowerCase() + ".png";
+	                    String rutaFisica = "img/tipos/" + nombreArchivo;
+	                    
+	                    File archivo = new File(rutaFisica);
+
+	                    if (archivo.exists()) {
+	                        iv.setImage(new Image(archivo.toURI().toString()));
+	                        iv.setVisible(true);
+	                    } else {
+	                        System.out.println("No existe el archivo para el tipo: " + rutaFisica);
+	                        iv.setVisible(false);
+	                    }
+	                } catch (Exception e) {
+	                    iv.setVisible(false);
+	                }
+	            } else {
+	                // Si el Enum es null (el segundo tipo suele serlo), limpiamos y ocultamos
+	                iv.setImage(null);
+	                iv.setVisible(false);
+	            }
+	        }
+	    }
+	    
+	    private void actualizarColorBarraVida(ProgressBar barra, double progreso) {
+	        // Eliminamos los estilos anteriores para no acumularlos
+	        barra.getStyleClass().removeAll("barra-verde", "barra-amarilla", "barra-roja");
+
+	        if (progreso > 0.5) {
+	            // Más del 50%
+	            barra.setStyle("-fx-accent: #2ecc71;"); // Verde
+	        } else if (progreso > 0.2) {
+	            // Entre 20% y 50%
+	            barra.setStyle("-fx-accent: #f1c40f;"); // Amarillo
+	        } else {
+	            // Menos del 20%
+	            barra.setStyle("-fx-accent: #e74c3c;"); // Rojo
+	        }
+	    }
+	    
+	    private void aplicarParpadeoSeleccion(int seleccion) {
+	        //Agrupamos tus variables en un array
+	        ImageView[] selects = {imgSelect1, imgSelect2, imgSelect3, imgSelect4, imgSelect5, imgSelect6};
+
+	        //Limpieza total: paramos animación y OCULTAMOS todas las imágenes
+	        if (animacionActiva != null) {
+	            animacionActiva.stop();
+	        }
+	        
+	        for (ImageView img : selects) {
+	            if (img != null) {
+	                img.setVisible(false); //Todas invisibles por defecto
+	                img.setOpacity(1.0);    //Reset opacidad para la próxima vez
+	            }
+	        }
+
+	        //Validar rango (1-6). Si no hay selección válida, no mostramos ninguna.
+	        if (seleccion < 1 || seleccion > 6) return;
+
+	        //Activar la imagen seleccionada
+	        ImageView imgElegida = selects[seleccion - 1];
+
+	        if (imgElegida != null) {
+	            imgElegida.setVisible(true); //Solo esta se vuelve visible
+
+	            //Configurar y lanzar el parpadeo
+	            animacionActiva = new FadeTransition(Duration.millis(600), imgElegida);
+	            animacionActiva.setFromValue(1.0);
+	            animacionActiva.setToValue(0.2);
+	            animacionActiva.setCycleCount(FadeTransition.INDEFINITE);
+	            animacionActiva.setAutoReverse(true);
+	            animacionActiva.play();
+	        }
+	    }
+	    private void activarMover(int seleccion) {
+	        //Agrupamos tus variables en un array
+	        ImageView[] mover = {imgMover1, imgMover2, imgMover3, imgMover4, imgMover5, imgMover6};
+
+	        Button[] botonesMover = {botonMover1, botonMover2, botonMover3, botonMover4, botonMover5, botonMover6};
+	        
+	        Label[] moverlbl = {lblMover1, lblMover2, lblMover3, lblMover4, lblMover5, lblMover6};
+	        
+	        for (ImageView img : mover) {
+	            if (img != null) {
+	                img.setVisible(false); //Todas invisibles por defecto
+	            }
+	        }
+	        
+	        for (Button button : botonesMover) {
+	            if (button != null) {
+	            	button.setDisable(true); //Todas invisibles por defecto
+	            }
+	        }
+	        
+	        for (Label label : moverlbl) {
+	            if (label != null) {
+	            	label.setVisible(false); //Todas invisibles por defecto
+	            }
+	        }
+
+	        //Validar rango (1-6). Si no hay selección válida, no mostramos ninguna.
+	        if (seleccion < 1 || seleccion > 6) return;
+
+	        //Activar la imagen seleccionada
+	        ImageView imgElegida = mover[seleccion - 1];
+
+	        if (imgElegida != null) {
+	            imgElegida.setVisible(true); //Solo esta se vuelve visible
+	        }
+
+	        
+	        Button botonElegido = botonesMover[seleccion - 1];
+	        
+	        if (botonElegido != null) {
+	        	botonElegido.setDisable(false); //Solo esta se vuelve visible
+	        }
+	        
+	        Label moverElegido = moverlbl[seleccion - 1];
+	        
+	        if (moverElegido != null) {
+	        	moverElegido.setVisible(true); //Solo esta se vuelve visible
+	        }
+	        
+	    }
 	}
 

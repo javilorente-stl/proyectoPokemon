@@ -51,7 +51,7 @@
                   <Image url="@../../img/equipo/Gemini_Generated_Image_7309vz7309vz7309%20(1).png" />
                </image>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgSelect1" fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="115.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -59,7 +59,7 @@
                   <Glow level="0.38" />
                </effect>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="216.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            <ImageView fx:id="imgSelect2" fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="216.0" pickOnBounds="true" preserveRatio="true" visible="false">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -67,7 +67,7 @@
                   <Glow level="0.38" />
                </effect>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            <ImageView fx:id="imgSelect3" fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="317.0" pickOnBounds="true" preserveRatio="true" visible="false">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -75,7 +75,7 @@
                   <Glow level="0.38" />
                </effect>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="418.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            <ImageView fx:id="imgSelect4" fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="418.0" pickOnBounds="true" preserveRatio="true" visible="false">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -83,7 +83,7 @@
                   <Glow level="0.38" />
                </effect>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="519.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            <ImageView fx:id="imgSelect5" fitHeight="131.0" fitWidth="580.0" layoutX="-5.0" layoutY="519.0" pickOnBounds="true" preserveRatio="true" visible="false">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -91,7 +91,7 @@
                   <Glow level="0.38" />
                </effect>
             </ImageView>
-            <ImageView fitHeight="131.0" fitWidth="578.0" layoutX="-5.0" layoutY="620.0" pickOnBounds="true" preserveRatio="true" visible="false">
+            <ImageView fx:id="imgSelect6" fitHeight="131.0" fitWidth="578.0" layoutX="-5.0" layoutY="620.0" pickOnBounds="true" preserveRatio="true" visible="false">
                <image>
                   <Image url="@../../img/equipo/seleccionado.png" />
                </image>
@@ -296,7 +296,7 @@
                   <Font name="System Bold" size="12.0" />
                </font>
             </Label>
-            <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="987.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="996.0" layoutY="274.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../img/tipos/planta.png" />
                </image>
@@ -431,18 +431,18 @@
             <Button fx:id="botonMovimiento2" layoutX="1030.0" layoutY="544.0" mnemonicParsing="false" onAction="#abrirMovimiento2" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
             <Button fx:id="botonMovimiento4" layoutX="1030.0" layoutY="607.0" mnemonicParsing="false" onAction="#abrirMovimiento4" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
             <Button fx:id="botonMovimiento3" layoutX="789.0" layoutY="607.0" mnemonicParsing="false" onAction="#abrirMovimiento3" opacity="0.0" prefHeight="52.0" prefWidth="230.0" text="Button" />
-            <Button fx:id="botonPokemon1" layoutX="55.0" layoutY="120.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonPokemon2" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonPokemon3" layoutX="55.0" layoutY="322.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonPokemon4" layoutX="55.0" layoutY="423.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonPokemon5" layoutX="55.0" layoutY="523.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonPokemon6" layoutX="56.0" layoutY="625.0" mnemonicParsing="false" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
-            <Button fx:id="botonMover1" disable="true" layoutX="486.0" layoutY="153.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
-            <Button fx:id="botonMover2" disable="true" layoutX="486.0" layoutY="255.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
-            <Button fx:id="botonMover3" disable="true" layoutX="487.0" layoutY="356.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
-            <Button fx:id="botonMover4" disable="true" layoutX="486.0" layoutY="456.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
-            <Button fx:id="botonMover5" disable="true" layoutX="487.0" layoutY="558.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
-            <Button fx:id="botonMover6" disable="true" layoutX="487.0" layoutY="658.0" mnemonicParsing="false" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonPokemon1" layoutX="55.0" layoutY="120.0" mnemonicParsing="false" onAction="#pokemonSeleccionado1" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon2" layoutX="56.0" layoutY="220.0" mnemonicParsing="false" onAction="#pokemonSeleccionado2" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon3" layoutX="55.0" layoutY="322.0" mnemonicParsing="false" onAction="#pokemonSeleccionado3" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon4" layoutX="55.0" layoutY="423.0" mnemonicParsing="false" onAction="#pokemonSeleccionado4" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon5" layoutX="55.0" layoutY="523.0" mnemonicParsing="false" onAction="#pokemonSeleccionado5" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonPokemon6" layoutX="56.0" layoutY="625.0" mnemonicParsing="false" onAction="#pokemonSeleccionado6" opacity="0.0" prefHeight="91.0" prefWidth="420.0" text="Button" />
+            <Button fx:id="botonMover1" disable="true" layoutX="486.0" layoutY="153.0" mnemonicParsing="false" onAction="#mover1" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover2" disable="true" layoutX="486.0" layoutY="255.0" mnemonicParsing="false" onAction="#mover2" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover3" disable="true" layoutX="487.0" layoutY="356.0" mnemonicParsing="false" onAction="#mover3" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover4" disable="true" layoutX="486.0" layoutY="456.0" mnemonicParsing="false" onAction="#mover4" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover5" disable="true" layoutX="487.0" layoutY="558.0" mnemonicParsing="false" onAction="#mover5" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
+            <Button fx:id="botonMover6" disable="true" layoutX="487.0" layoutY="658.0" mnemonicParsing="false" onAction="#mover6" opacity="0.0" prefHeight="25.0" prefWidth="101.0" text="Button" />
             <ImageView fitHeight="70.0" fitWidth="237.0" layoutX="1133.0" layoutY="-1.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../img/equipo/volver.png" />
@@ -454,6 +454,11 @@
                </font>
             </Label>
             <Button fx:id="botonVolver" layoutX="1140.0" mnemonicParsing="false" onAction="#VolverMenu" opacity="0.0" prefHeight="70.0" prefWidth="209.0" text="Button" />
+            <Label fx:id="lblACaja" contentDisplay="CENTER" layoutX="1157.0" layoutY="675.0" prefHeight="46.0" prefWidth="136.0" text="a Caja" textAlignment="CENTER" visible="false">
+               <font>
+                  <Font name="System Bold" size="29.0" />
+               </font>
+            </Label>
       </children>
     </AnchorPane>
   </children>

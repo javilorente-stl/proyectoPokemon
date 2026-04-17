@@ -454,7 +454,7 @@
                </font>
             </Label>
             <Button fx:id="botonVolver" layoutX="1140.0" mnemonicParsing="false" onAction="#VolverMenu" opacity="0.0" prefHeight="70.0" prefWidth="209.0" text="Button" />
-            <Label fx:id="lblACaja" contentDisplay="CENTER" layoutX="1157.0" layoutY="675.0" prefHeight="46.0" prefWidth="136.0" text="a Caja" textAlignment="CENTER" visible="false">
+            <Label fx:id="lblACaja" contentDisplay="CENTER" layoutX="1157.0" layoutY="675.0" onMouseClicked="#moverACaja" prefHeight="46.0" prefWidth="136.0" text="a Caja" textAlignment="CENTER" visible="false">
                <font>
                   <Font name="System Bold" size="29.0" />
                </font>

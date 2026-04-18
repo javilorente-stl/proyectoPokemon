@@ -1,6 +1,7 @@
 package controller;
 
 	import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,7 +12,10 @@ import dao.ConexionBD;
 import dao.PokemonCrud;
 import javafx.event.ActionEvent;
 	import javafx.fxml.FXML;
-	import javafx.scene.control.Button;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 	import javafx.scene.control.Label;
 	import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
@@ -441,8 +445,8 @@ public class EquipoController {
 	            
 	            // 2. Ejecutamos el movimiento (posicionOrigen -> destinoCaja)
 	            // posicionOrigen es la posición actual del pokemon en el equipo (1-6)
-	            PokemonCrud.moverPokemon(con, e.getIdEntrenador(), posicionOrigen, destinoCaja);
-	            
+	            gestionarClickPokemon(destinoCaja);
+	            limpiarModoMover();
 	            // 3. Refrescamos datos
 	            PokemonCrud.obtenerPokemon1(con, e); // Recargar equipo
 	            PokemonCrud.obtenerPokemon2(con, e); // Recargar caja
@@ -450,15 +454,69 @@ public class EquipoController {
 	            actualizarPokemonSeleccionado(e.getEquipo1().get(posicionOrigen-1));
 		    	cargarTiposMovimientos(e.getEquipo1().get(posicionOrigen-1));
 		    	aplicarParpadeoSeleccion(posicionOrigen-1);
+		    	
 	            
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
 	        }
 	    }
+	    /*
+	    void moverACaja(MouseEvent event) {
+	        // Asegúrate de tener guardado qué pokemon del equipo quieres mover (posicionOrigen)
+	        try (Connection con = conBD.getConnection()) {
+	            // 1. Calculamos el hueco libre en la caja (ej: 42)
+	            int destinoCaja = PokemonCrud.obtenerSiguienteHuecoCaja(con, e.getIdEntrenador());
+	            
+	            // 2. OBTENER EL POKEMON ACTUAL DEL EQUIPO
+	            // Usamos posicionOrigen - 1 porque Java empieza en 0
+	            Pokemon pAMover = e.getEquipo1().get(posicionOrigen - 1);
+
+	            // 3. ACTUALIZAR EN LA BASE DE DATOS
+	            // Necesitas un método que haga: UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?
+	            PokemonCrud.actualizarPosicionCaja(con, pAMover.getId_pokemon(), destinoCaja);
+
+	            // 4. LIMPIAR Y REFRESCAR
+	            limpiarModoMover();
+	            
+	            PokemonCrud.obtenerPokemon1(con, e); // Recargar equipo (ahora tendrá uno menos)
+	            PokemonCrud.obtenerPokemon2(con, e); // Recargar caja (ahora tendrá uno más)
+	            
+	            rellenarDatosEquipo();
+	            
+	            // ¡OJO AQUÍ! Si el equipo se quedó vacío tras el movimiento, 
+	            // no puedes intentar cargar el pokemon de posicionOrigen porque ya no existe.
+	            if (!e.getEquipo1().isEmpty()) {
+	                actualizarPokemonSeleccionado(e.getEquipo1().get(0));
+	                cargarTiposMovimientos(e.getEquipo1().get(0));
+	            }
+
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        } catch (IndexOutOfBoundsException ex) {
+	            System.err.println("Error: Intentaste acceder a un pokemon que ya no está en el equipo.");
+	        }
+	    }*/
 	    
 	    @FXML
-	    void VolverMenu(ActionEvent event) {
-
+	    void VolverMenu(ActionEvent event) throws IOException, SQLException {
+	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
+	        Parent root = loader.load();
+	        
+	        MenuController controller = loader.getController();
+	        
+	        //Vuelvo a cargar el entrenador
+	        controller.init(this.e, (Stage) botonVolver.getScene().getWindow(), null);
+	        if(mediaPlayer!=null) {
+	        	mediaPlayer.stop();
+	        }
+	        //Cambiar la escena
+	        Stage stage = (Stage) botonVolver.getScene().getWindow();
+	        Scene scene = new Scene(root);
+	        stage.setScene(scene);
+	        
+	        stage.sizeToScene();
+	        stage.centerOnScreen();
+	        stage.show();
 	    }
 
 	    @FXML

@@ -100,6 +100,32 @@ public class PokemonCrud {
 	                    psIns.setNull(18, java.sql.Types.INTEGER);
 
 	                    psIns.executeUpdate();
+	                    
+	                 // 1. Obtenemos el tipo principal directamente del ResultSet de la Pokedex
+	                    Tipo tipoPrincipal = Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase());
+
+	                    // 2. Llamamos al método que busca el ataque más débil (Potencia > 0) de ese tipo
+	                    Movimiento inicial = MovimientoCrud.obtenerMovimientoInicial(con, tipoPrincipal);
+
+	                    // 3. Verificamos que se haya encontrado algo antes de insertar
+	                    if (inicial != null) {
+	                        // Depuración: Verifica en consola que el ID ya no sea 0
+	                        System.out.println("Asignando Movimiento: " + inicial.getNombre() + " (ID: " + inicial.getIdMovimiento() + ") al Pokemon ID: " + nuevoId);
+
+	                        String sqlInsMov = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, NUM_PP, ACTIVO) VALUES (?, ?, ?, ?)";
+	                        
+	                        try (PreparedStatement psMov = con.prepareStatement(sqlInsMov)) {
+	                            psMov.setInt(1, nuevoId);
+	                            psMov.setInt(2, inicial.getIdMovimiento()); 
+	                            psMov.setInt(3, inicial.getNumPP());        // PP oficiales de la tabla MOVIMIENTO
+	                            psMov.setInt(4, 1);                         // 1 = Movimiento activo
+	                            
+	                            psMov.executeUpdate();
+	                        }
+	                    } else {
+	                        System.out.println("Aviso: No se encontró ningún movimiento de ataque para el tipo " + tipoPrincipal);
+	                    }
+	                    
 	                }
 	            }
 	        }

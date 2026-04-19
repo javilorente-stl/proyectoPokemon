@@ -459,6 +459,66 @@
                   <Font name="System Bold" size="29.0" />
                </font>
             </Label>
+            <ImageView fx:id="imgSexo1" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="127.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSexo2" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="227.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSexo3" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="329.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSexo4" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="428.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSexo5" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="528.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSexo6" fitHeight="25.0" fitWidth="29.0" layoutX="123.0" layoutY="629.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/male_symbol_by_jormxdos_dffxqyf-fullview.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado1" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="124.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado2" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="224.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado3" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="326.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado4" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="429.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado5" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="529.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgEstado6" fitHeight="31.0" fitWidth="34.0" layoutX="401.0" layoutY="632.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../../../../Downloads/38px-Envenenado_icono_EP.png" />
+               </image>
+            </ImageView>
       </children>
     </AnchorPane>
   </children>

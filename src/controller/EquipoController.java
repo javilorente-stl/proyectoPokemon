@@ -259,6 +259,42 @@ public class EquipoController {
 	    private ImageView imgSelect6;
 	    
 	    @FXML
+	    private ImageView imgSexo1;
+
+	    @FXML
+	    private ImageView imgSexo2;
+
+	    @FXML
+	    private ImageView imgSexo3;
+
+	    @FXML
+	    private ImageView imgSexo4;
+
+	    @FXML
+	    private ImageView imgSexo5;
+
+	    @FXML
+	    private ImageView imgSexo6;
+	    
+	    @FXML
+	    private ImageView imgEstado1;
+
+	    @FXML
+	    private ImageView imgEstado2;
+
+	    @FXML
+	    private ImageView imgEstado3;
+
+	    @FXML
+	    private ImageView imgEstado4;
+
+	    @FXML
+	    private ImageView imgEstado5;
+
+	    @FXML
+	    private ImageView imgEstado6;
+	    
+	    @FXML
 	    private Label lblACaja;
 
 	    @FXML
@@ -439,63 +475,44 @@ public class EquipoController {
 
 	    @FXML
 	    void moverACaja(MouseEvent event) {
-	    	try (Connection con = conBD.getConnection()) {
-	            // 1. Calculamos cuál es el último hueco libre
-	            int destinoCaja = PokemonCrud.obtenerSiguienteHuecoCaja(con, e.getIdEntrenador());
-	            
-	            // 2. Ejecutamos el movimiento (posicionOrigen -> destinoCaja)
-	            // posicionOrigen es la posición actual del pokemon en el equipo (1-6)
-	            gestionarClickPokemon(destinoCaja);
-	            limpiarModoMover();
-	            // 3. Refrescamos datos
-	            PokemonCrud.obtenerPokemon1(con, e); // Recargar equipo
-	            PokemonCrud.obtenerPokemon2(con, e); // Recargar caja
-	            rellenarDatosEquipo();
-	            actualizarPokemonSeleccionado(e.getEquipo1().get(posicionOrigen-1));
-		    	cargarTiposMovimientos(e.getEquipo1().get(posicionOrigen-1));
-		    	aplicarParpadeoSeleccion(posicionOrigen-1);
-		    	
-	            
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	    }
-	    /*
-	    void moverACaja(MouseEvent event) {
-	        // Asegúrate de tener guardado qué pokemon del equipo quieres mover (posicionOrigen)
 	        try (Connection con = conBD.getConnection()) {
-	            // 1. Calculamos el hueco libre en la caja (ej: 42)
+	            // 1. Calculamos el hueco en la DB (ej: 43)
 	            int destinoCaja = PokemonCrud.obtenerSiguienteHuecoCaja(con, e.getIdEntrenador());
 	            
-	            // 2. OBTENER EL POKEMON ACTUAL DEL EQUIPO
-	            // Usamos posicionOrigen - 1 porque Java empieza en 0
-	            Pokemon pAMover = e.getEquipo1().get(posicionOrigen - 1);
+	            // 2. Obtenemos el Pokémon real que está en la posición seleccionada
+	            // Usamos posicionOrigen - 1 porque en Java las listas empiezan en 0
+	            Pokemon p = e.getEquipo1().get(posicionOrigen - 1);
 
-	            // 3. ACTUALIZAR EN LA BASE DE DATOS
-	            // Necesitas un método que haga: UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?
-	            PokemonCrud.actualizarPosicionCaja(con, pAMover.getId_pokemon(), destinoCaja);
-
-	            // 4. LIMPIAR Y REFRESCAR
+	            // 3. ACTUALIZAMOS LA BASE DE DATOS (Este es el paso que te faltaba)
+	            // Cambiamos su columna CAJA de (1-6) a (43)
+	            PokemonCrud.actualizarPosicionPokemon(con, p.getId_pokemon(), destinoCaja);
+	            
+	            // 4. Limpiamos el estado visual
 	            limpiarModoMover();
+
+	            PokemonCrud.compactarCaja(con, e.getIdEntrenador());
+	            PokemonCrud.obtenerPokemon1(con, e); // El equipo ahora tendrá uno menos
+	            PokemonCrud.obtenerPokemon2(con, e); // La caja ahora tendrá uno más
 	            
-	            PokemonCrud.obtenerPokemon1(con, e); // Recargar equipo (ahora tendrá uno menos)
-	            PokemonCrud.obtenerPokemon2(con, e); // Recargar caja (ahora tendrá uno más)
-	            
+	            // 6. Volvemos a pintar la interfaz
 	            rellenarDatosEquipo();
-	            
-	            // ¡OJO AQUÍ! Si el equipo se quedó vacío tras el movimiento, 
-	            // no puedes intentar cargar el pokemon de posicionOrigen porque ya no existe.
+
+	            // 7. SEGURIDAD: Solo intentamos seleccionar si queda alguien en el equipo
 	            if (!e.getEquipo1().isEmpty()) {
+	                // Seleccionamos por defecto el primero que quede (índice 0)
 	                actualizarPokemonSeleccionado(e.getEquipo1().get(0));
 	                cargarTiposMovimientos(e.getEquipo1().get(0));
+	                aplicarParpadeoSeleccion(0);
+	                
 	            }
-
+	            
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
 	        } catch (IndexOutOfBoundsException ex) {
-	            System.err.println("Error: Intentaste acceder a un pokemon que ya no está en el equipo.");
+	            System.err.println("Error: El equipo se ha quedado vacío o el índice no es válido.");
 	        }
-	    }*/
+	    }
+	    
 	    
 	    @FXML
 	    void VolverMenu(ActionEvent event) throws IOException, SQLException {
@@ -561,7 +578,7 @@ public class EquipoController {
 	        }
 	    }
 	    
-	    public void rellenarDatosEquipo() {
+	    public void rellenarDatosEquipo1() {
 	        //Por defecto es el 1
 	    	//aplicarParpadeoSeleccion(1);
 	    	//activarMover(1);
@@ -640,6 +657,86 @@ public class EquipoController {
 	            mostrarStats(equipo1.getFirst());
 	        }
 	    }
+	    
+	    public void rellenarDatosEquipo() {
+	    	lblACaja.setStyle("-fx-background-color: white;");
+	    	
+	    	Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
+	        Label[] niveles = {LblNivel1, LblNivel2, LblNivel3, LblNivel4, LblNivel5, LblNivel6};
+	        Label[] vidas = {LblVida1, LblVida2, LblVida3, LblVida4, LblVida5, LblVida6};
+	        ProgressBar[] barrasVida = {barPokemon1, barPokemon2, barPokemon3, barPokemon4, barPokemon5, barPokemon6};
+	        ImageView[] imagenes = {imgPokemon1, imgPokemon2, imgPokemon3, imgPokemon4, imgPokemon5, imgPokemon6};
+	        ImageView[] sexos = {imgSexo1, imgSexo2, imgSexo3, imgSexo4, imgSexo5, imgSexo6};
+	        ImageView[] estados = {imgEstado1, imgEstado2, imgEstado3, imgEstado4, imgEstado5, imgEstado6};
+	        Button[] botones = {botonPokemon1, botonPokemon2, botonPokemon3, botonPokemon4, botonPokemon5, botonPokemon6};
+	        if (e == null || e.getEquipo1() == null) return;
+	        
+
+	        LinkedList<Pokemon> equipo1 = e.getEquipo1();
+
+	        for (int i = 0; i < 6; i++) {
+	            if (i < equipo1.size()) {
+	                Pokemon p = equipo1.get(i);
+	                
+	                // 1. TEXTOS Y VIDA
+	                String nombreAMostrar = (p.getMote() != null && !p.getMote().isEmpty()) ? p.getMote() : p.getNombre();
+	                nombres[i].setText(nombreAMostrar);
+	                niveles[i].setText("Nv. " + p.getNivel());
+	                vidas[i].setText(p.getVitalidad() + "/" + p.getVitalidadMax()); 
+	                //barrasVida[i].setProgress(p.getVitalidad() / p.getVitalidadMax());
+
+	                // 2. IMAGEN POKEMON
+	                File archivoPk = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
+	                if (archivoPk.exists()) imagenes[i].setImage(new Image(archivoPk.toURI().toString()));
+
+	                // 3. SEXO (Uso del Enum)
+	                // Asumiendo que el Enum Sexo tiene valores como MACHO, HEMBRA o M, H
+	                String nombreSexo = p.getSexo().name().toLowerCase(); 
+	                File fileSexo = new File("img/" + nombreSexo + ".png");
+	                if (fileSexo.exists()) sexos[i].setImage(new Image(fileSexo.toURI().toString()));
+
+	                // 4. ESTADO (Uso del Enum)
+	                // Buscamos el icono según el nombre del Enum (VIVO, DEBILITADO, PARALIZADO...)
+	                String nombreEstado = p.getEstado().name().toLowerCase();
+	                File fileEstado = new File("img/estados/" + nombreEstado + ".png");
+	                
+	                if (fileEstado.exists()) {
+	                    estados[i].setImage(new Image(fileEstado.toURI().toString()));
+	                } else {
+	                    estados[i].setImage(null); // Si es VIVO y no tienes icono, se limpia
+	                }
+	                
+	                // 5. BARRA DE VIDA
+	                double porcentajeVida = (double) p.getVitalidad() / p.getVitalidadMax();
+	                barrasVida[i].setProgress(porcentajeVida);
+	                actualizarColorBarraVida(barrasVida[i], porcentajeVida);   
+
+	                // VISIBILIDAD ON
+	                toggleSlotVisible(i, true, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
+
+	            } else {
+	                // VISIBILIDAD OFF
+	                toggleSlotVisible(i, false, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
+	            }
+	        }
+	        
+	        if (!equipo1.isEmpty()) mostrarStats(equipo1.getFirst());
+	        
+	        // Nota: El sistema recordará que sexo y estado son enums para esta sesión.
+	    }
+
+	    // Método auxiliar para no repetir líneas de setVisible
+	    private void toggleSlotVisible(int i, boolean visible, Button[] b, Label[] n, Label[] nv, Label[] v, ProgressBar[] bar, ImageView[] img, ImageView[] s, ImageView[] e) {
+	        b[i].setVisible(visible);
+	        n[i].setVisible(visible);
+	        nv[i].setVisible(visible);
+	        v[i].setVisible(visible);
+	        bar[i].setVisible(visible);
+	        img[i].setVisible(visible);
+	        s[i].setVisible(visible);
+	        e[i].setVisible(visible);
+	    }
+	    
 
 	    private void mostrarStats(Pokemon p) {
 	    	

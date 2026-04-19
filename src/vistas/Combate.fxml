@@ -81,7 +81,7 @@
                <image>
                   <Image url="@../../img/pokemon/back/24.gif" />
                </image></ImageView>
-            <ImageView fx:id="imgFront" fitHeight="150.0" fitWidth="200.0" layoutX="465.0" layoutY="70.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgFront" fitHeight="150.0" fitWidth="200.0" layoutX="471.0" layoutY="64.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../img/pokemon/front/46.gif" />
                </image></ImageView>

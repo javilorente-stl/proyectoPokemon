@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 
 import modelo.Entrenador;
+import modelo.Estado;
 import modelo.Movimiento;
 import modelo.Pokemon;
 import modelo.Sexo;
@@ -174,6 +175,10 @@ public class PokemonCrud {
 	        if (rs.getString("TIPO2") != null) {
 	            // Usamos el mismo método que en TIPO1 para evitar errores de tildes o formatos
 	            p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
+	        }
+	        
+	        if (rs.getString("ESTADO") != null) {
+	            p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
 	        }
 
 	        cargarMovimientosPokemon(conexion, p);
@@ -373,6 +378,47 @@ public class PokemonCrud {
 	    }
 	}
 	
+	public static void compactarCaja(Connection con, int idEntrenador) throws SQLException {
+	    //Buscamos solo los que tienen caja mayor a 6
+	    String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA > 6 ORDER BY CAJA ASC";
+	    String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
+
+	    LinkedList<Integer> ids = new LinkedList<>();
+
+	    try {
+	        con.setAutoCommit(false);
+	        
+	        //Obtenemos los IDs de los pokémon que están en la caja
+	        PreparedStatement psSel = con.prepareStatement(sqlSelect);
+	        psSel.setInt(1, idEntrenador);
+	        ResultSet rs = psSel.executeQuery();
+	        while (rs.next()) {
+	            ids.add(rs.getInt("ID_POKEMON"));
+	        }
+
+	        PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
+	        
+	        //La primera posición de la caja es la 7 (1-6 son el equipo)
+	        int nuevaPosicionCaja = 7;
+
+	        for (int id : ids) {
+	            psUpd.setInt(1, nuevaPosicionCaja);
+	            psUpd.setInt(2, id);
+	            psUpd.executeUpdate();
+	            nuevaPosicionCaja++;
+	        }
+
+	        con.commit();
+	        System.out.println("Caja compactada: se han reordenado " + ids.size() + " pokémon a partir de la posición 7.");
+	        
+	    } catch (SQLException e) {
+	        if (con != null) con.rollback();
+	        throw e;
+	    } finally {
+	        con.setAutoCommit(true);
+	    }
+	}
+	
 	public static int obtenerSiguienteHuecoCaja(Connection conexion, int idEntrenador) throws SQLException {
 	    // Buscamos el valor máximo de la columna CAJA para este entrenador
 	    String sql = "SELECT MAX(CAJA) AS ultimo_hueco FROM POKEMON WHERE ID_ENTRENADOR = ?";
@@ -394,6 +440,15 @@ public class PokemonCrud {
 	    }
 	    // Por si acaso falla algo
 	    return 7;
+	}
+	
+	public static void actualizarPosicionPokemon(Connection con, int idPokemon, int nuevaCaja) throws SQLException {
+	    String sql = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
+	    try (PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setInt(1, nuevaCaja);
+	        ps.setInt(2, idPokemon);
+	        ps.executeUpdate();
+	    }
 	}
 	
 	public static void asignarMovimiento(Connection con, int idPokemon, int idMovimiento, int ppMax) throws SQLException {

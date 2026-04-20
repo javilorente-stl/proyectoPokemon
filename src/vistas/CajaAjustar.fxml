@@ -51,127 +51,128 @@
    <children>
       <ImageView fitHeight="467.0" fitWidth="674.0" pickOnBounds="true" preserveRatio="true">
          <image>
-            <Image url="@../../../../../Downloads/Gemini_Generated_Image_yoef9gyoef9gyoef.png" />
+            <Image url="@../../img/FondoCaja.png" />
          </image>
       </ImageView>
       <VBox layoutX="416.0" layoutY="2.0" prefHeight="457.0" prefWidth="252.0">
          <children>
             <AnchorPane prefHeight="456.0" prefWidth="251.0" style="-fx-background-color: rgba(255, 255, 255, 0.3);">
                <children>
-                  <ImageView fx:id="imgPokemonSeleccionado" fitHeight="76.0" fitWidth="102.0" layoutX="72.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
-                  <ProgressBar fx:id="vitalidadBar" layoutX="84.0" layoutY="177.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <ProgressBar fx:id="ataqueBar" layoutX="84.0" layoutY="198.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <ProgressBar fx:id="defensaBar" layoutX="84.0" layoutY="216.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <ProgressBar fx:id="defensaSpBar" layoutX="84.0" layoutY="256.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <ProgressBar fx:id="ataqueSpBar" layoutX="84.0" layoutY="237.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <ProgressBar fx:id="velocidadBar" layoutX="84.0" layoutY="276.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
-                  <Label layoutX="18.0" layoutY="172.0" prefHeight="21.0" prefWidth="77.0" text="Vitalidad:" />
-                  <Label layoutX="18.0" layoutY="193.0" prefHeight="21.0" prefWidth="77.0" text="Ataque:" />
-                  <Label layoutX="18.0" layoutY="211.0" prefHeight="21.0" prefWidth="77.0" text="Defensa:" />
-                  <Label layoutX="18.0" layoutY="232.0" prefHeight="21.0" prefWidth="77.0" text="Ataque Sp:" />
-                  <Label layoutX="18.0" layoutY="251.0" prefHeight="21.0" prefWidth="85.0" text="Defensa Sp:" />
-                  <Label layoutX="18.0" layoutY="273.0" prefHeight="11.0" prefWidth="59.0" text="Velocidad:" />
-                  <Label fx:id="statVitalidadLbl" alignment="CENTER" layoutX="174.0" layoutY="172.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <ImageView fx:id="imgPokemonSeleccionado" fitHeight="86.0" fitWidth="107.0" layoutX="38.0" layoutY="24.0" pickOnBounds="true" preserveRatio="true" />
+                  <ProgressBar fx:id="vitalidadBar" layoutX="80.0" layoutY="157.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="ataqueBar" layoutX="80.0" layoutY="178.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="defensaBar" layoutX="80.0" layoutY="196.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="defensaSpBar" layoutX="80.0" layoutY="236.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="ataqueSpBar" layoutX="80.0" layoutY="217.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="velocidadBar" layoutX="80.0" layoutY="256.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <Label layoutX="14.0" layoutY="152.0" prefHeight="21.0" prefWidth="77.0" text="Vitalidad:" />
+                  <Label layoutX="14.0" layoutY="173.0" prefHeight="21.0" prefWidth="77.0" text="Ataque:" />
+                  <Label layoutX="14.0" layoutY="191.0" prefHeight="21.0" prefWidth="77.0" text="Defensa:" />
+                  <Label layoutX="14.0" layoutY="212.0" prefHeight="21.0" prefWidth="77.0" text="Ataque Sp:" />
+                  <Label layoutX="14.0" layoutY="231.0" prefHeight="21.0" prefWidth="85.0" text="Defensa Sp:" />
+                  <Label layoutX="14.0" layoutY="253.0" prefHeight="11.0" prefWidth="59.0" text="Velocidad:" />
+                  <Label fx:id="statVitalidadLbl" alignment="CENTER" layoutX="170.0" layoutY="152.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="statDefensaLbl" alignment="CENTER" layoutX="174.0" layoutY="211.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <Label fx:id="statDefensaLbl" alignment="CENTER" layoutX="170.0" layoutY="191.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="statAtaqueLbl" alignment="CENTER" layoutX="174.0" layoutY="193.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <Label fx:id="statAtaqueLbl" alignment="CENTER" layoutX="170.0" layoutY="173.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="statAtaqueSpLbl" alignment="CENTER" layoutX="174.0" layoutY="232.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <Label fx:id="statAtaqueSpLbl" alignment="CENTER" layoutX="170.0" layoutY="212.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="statDefensaSpLbl" alignment="CENTER" layoutX="174.0" layoutY="251.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <Label fx:id="statDefensaSpLbl" alignment="CENTER" layoutX="170.0" layoutY="231.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="statVelocidadLbl" alignment="CENTER" layoutX="174.0" layoutY="271.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                  <Label fx:id="statVelocidadLbl" alignment="CENTER" layoutX="170.0" layoutY="251.0" prefHeight="21.0" prefWidth="42.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="42.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="14.0" layoutY="128.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/planta.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="imgTipo2" fitHeight="18.0" fitWidth="85.0" layoutX="144.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgTipo2" fitHeight="18.0" fitWidth="85.0" layoutX="109.0" layoutY="128.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/veneno.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="31.0" fitWidth="213.0" layoutX="29.0" layoutY="392.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="31.0" fitWidth="213.0" layoutX="25.0" layoutY="372.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/equipo/movimientos.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="imgMovimiento2" fitHeight="8.0" fitWidth="59.0" layoutX="167.0" layoutY="342.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgMovimiento2" fitHeight="8.0" fitWidth="59.0" layoutX="163.0" layoutY="322.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/lucha.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="31.0" fitWidth="224.0" layoutX="29.0" layoutY="361.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="31.0" fitWidth="224.0" layoutX="25.0" layoutY="341.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/equipo/movimientos.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="imgMovimiento4" fitHeight="8.0" fitWidth="42.0" layoutX="167.0" layoutY="404.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgMovimiento4" fitHeight="8.0" fitWidth="42.0" layoutX="163.0" layoutY="384.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/psiquico.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="31.0" fitWidth="210.0" layoutX="29.0" layoutY="330.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="31.0" fitWidth="210.0" layoutX="25.0" layoutY="310.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/equipo/movimientos.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="imgMovimiento1" fitHeight="8.0" fitWidth="59.0" layoutX="167.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgMovimiento1" fitHeight="8.0" fitWidth="59.0" layoutX="163.0" layoutY="291.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/planta.png" />
                      </image>
                   </ImageView>
-                  <ImageView fitHeight="31.0" fitWidth="203.0" layoutX="29.0" layoutY="299.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="31.0" fitWidth="203.0" layoutX="25.0" layoutY="279.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/equipo/movimientos.png" />
                      </image>
                   </ImageView>
-                  <ImageView fx:id="imgMovimiento3" fitHeight="11.0" fitWidth="42.0" layoutX="166.0" layoutY="372.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgMovimiento3" fitHeight="11.0" fitWidth="42.0" layoutX="162.0" layoutY="352.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../../img/tipos/fuego.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblMovimiento1" alignment="CENTER" layoutX="48.0" layoutY="299.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                  <Label fx:id="lblMovimiento1" alignment="CENTER" layoutX="44.0" layoutY="279.0" prefHeight="31.0" prefWidth="107.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblMovimiento3" alignment="CENTER" layoutX="48.0" layoutY="361.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                  <Label fx:id="lblMovimiento3" alignment="CENTER" layoutX="44.0" layoutY="341.0" prefHeight="31.0" prefWidth="107.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblMovimiento2" alignment="CENTER" layoutX="48.0" layoutY="330.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                  <Label fx:id="lblMovimiento2" alignment="CENTER" layoutX="44.0" layoutY="310.0" prefHeight="31.0" prefWidth="107.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Label fx:id="lblMovimiento4" alignment="CENTER" layoutX="59.0" layoutY="397.0" prefHeight="21.0" prefWidth="85.0" text="Label">
+                  <Label fx:id="lblMovimiento4" alignment="CENTER" layoutX="55.0" layoutY="377.0" prefHeight="21.0" prefWidth="85.0" text="Label">
                      <font>
                         <Font name="System Bold" size="12.0" />
                      </font>
                   </Label>
-                  <Button fx:id="botonVolver" layoutX="155.0" layoutY="8.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="77.0" text="Volver" />
+                  <Button fx:id="botonVolver" layoutX="155.0" layoutY="8.0" mnemonicParsing="false" onAction="#volverAEquipo" prefHeight="31.0" prefWidth="77.0" text="Volver" />
+                  <Button fx:id="botonEliminar" layoutX="177.0" layoutY="410.0" mnemonicParsing="false" onAction="#eliminarPokemon" text="Eliminar" />
                </children>
             </AnchorPane>
          </children>
@@ -199,7 +200,7 @@
                                     <Font size="15.0" />
                                  </font>
                               </Label>
-                              <Button fx:id="moverAEquipo" mnemonicParsing="false" text="Mover a equipo" />
+                              <Button fx:id="moverAEquipo" mnemonicParsing="false" prefHeight="33.0" prefWidth="118.0" text="Equipar" />
                               <Label prefHeight="19.0" prefWidth="40.0" style="-fx-text-fill: black;" text="lvl" />
                               <Label prefHeight="19.0" prefWidth="40.0" style="-fx-text-fill: black;" text="Nvl." />
                            </children>

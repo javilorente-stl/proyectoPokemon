@@ -6,17 +6,22 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 
 import dao.ConexionBD;
 import dao.PokemonCrud;
 import javafx.animation.FadeTransition;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
@@ -43,6 +48,7 @@ public class CajaController {
 	private int posicionOrigen = -1;
 	private boolean modoMover = false;
 	ConexionBD conBD = new ConexionBD();
+	private Pokemon pokemonSeleccionado;
 
     @FXML
     private ProgressBar ataqueBar;
@@ -52,6 +58,9 @@ public class CajaController {
 
     @FXML
     private Button botonVolver;
+    
+    @FXML
+    private Button botonEliminar;
 
     @FXML
     private ProgressBar defensaBar;
@@ -125,6 +134,82 @@ public class CajaController {
     @FXML
     private ProgressBar vitalidadBar;
 
+    @FXML
+    void volverAEquipo(ActionEvent event) throws IOException, SQLException {
+        // 1. Cargamos la vista del Equipo
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/equipo.fxml"));
+        Parent root = loader.load();
+
+        // 2. Obtenemos el controlador del Equipo
+        EquipoController controller = loader.getController();
+
+        // 3. Pasamos los datos del Entrenador para que el equipo no salga vacío
+        // Usamos recibirDatos porque es el método que ya tienes configurado
+        controller.recibirDatos(this.e);
+
+        // 4. Parar música si fuera necesario
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+
+        // 5. Obtener el Stage actual desde cualquier nodo (por ejemplo, el botón que lanza el evento)
+        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        
+        // 6. Cambiar la escena
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+
+        // 7. Ajustes finales de ventana
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        stage.show();
+    }
+    
+    @FXML
+    void eliminarPokemon(ActionEvent event) {
+    	if (pokemonSeleccionado == null) {
+            System.out.println("No hay ningún Pokémon seleccionado para eliminar.");
+            return;
+        }
+
+        // 2. Crear Alerta de Confirmación
+        Alert confirmacion = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmacion.setTitle("Confirmar Eliminación");
+        confirmacion.setHeaderText("¿Estás seguro de que quieres liberar a " + pokemonSeleccionado.getNombre() + "?");
+        confirmacion.setContentText("Esta acción no se puede deshacer y el Pokémon desaparecerá para siempre.");
+
+        // 3. Esperar respuesta del usuario
+        Optional<ButtonType> resultado = confirmacion.showAndWait();
+
+        if (resultado.isPresent() && resultado.get() == ButtonType.OK) {
+            try (Connection con = conBD.getConnection()) {
+                
+                // 4. Llamar al CRUD
+                boolean eliminado = PokemonCrud.eliminarPokemon(con, pokemonSeleccionado.getId_pokemon(), e.getIdEntrenador());
+
+                if (eliminado) {
+                    System.out.println("Pokémon liberado con éxito.");
+                    
+                    // 5. Actualizar los datos del objeto Entrenador en memoria
+                    PokemonCrud.obtenerPokemon1(con, e);
+                    PokemonCrud.obtenerPokemon2(con, e);
+
+                    // 6. Refrescar la interfaz
+                    rellenarCaja(e.getEquipo2());
+                    mostrarStats(null); // Limpiamos el panel de estadísticas
+                    pokemonSeleccionado = null;
+                    
+                } else {
+                    System.err.println("No se pudo eliminar el Pokémon de la base de datos.");
+                }
+
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            System.out.println("Eliminación cancelada.");
+        }
+    }
     
     public void recibirDatos(Entrenador ent) throws SQLException {
         this.e = ent;
@@ -184,7 +269,7 @@ public class CajaController {
             img.setPreserveRatio(true);
 
             // 3. Botón
-            Button btnMover = new Button("Mover a equipo");
+            Button btnMover = new Button("Equipar");
             btnMover.setOnAction(e -> gestionarMoverAEquipo(p));
 
             // 4. Nivel - Textos en NEGRO
@@ -205,12 +290,49 @@ public class CajaController {
             // Añadir al grid (i % 3 para 3 columnas según tu código actual)
             gridCaja.add(slot, i % 3, i / 3);
             
-            // Evento para los stats
-            slot.setOnMouseClicked(event -> mostrarStats(p));
+            slot.setOnMouseClicked(event -> {
+                this.pokemonSeleccionado = p; 
+                mostrarStats(p);             
+            });
         }
     }
     private void mostrarStats(Pokemon p) {
-        // --- LÓGICA DE CÁLCULO DE STATS ---
+    	if (p == null) {
+            // Si el pokemon es null, limpiamos los textos y barras
+            statVitalidadLbl.setText("-");
+            vitalidadBar.setProgress(0);
+            statAtaqueLbl.setText("-");
+            ataqueBar.setProgress(0);
+            statDefensaLbl.setText("-");
+            defensaBar.setProgress(0);
+            statAtaqueSpLbl.setText("-");
+            ataqueSpBar.setProgress(0);
+            statDefensaSpLbl.setText("-");
+            defensaSpBar.setProgress(0);
+            statVelocidadLbl.setText("-");
+            velocidadBar.setProgress(0);
+            imgTipo1.setVisible(false);
+            imgTipo2.setVisible(false);
+            imgPokemonSeleccionado.setVisible(false);
+            imgMovimiento1.setVisible(false);
+            imgMovimiento2.setVisible(false);
+            imgMovimiento3.setVisible(false);
+            imgMovimiento4.setVisible(false);
+            lblMovimiento1.setText("-");
+            lblMovimiento2.setText("-");
+            lblMovimiento3.setText("-");
+            lblMovimiento4.setText("-");
+            
+            // ... limpia aquí todos los labels y barras que tengas ...
+            
+            // Si tienes una imagen del pokemon seleccionado, límpiala también
+            // imgPokemonSeleccionado.setImage(null);
+            
+            return; // Salimos del método para no ejecutar lo de abajo
+        }
+    	
+    	
+    	// --- LÓGICA DE CÁLCULO DE STATS ---
         double maxStatGeneral = p.getNivel() * 5.0;
         double maxVidaSegunNivel = 15.0 + (p.getNivel() * 5.0);
         double minVidaSegunNivel = maxVidaSegunNivel - 5.0; 
@@ -239,6 +361,7 @@ public class CajaController {
         File archivoPk = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
         if (archivoPk.exists()) {
             imgPokemonSeleccionado.setImage(new Image(archivoPk.toURI().toString()));
+            imgPokemonSeleccionado.setVisible(true);
         }
 
         // --- TU MÉTODO DE TIPOS ---

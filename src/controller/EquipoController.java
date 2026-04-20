@@ -599,24 +599,33 @@ public class EquipoController {
 	    
 	    @FXML
 	    void VolverMenu(ActionEvent event) throws IOException, SQLException {
-	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
-	        Parent root = loader.load();
-	        
-	        MenuController controller = loader.getController();
-	        
-	        //Vuelvo a cargar el entrenador
-	        controller.init(this.e, (Stage) botonVolver.getScene().getWindow(), null);
-	        if(mediaPlayer!=null) {
-	        	mediaPlayer.stop();
-	        }
-	        //Cambiar la escena
-	        Stage stage = (Stage) botonVolver.getScene().getWindow();
-	        Scene scene = new Scene(root);
-	        stage.setScene(scene);
-	        
-	        stage.sizeToScene();
-	        stage.centerOnScreen();
-	        stage.show();
+	    	    if (modoIntercambio) {
+	    	        // ESCENARIO A: Cancelar intercambio
+	    	        // Simplemente cerramos esta ventana (el Stage actual)
+	    	        Stage stage = (Stage) botonVolver.getScene().getWindow();
+	    	        stage.close(); 
+	    	        
+	    	        // Al cerrar, el 'showAndWait()' de la Caja terminará 
+	    	        // y el usuario volverá a ver su caja tal cual estaba.
+	    	        System.out.println("Intercambio cancelado por el usuario.");
+	    	        
+	    	    } else {
+	    	        // ESCENARIO B: Volver al menú (Tu código original)
+	    	        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
+	    	        Parent root = loader.load();
+	    	        MenuController controller = loader.getController();
+	    	        controller.init(this.e, (Stage) botonVolver.getScene().getWindow(), null);
+	    	        
+	    	        if(mediaPlayer != null) mediaPlayer.stop();
+	    	        
+	    	        Stage stage = (Stage) botonVolver.getScene().getWindow();
+	    	        Scene scene = new Scene(root);
+	    	        stage.setScene(scene);
+	    	        stage.sizeToScene();
+	    	        stage.centerOnScreen();
+	    	        stage.show();
+	    	    }
+	    	
 	    }
 
 	    @FXML
@@ -1115,6 +1124,9 @@ public class EquipoController {
 	        rellenarDatosEquipo();
 	        aplicarParpadeoDestinos(pCaja.getCaja());
 	        
+	        botonVolver.setDisable(false); // Aseguramos que esté activo
+	        botonVolver.setText("Cancelar"); // Opcional: avisar que es para cancelar
+	        botonCaja.setDisable(true);
 	        
 	        // UI: Puedes cambiar el título o un label para avisar: "Elige quién sale del equipo"
 	        //lblACaja.setText("SELECCIONA EL DESTINO");

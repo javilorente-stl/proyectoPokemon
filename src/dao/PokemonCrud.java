@@ -78,7 +78,7 @@ public class PokemonCrud {
 	        psSel.setInt(1, numPokedex);
 	        try (ResultSet rs = psSel.executeQuery()) {
 	            if (rs.next()) {
-	            	int vitalidadAleatoria = (int) (Math.random() * 6) + 15;
+	            	int vitalidadAleatoria = (int) (Math.random() * 6) + 16;
 	            	Sexo sexoAleatorio = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 	            	if (numPokedex >= 29 && numPokedex <= 31) { // Nidoran♀
 	            	    sexoAleatorio = Sexo.H;
@@ -499,5 +499,33 @@ public class PokemonCrud {
 	        psInsert.executeUpdate();
 	        System.out.println("Movimiento asignado con éxito.");
 	    }
+	    
+	}
+	
+	public static boolean eliminarPokemon(Connection con, int idPokemon, int idEntrenador) throws SQLException {
+	    String sqlDelete = "DELETE FROM POKEMON WHERE ID_POKEMON = ?";
+	    
+	    // FASE 1: Borrado atómico
+	    try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
+	        ps.setInt(1, idPokemon);
+	        int filasAfec = ps.executeUpdate();
+	        
+	        if (filasAfec > 0) {
+	            // Confirmamos el borrado inmediatamente si la conexión lo requiere
+	            if (!con.getAutoCommit()) con.commit(); 
+
+	            // FASE 2: Llamadas independientes
+	            // Como no queremos tocar estos métodos, los llamamos por separado.
+	            // Cada uno gestionará su propio setAutoCommit y Commit internamente.
+	            compactarEquipo(con, idEntrenador);
+	            compactarCaja(con, idEntrenador);
+	            
+	            return true;
+	        }
+	    } catch (SQLException e) {
+	        // Si falla el borrado, aquí no hay riesgo de rollback cruzado
+	        throw e;
+	    }
+	    return false;
 	}
 }

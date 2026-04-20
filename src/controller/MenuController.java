@@ -44,6 +44,9 @@ public class MenuController {
 
     @FXML
     private Button btnEquipo;
+    
+    @FXML
+    private Button btnCrianza;
 
     @FXML
     private Button btnHospital;
@@ -92,6 +95,12 @@ public class MenuController {
 			System.out.println(e.getMessage());
 		}
     }
+    
+    @FXML
+    void abrirCrianza(ActionEvent event) throws IOException {
+    	cerrarMenutoCrianza();
+    }
+    
     
 
     @FXML
@@ -170,6 +179,33 @@ public class MenuController {
         
         stage.show();
         mediaPlayer.stop();
+    }
+    
+    public void cerrarMenutoCrianza() throws IOException {
+        // 1. Cargamos el FXML de la vista de Crianza
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Crianza.fxml"));
+        Parent root = loader.load();
+        
+        // 2. Obtenemos el Stage actual a través de cualquier botón (btnSalir en este caso)
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        // 3. Obtenemos el controlador de Crianza y le pasamos el objeto Entrenador 'e'
+        CrianzaController controller = loader.getController();
+        //controller.recibirDatos(this.e);
+        
+        // 4. Configuramos la nueva escena
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        // 5. Ajustamos ventana (opcional pero recomendado para que cuadre el diseño)
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        // 6. Mostramos y paramos la música actual
+        stage.show();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
     }
 
     public void cerrarMenutoEquipo() throws IOException, SQLException {

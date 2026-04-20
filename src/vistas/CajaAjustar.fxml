@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
+  All rights reserved. Use is subject to license terms.
+
+  This file is available and licensed under the following license:
+
+  Redistribution and use in source and binary forms, with or without
+  modification, are permitted provided that the following conditions
+  are met:
+
+  - Redistributions of source code must retain the above copyright
+    notice, this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in
+    the documentation and/or other materials provided with the distribution.
+  - Neither the name of Oracle Corporation nor the names of its
+    contributors may be used to endorse or promote products derived
+    from this software without specific prior written permission.
+
+  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="457.0" prefWidth="667.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CajaController">
+   <children>
+      <ImageView fitHeight="467.0" fitWidth="674.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@../../../../../Downloads/Gemini_Generated_Image_yoef9gyoef9gyoef.png" />
+         </image>
+      </ImageView>
+      <VBox layoutX="416.0" layoutY="2.0" prefHeight="457.0" prefWidth="252.0">
+         <children>
+            <AnchorPane prefHeight="456.0" prefWidth="251.0" style="-fx-background-color: rgba(255, 255, 255, 0.3);">
+               <children>
+                  <ImageView fx:id="imgPokemonSeleccionado" fitHeight="76.0" fitWidth="102.0" layoutX="72.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" />
+                  <ProgressBar fx:id="vitalidadBar" layoutX="84.0" layoutY="177.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="ataqueBar" layoutX="84.0" layoutY="198.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="defensaBar" layoutX="84.0" layoutY="216.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="defensaSpBar" layoutX="84.0" layoutY="256.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="ataqueSpBar" layoutX="84.0" layoutY="237.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <ProgressBar fx:id="velocidadBar" layoutX="84.0" layoutY="276.0" prefHeight="11.0" prefWidth="77.0" progress="0.0" />
+                  <Label layoutX="18.0" layoutY="172.0" prefHeight="21.0" prefWidth="77.0" text="Vitalidad:" />
+                  <Label layoutX="18.0" layoutY="193.0" prefHeight="21.0" prefWidth="77.0" text="Ataque:" />
+                  <Label layoutX="18.0" layoutY="211.0" prefHeight="21.0" prefWidth="77.0" text="Defensa:" />
+                  <Label layoutX="18.0" layoutY="232.0" prefHeight="21.0" prefWidth="77.0" text="Ataque Sp:" />
+                  <Label layoutX="18.0" layoutY="251.0" prefHeight="21.0" prefWidth="85.0" text="Defensa Sp:" />
+                  <Label layoutX="18.0" layoutY="273.0" prefHeight="11.0" prefWidth="59.0" text="Velocidad:" />
+                  <Label fx:id="statVitalidadLbl" alignment="CENTER" layoutX="174.0" layoutY="172.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statDefensaLbl" alignment="CENTER" layoutX="174.0" layoutY="211.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statAtaqueLbl" alignment="CENTER" layoutX="174.0" layoutY="193.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statAtaqueSpLbl" alignment="CENTER" layoutX="174.0" layoutY="232.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statDefensaSpLbl" alignment="CENTER" layoutX="174.0" layoutY="251.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="statVelocidadLbl" alignment="CENTER" layoutX="174.0" layoutY="271.0" prefHeight="21.0" prefWidth="42.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <ImageView fx:id="imgTipo1" fitHeight="18.0" fitWidth="85.0" layoutX="42.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/planta.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgTipo2" fitHeight="18.0" fitWidth="85.0" layoutX="144.0" layoutY="136.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/veneno.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="31.0" fitWidth="213.0" layoutX="29.0" layoutY="392.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/equipo/movimientos.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgMovimiento2" fitHeight="8.0" fitWidth="59.0" layoutX="167.0" layoutY="342.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/lucha.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="31.0" fitWidth="224.0" layoutX="29.0" layoutY="361.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/equipo/movimientos.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgMovimiento4" fitHeight="8.0" fitWidth="42.0" layoutX="167.0" layoutY="404.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/psiquico.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="31.0" fitWidth="210.0" layoutX="29.0" layoutY="330.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/equipo/movimientos.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgMovimiento1" fitHeight="8.0" fitWidth="59.0" layoutX="167.0" layoutY="311.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/planta.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fitHeight="31.0" fitWidth="203.0" layoutX="29.0" layoutY="299.0" opacity="0.58" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/equipo/movimientos.png" />
+                     </image>
+                  </ImageView>
+                  <ImageView fx:id="imgMovimiento3" fitHeight="11.0" fitWidth="42.0" layoutX="166.0" layoutY="372.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../img/tipos/fuego.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="lblMovimiento1" alignment="CENTER" layoutX="48.0" layoutY="299.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblMovimiento3" alignment="CENTER" layoutX="48.0" layoutY="361.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblMovimiento2" alignment="CENTER" layoutX="48.0" layoutY="330.0" prefHeight="31.0" prefWidth="107.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="lblMovimiento4" alignment="CENTER" layoutX="59.0" layoutY="397.0" prefHeight="21.0" prefWidth="85.0" text="Label">
+                     <font>
+                        <Font name="System Bold" size="12.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="botonVolver" layoutX="155.0" layoutY="8.0" mnemonicParsing="false" prefHeight="31.0" prefWidth="77.0" text="Volver" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
+      <HBox prefHeight="456.0" prefWidth="427.0">
+         <children>
+            <ScrollPane fx:id="scrollCaja" fitToWidth="true" prefHeight="239.0" prefWidth="443.0" style="-fx-background-color: transparent; -fx-background: transparent; -fx-viewport-fill: transparent;">
+               <content>
+                  <GridPane fx:id="gridCaja" hgap="10.0" prefHeight="140.0" prefWidth="283.0" vgap="10.0">
+                     <columnConstraints>
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <padding>
+                        <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+                     </padding>
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0">
+                           <children>
+                              <ImageView fitHeight="52.0" fitWidth="61.0" pickOnBounds="true" preserveRatio="true" style="-fx-opacity: 1;" />
+                              <Label prefHeight="30.0" prefWidth="66.0" style="-fx-text-fill: black;" text="Nombre">
+                                 <font>
+                                    <Font size="15.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="moverAEquipo" mnemonicParsing="false" text="Mover a equipo" />
+                              <Label prefHeight="19.0" prefWidth="40.0" style="-fx-text-fill: black;" text="lvl" />
+                              <Label prefHeight="19.0" prefWidth="40.0" style="-fx-text-fill: black;" text="Nvl." />
+                           </children>
+                        </VBox>
+                     </children>
+                  </GridPane>
+               </content>
+            </ScrollPane>
+         </children>
+      </HBox>
+   </children>
+</AnchorPane>

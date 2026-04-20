@@ -13,6 +13,7 @@ import dao.PokemonCrud;
 import javafx.event.ActionEvent;
 	import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -44,6 +45,11 @@ public class EquipoController {
 	private boolean modoMover = false;
 	ConexionBD conBD = new ConexionBD();
 	
+	//Para hacer el cambio despues de estar en la caja
+	private Pokemon pokemonVieneDeCaja;
+	private CajaController cajaPadre;
+	private boolean modoIntercambio = false;
+	private Button[] botones;
 	
 	    @FXML
 	    private Label LblNivel1;
@@ -414,68 +420,145 @@ public class EquipoController {
 	    
 	    @FXML
 	    void pokemonSeleccionado1(ActionEvent event) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(0));
-	    	cargarTiposMovimientos(e.getEquipo1().get(0));
-	    	aplicarParpadeoSeleccion(1);
-	    	activarMover(1);
-	    	gestionarClickPokemon(1);
-	    	mostrarStats(e.getEquipo1().get(0));
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(1); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
+	                actualizarPokemonSeleccionado(e.getEquipo1().get(0));
+	                cargarTiposMovimientos(e.getEquipo1().get(0));
+	                mostrarStats(e.getEquipo1().get(0));
+	                aplicarParpadeoSeleccion(1);
+	                activarMover(1);
+	            }
+	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado2(ActionEvent event) {
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(2); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
 	    	actualizarPokemonSeleccionado(e.getEquipo1().get(1));
 	    	cargarTiposMovimientos(e.getEquipo1().get(1));
 	    	aplicarParpadeoSeleccion(2);
 	    	activarMover(2);
-	    	gestionarClickPokemon(2);
 	    	mostrarStats(e.getEquipo1().get(1));
+	            }
+	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado3(ActionEvent event) {
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(3); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
 	    	actualizarPokemonSeleccionado(e.getEquipo1().get(2));
 	    	cargarTiposMovimientos(e.getEquipo1().get(2));
 	    	aplicarParpadeoSeleccion(3);
 	    	activarMover(3);
-	    	gestionarClickPokemon(3);
 	    	mostrarStats(e.getEquipo1().get(2));
+	            }
+	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado4(ActionEvent event) {
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(4); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
 	    	actualizarPokemonSeleccionado(e.getEquipo1().get(3));
 	    	cargarTiposMovimientos(e.getEquipo1().get(3));
 	    	aplicarParpadeoSeleccion(4);
 	    	activarMover(4);
-	    	gestionarClickPokemon(4);
 	    	mostrarStats(e.getEquipo1().get(3));
+	            }
+	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado5(ActionEvent event) {
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(5); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
 	    	actualizarPokemonSeleccionado(e.getEquipo1().get(4));
 	    	cargarTiposMovimientos(e.getEquipo1().get(4));
 	    	aplicarParpadeoSeleccion(5);
 	    	activarMover(5);
-	    	gestionarClickPokemon(5);
 	    	mostrarStats(e.getEquipo1().get(4));
+	            }
+	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado6(ActionEvent event) {
+	    	if (modoMover||modoIntercambio) {
+	            // Si estamos moviendo, el clic en el botón significa "destino"
+	            gestionarClickPokemon(1); 
+	        } else {
+	            // Si no, es una selección normal para ver datos
+	            if (e.getEquipo1().size() >= 1) {
 	    	actualizarPokemonSeleccionado(e.getEquipo1().get(5));
 	    	cargarTiposMovimientos(e.getEquipo1().get(5));
 	    	aplicarParpadeoSeleccion(6);
 	    	activarMover(6);
-	    	gestionarClickPokemon(6);
 	    	mostrarStats(e.getEquipo1().get(5));
+	            }
+	        }
 	    }
 	    
+	    @FXML
+	    void irACaja(ActionEvent event) throws SQLException, IOException {
+	    	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/CajaAjustar.fxml"));
+	        Parent root = loader.load();
+
+	        // 2. Obtener el controlador de la Caja
+	        CajaController controller = loader.getController();
+
+	        // 3. Pasar los datos del Entrenador (el método que rellenará el GridPane)
+	        controller.recibirDatos(this.e);
+
+	        // 4. Parar la música si es necesario (como hacías en VolverMenu)
+	        if (mediaPlayer != null) {
+	            mediaPlayer.stop();
+	        }
+
+	        // 5. Cambiar la escena
+	        Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+	        Scene scene = new Scene(root);
+	        stage.setScene(scene);
+
+	        // 6. Ajustes de ventana
+	        stage.sizeToScene();
+	        stage.centerOnScreen();
+	        stage.show();
+	    }
 
 	    @FXML
 	    void moverACaja(MouseEvent event) {
-	        try (Connection con = conBD.getConnection()) {
+	    	if (e.getEquipo1().size() <= 1) {
+	            System.out.println("¡No puedes enviar tu último Pokémon a la caja!");
+	            
+	            // Opcional: Mostrar una alerta visual al usuario
+	            // Alerta.mostrarError("Acción no permitida", "Debes tener al menos un Pokémon en tu equipo.");
+	            
+	            limpiarModoMover(); // Cancelamos el modo mover para que no se quede bloqueado
+	            return;
+	    	}
+	    	try (Connection con = conBD.getConnection()) {
 	            // 1. Calculamos el hueco en la DB (ej: 43)
 	            int destinoCaja = PokemonCrud.obtenerSiguienteHuecoCaja(con, e.getIdEntrenador());
 	            
@@ -578,85 +661,6 @@ public class EquipoController {
 	        }
 	    }
 	    
-	    public void rellenarDatosEquipo1() {
-	        //Por defecto es el 1
-	    	//aplicarParpadeoSeleccion(1);
-	    	//activarMover(1);
-	    	lblACaja.setStyle("-fx-background-color: white;");
-	    	
-	    	Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
-	        Label[] niveles = {LblNivel1, LblNivel2, LblNivel3, LblNivel4, LblNivel5, LblNivel6};
-	        Label[] vidas = {LblVida1, LblVida2, LblVida3, LblVida4, LblVida5, LblVida6};
-	        ProgressBar[] barrasVida = {barPokemon1, barPokemon2, barPokemon3, barPokemon4, barPokemon5, barPokemon6};
-	        ImageView[] imagenes = {imgPokemon1, imgPokemon2, imgPokemon3, imgPokemon4, imgPokemon5, imgPokemon6};
-	        Button[] botones = {botonPokemon1, botonPokemon2, botonPokemon3, botonPokemon4, botonPokemon5, botonPokemon6};
-
-	        // Seguridad: Si e es null o el equipo es null, salimos para evitar errores
-	        if (e == null || e.getEquipo1() == null) {
-	            return;
-	        }
-
-	        LinkedList<Pokemon> equipo1 = e.getEquipo1();
-
-	        for (int i = 0; i < 6; i++) {
-	            if (i < equipo1.size()) {
-	                Pokemon p = equipo1.get(i);
-	                
-	                // Si el mote está vacío en la DB, a veces llega como String vacío "" en lugar de null
-	                String nombreAMostrar = (p.getMote() != null && !p.getMote().isEmpty()) ? p.getMote() : p.getNombre();
-	                
-	                nombres[i].setText(nombreAMostrar);
-	                niveles[i].setText("Nv. " + p.getNivel());
-	                vidas[i].setText(p.getVitalidad() +"/"+ p.getVitalidadMax()); 
-	                
-	                barrasVida[i].setProgress(p.getVitalidad() / p.getVitalidadMax());
-
-	                try {
-	                    //Construimos la ruta relativa desde la raíz del proyecto
-	                    String rutaFisica = "img/pokemon/front/" + p.getNum_pokedex() + ".gif";
-	                    
-	                    //Creamos un objeto File
-	                    File archivo = new File(rutaFisica);
-
-	                    if (archivo.exists()) {
-	                        //Convertimos el archivo a una URI que Image pueda entender
-	                        Image img = new Image(archivo.toURI().toString());
-	                        imagenes[i].setImage(img);
-	                    } else {
-	                        System.out.println("No existe el archivo físico en: " + archivo.getAbsolutePath());
-	                    }
-	                } catch (Exception ex) {
-	                    ex.printStackTrace();
-	                }
-	                
-	                	
-	                
-	                // SetVisible(true) para mostrar el slot ocupado
-	                botones[i].setVisible(true);
-	                nombres[i].setVisible(true);
-	                niveles[i].setVisible(true);
-	                vidas[i].setVisible(true);
-	                //Tratamos la barras
-	                double porcentajeVida = (double) p.getVitalidad() / p.getVitalidadMax();
-	                barrasVida[i].setProgress(porcentajeVida);
-	                actualizarColorBarraVida(barrasVida[i], porcentajeVida);   
-	                barrasVida[i].setVisible(true);
-	                imagenes[i].setVisible(true);
-	            } else {
-	                // SetVisible(false) para ocultar slots donde no hay pokemon
-	                botones[i].setVisible(false);
-	                nombres[i].setVisible(false);
-	                niveles[i].setVisible(false);
-	                vidas[i].setVisible(false);
-	                barrasVida[i].setVisible(false);
-	                imagenes[i].setVisible(false);
-	            }
-	        }
-	        
-	        if (!equipo1.isEmpty()) {
-	            mostrarStats(equipo1.getFirst());
-	        }
-	    }
 	    
 	    public void rellenarDatosEquipo() {
 	    	lblACaja.setStyle("-fx-background-color: white;");
@@ -668,7 +672,7 @@ public class EquipoController {
 	        ImageView[] imagenes = {imgPokemon1, imgPokemon2, imgPokemon3, imgPokemon4, imgPokemon5, imgPokemon6};
 	        ImageView[] sexos = {imgSexo1, imgSexo2, imgSexo3, imgSexo4, imgSexo5, imgSexo6};
 	        ImageView[] estados = {imgEstado1, imgEstado2, imgEstado3, imgEstado4, imgEstado5, imgEstado6};
-	        Button[] botones = {botonPokemon1, botonPokemon2, botonPokemon3, botonPokemon4, botonPokemon5, botonPokemon6};
+	        botones = new Button[]{botonPokemon1, botonPokemon2, botonPokemon3, botonPokemon4, botonPokemon5, botonPokemon6};
 	        if (e == null || e.getEquipo1() == null) return;
 	        
 
@@ -714,6 +718,17 @@ public class EquipoController {
 	                // VISIBILIDAD ON
 	                toggleSlotVisible(i, true, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
 
+	                final int posicion = i; // Necesitamos una variable final para el lambda
+	                /*
+	                botones[i].setOnAction(event -> {
+	                    if (modoIntercambio) {
+	                        ejecutarIntercambio(posicion);
+	                    } else {
+	                        // Aquí va tu lógica normal de cuando ves el equipo (ej: ver stats)
+	                        mostrarStats(e.getEquipo1().get(posicion));
+	                    }
+	                });*/
+	                
 	            } else {
 	                // VISIBILIDAD OFF
 	                toggleSlotVisible(i, false, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
@@ -722,7 +737,7 @@ public class EquipoController {
 	        
 	        if (!equipo1.isEmpty()) mostrarStats(equipo1.getFirst());
 	        
-	        // Nota: El sistema recordará que sexo y estado son enums para esta sesión.
+
 	    }
 
 	    // Método auxiliar para no repetir líneas de setVisible
@@ -1046,68 +1061,147 @@ public class EquipoController {
 	                // 1. Mover en la base de datos
 	                PokemonCrud.moverPokemon(conexion, e.getIdEntrenador(), posicionOrigen, posicionDestino);
 	                
-	                // 2. Compactar (si así lo deseas)
+	                // 2. Compactar el equipo
 	                PokemonCrud.compactarEquipo(conexion, e.getIdEntrenador());
 
-	                // --- ESTE ES EL PASO QUE TE FALTA ---
 	                // 3. Volver a cargar los Pokémon de la DB al objeto Java 'e'
-	                // Sin esto, 'e.getEquipo1()' sigue teniendo el orden viejo.
 	                PokemonCrud.obtenerPokemon1(conexion, this.e); 
-	                // ------------------------------------
 
-	                // 4. Ahora sí, los datos en 'e' son los nuevos y podemos pintar
+	                // 4. Pintar la interfaz con las nuevas posiciones
 	                rellenarDatosEquipo(); 
 	                
-	                System.out.println("Movimiento completado y datos recargados.");
+	                // --- NUEVA LÓGICA DE SELECCIÓN ---
+	                // 5. Buscamos el Pokémon que ahora está en la posición de destino
+	                int indice = posicionDestino - 1;
+	                if (indice >= 0 && indice < e.getEquipo1().size()) {
+	                    Pokemon p = e.getEquipo1().get(indice);
+	                    
+	                    // Actualizamos todos los componentes visuales
+	                    actualizarPokemonSeleccionado(p);
+	                    cargarTiposMovimientos(p);
+	                    mostrarStats(p);
+	                    aplicarParpadeoSeleccion(posicionDestino);
+	                    activarMover(posicionDestino);
+	                    
+	                    // Muy importante: actualizamos posicionOrigen para que sea la nueva
+	                    this.posicionOrigen = posicionDestino;
+	                }
+	                
+	                System.out.println("Intercambio completado. Pokémon seleccionado en posición: " + posicionDestino);
 	            }
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
 	        } finally {
-	            limpiarModoMover();
+	            // Al terminar, quitamos el modo mover (las flechas parpadeantes de destino)
+	            // pero NO limpiamos la posicionOrigen si queremos que siga "marcado"
+	            modoMover = false;
+	            lblACaja.setVisible(false);
+	            lblACaja.setDisable(true);
+	            // Nota: He sacado el contenido de limpiarModoMover() aquí para no resetear posicionOrigen
 	        }
 	    }
-	    /*
-	    private void onPokemonClick(int posicionClicada) {
-	        if (!modoMover) {
-	            // --- ESTADO NORMAL: SELECCIÓN ---
-	            posicionOrigen = posicionClicada;
-	            
-	            // Aplicas el parpadeo de "estoy seleccionado" (el que hicimos al principio)
-	            aplicarParpadeoSeleccion(posicionClicada);
-	            
-	            // Mostrar estadísticas del pokémon en los labels
-	            //mostrarDatosPokemon(posicionClicada); 
-
-	        } else {
-	            // --- ESTADO MOVER: EJECUTAR INTERCAMBIO ---
-	            ejecutarIntercambio(posicionClicada);
-	        }
-	    }*/
+	    
+	    public void prepararParaIntercambio1(Entrenador ent, Pokemon pCaja, CajaController padre) {
+	        this.e = ent;
+	        this.pokemonVieneDeCaja = pCaja;
+	        this.cajaPadre = padre;
+	        this.modoIntercambio = true; // Variable nueva para diferenciar el estado
+	        
+	        // Cargamos los datos para que el equipo se vea
+	        try (Connection con = conBD.getConnection()) {
+	            PokemonCrud.obtenerPokemon1(con, e);
+	        } catch (SQLException ex) { ex.printStackTrace(); }
+	        
+	        rellenarDatosEquipo();
+	        aplicarParpadeoDestinos(pCaja.getCaja());
+	        
+	        
+	        // UI: Puedes cambiar el título o un label para avisar: "Elige quién sale del equipo"
+	        //lblACaja.setText("SELECCIONA EL DESTINO");
+	        //lblACaja.setVisible(true);
+	        
+	    }
+	    
 	    private void gestionarClickPokemon(int posicionClicada) {
-	        // 1. ¡PROTECCIÓN! Si la posición es menor que 1, nos salimos para evitar el error
-	        if (posicionClicada < 1) {
-	            System.out.println("Posición no válida detectada: " + posicionClicada);
-	            return;
+	        if (posicionClicada < 1) return;
+	        int indice = posicionClicada - 1;
+
+	        // --- RAMA 1: INTERCAMBIO CON LA CAJA ---
+	        if (modoIntercambio) {
+	            ejecutarIntercambioCajaEquipo(indice);
+	            Stage stage = (Stage) LblPokemon1.getScene().getWindow();
+	            stage.close();
+	            return; 
 	        }
 
+	        // --- RAMA 2: MOVER DENTRO DEL EQUIPO ---
 	        if (modoMover) {
 	            ejecutarIntercambio(posicionClicada);
-	            actualizarPokemonSeleccionado(e.getEquipo1().get(posicionClicada-1));
-		    	cargarTiposMovimientos(e.getEquipo1().get(posicionClicada-1));
-	        } else {
-	            this.posicionOrigen = posicionClicada;
 	            
-	            // 2. Antes de hacer .get(), comprueba que el índice exista en la lista
-	            int indice = posicionClicada - 1;
+	            // Refrescamos la UI seleccionando al primero por seguridad
+	            if (e.getEquipo1() != null && !e.getEquipo1().isEmpty()) {
+	                Pokemon p = e.getEquipo1().get(0);
+	                //actualizarInterfaz(p, 1);
+	            }
+	        } 
+	        // --- RAMA 3: SELECCIÓN NORMAL ---
+	        else {
 	            if (indice >= 0 && indice < e.getEquipo1().size()) {
-	                //mostrarStats(e.getEquipo1().get(indice));
-	                aplicarParpadeoSeleccion(posicionClicada);
+	                this.posicionOrigen = posicionClicada;
+	                Pokemon p = e.getEquipo1().get(indice);
+	                actualizarInterfaz(p, posicionClicada);
 	            } else {
 	                System.out.println("Has clicado en un hueco vacío.");
-	                // Aquí podrías limpiar los stats o hacer un parpadeo de "slot vacío"
 	            }
 	        }
 	    }
 	    
+	    private void actualizarInterfaz(Pokemon p, int posicion) {
+	        actualizarPokemonSeleccionado(p);
+	        cargarTiposMovimientos(p);
+	        mostrarStats(p);
+	        aplicarParpadeoSeleccion(posicion);
+	        activarMover(posicion);
+	    }
+	    
+	    private void ejecutarIntercambioCajaEquipo(int indiceEquipo) {
+	    	try (Connection conexion = conBD.getConnection()) {
+	            // 1. Solo necesitamos al de la caja (el que viene de fuera)
+	            Pokemon pCaja = this.pokemonVieneDeCaja;
+
+	            // 2. Calculamos las posiciones basándonos en la lógica pura:
+	            // posA: El slot del equipo que el usuario clicó (1, 2, 3, 4, 5 o 6)
+	            int posEquipoReal = indiceEquipo + 1; 
+	            
+	            // posB: La posición que tiene el pokémon en la caja actualmente (> 6)
+	            int posCajaReal = pCaja.getCaja();
+
+	            System.out.println("INTERCAMBIO SEGURO: Equipo Pos " + posEquipoReal + " <-> Caja Pos " + posCajaReal);
+
+	            // 3. Tu método del -1 (Asegúrate de que use el idEntrenador)
+	            PokemonCrud.intercambiarPosicion(conexion, e.getIdEntrenador(), posEquipoReal, posCajaReal);
+
+	            // 4. MANTENIMIENTO: Compactamos ambos para evitar ceros o huecos
+	            PokemonCrud.compactarEquipo(conexion, e.getIdEntrenador());
+	            PokemonCrud.compactarCaja(conexion, e.getIdEntrenador());
+
+	            // 5. RECARGA: Traemos los datos nuevos de la DB al Entrenador
+	            PokemonCrud.obtenerPokemon1(conexion, e);
+	            PokemonCrud.obtenerPokemon2(conexion, e);
+
+	            // 6. UI: Refrescamos la caja que se ve al fondo
+	            if (cajaPadre != null) {
+	                cajaPadre.rellenarCaja(e.getEquipo2());
+	            }
+	            
+	            // 7. CIERRE: Adios ventana de selección
+	            Stage stage = (Stage) LblPokemon1.getScene().getWindow();
+	            stage.close();
+
+	        } catch (SQLException ex) {
+	            System.err.println("Error en el intercambio: " + ex.getMessage());
+	            ex.printStackTrace();
+	        }
+	    }
 	}
 

@@ -79,6 +79,22 @@ public class PokemonCrud {
 	        try (ResultSet rs = psSel.executeQuery()) {
 	            if (rs.next()) {
 	            	int vitalidadAleatoria = (int) (Math.random() * 6) + 15;
+	            	Sexo sexoAleatorio = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
+	            	if (numPokedex >= 29 && numPokedex <= 31) { // Nidoran♀
+	            	    sexoAleatorio = Sexo.H;
+	            	} else if (numPokedex >= 32 && numPokedex <= 34) { // Nidoran♂
+	            	    sexoAleatorio = Sexo.M;
+	            	} else if (numPokedex == 81 || numPokedex == 82 || // Magnemite, Magneton
+	            	           numPokedex == 100 || numPokedex == 101 || // Voltorb, Electrode
+	            	           numPokedex == 120 || numPokedex == 121 || // Staryu, Starmie
+	            	           numPokedex == 132 || // Ditto
+	            	           numPokedex == 137 || // Porygon
+	            	           numPokedex == 144 || numPokedex == 145 || numPokedex == 146 || // Aves Legendarias
+	            	           numPokedex == 150 || numPokedex == 151) { // Mewtwo, Mew
+	            	    sexoAleatorio = Sexo.X;
+	            	}
+	            	Estado estadoInicial = Estado.VIVO;
+	            	
 	                
 	                try (PreparedStatement psIns = con.prepareStatement(sqlInsert)) {
 	                    psIns.setInt(1, nuevoId);
@@ -95,8 +111,8 @@ public class PokemonCrud {
 	                    psIns.setInt(12, 1);
 	                    psIns.setInt(13, 0);
 	                    psIns.setInt(14, 5);
-	                    psIns.setString(15, (Math.random() < 0.5) ? "M" : "H");
-	                    psIns.setString(16, "VIVO");
+	                    psIns.setString(15, sexoAleatorio.name()); 
+	                    psIns.setString(16, estadoInicial.name());
 	                    psIns.setInt(17, proximaPosicion); // El hueco encontrado
 	                    psIns.setNull(18, java.sql.Types.INTEGER);
 
@@ -168,8 +184,12 @@ public class PokemonCrud {
 	        p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
 	        p.setVelocidad(rs.getInt("VELOCIDAD"));
 	        p.setNivel(rs.getInt("NIVEL"));
+	        p.setFertilidad(rs.getInt("FERTILIDAD"));
 	        if (rs.getString("TIPO1") != null) {
 	            p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
+	        }
+	        if (rs.getString("SEXO") != null) {
+	            p.setSexo(Sexo.convertirSexoDesdeString(rs.getString("SEXO").toUpperCase()));
 	        }
 
 	        if (rs.getString("TIPO2") != null) {

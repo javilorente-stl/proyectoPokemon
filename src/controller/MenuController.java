@@ -73,8 +73,8 @@ public class MenuController {
     }
 
     @FXML
-    void abrirCasino(ActionEvent event) {
-
+    void abrirCasino(ActionEvent event) throws IOException {
+    	cerrarMenutoCasino();
     }
 
     @FXML
@@ -181,6 +181,37 @@ public class MenuController {
         stage.centerOnScreen();
         
         // 6. Mostramos la ventana y detenemos la música de la vista actual
+        stage.show();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
+    
+    public void cerrarMenutoCasino() throws IOException {
+        // 1. Cargamos el FXML de la vista del Casino
+        // Asegúrate de que el archivo se llame Casino.fxml y esté en esa ruta
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Casino.fxml"));
+        Parent root = loader.load();
+        
+        // 2. Obtenemos el Stage actual (usando btnSalir o cualquier nodo de la vista)
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        // 3. Obtenemos el controlador del Casino y le pasamos el objeto Entrenador
+        // Cambia 'CasinoController' por el nombre exacto de tu clase
+        CasinoController controller = loader.getController();
+        
+        // Pasamos los datos (asegúrate de que CasinoController tenga este método)
+        controller.recibirDatos(this.e);
+        
+        // 4. Configuramos la nueva escena
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        // 5. Ajustes de ventana
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        // 6. Cambio de vista y gestión de audio
         stage.show();
         if (mediaPlayer != null) {
             mediaPlayer.stop();

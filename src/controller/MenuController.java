@@ -83,8 +83,8 @@ public class MenuController {
     }
 
     @FXML
-    void abrirEntrenamiento(ActionEvent event) {
-
+    void abrirEntrenamiento(ActionEvent event) throws IOException {
+    	cerrarMenutoEntrenamiento();
     }
 
     @FXML
@@ -97,7 +97,7 @@ public class MenuController {
     }
     
     @FXML
-    void abrirCrianza(ActionEvent event) throws IOException {
+    void abrirCrianza(ActionEvent event) throws IOException, SQLException {
     	cerrarMenutoCrianza();
     }
     
@@ -160,6 +160,32 @@ public class MenuController {
         stage.show();
         mediaPlayer.stop();
     }
+    public void cerrarMenutoEntrenamiento() throws IOException {
+        // 1. Cargamos el FXML de la vista de Entrenamiento
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Entrenamiento.fxml"));
+        Parent root = loader.load();
+        
+        // 2. Obtenemos el Stage actual a través de cualquier componente (en este caso btnSalir)
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        // 3. Obtenemos el controlador de la nueva vista y le pasamos los datos del entrenador
+        EntrenamientoController controller = loader.getController();
+        controller.recibirDatos(this.e);
+        
+        // 4. Configuramos la nueva escena
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        // 5. Ajustamos el tamaño y centramos la ventana
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        // 6. Mostramos la ventana y detenemos la música de la vista actual
+        stage.show();
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+    }
     
     public void cerrarMenutoCaptura() throws IOException {
     	// Cargamos el FXML del Login
@@ -181,7 +207,7 @@ public class MenuController {
         mediaPlayer.stop();
     }
     
-    public void cerrarMenutoCrianza() throws IOException {
+    public void cerrarMenutoCrianza() throws IOException, SQLException {
         // 1. Cargamos el FXML de la vista de Crianza
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Crianza.fxml"));
         Parent root = loader.load();
@@ -191,7 +217,7 @@ public class MenuController {
         
         // 3. Obtenemos el controlador de Crianza y le pasamos el objeto Entrenador 'e'
         CrianzaController controller = loader.getController();
-        //controller.recibirDatos(this.e);
+        controller.recibirDatos(this.e);
         
         // 4. Configuramos la nueva escena
         Scene scene = new Scene(root);

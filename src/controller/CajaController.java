@@ -259,7 +259,7 @@ public class CajaController {
             slot.setStyle("-fx-background-color: rgba(255,255,255,0.4); -fx-background-radius: 10;");
 
             // 1. Nombre (Arriba) - Texto en NEGRO
-            Label lblNombre = new Label(p.getNombre());
+            Label lblNombre = new Label(p.getMote());
             lblNombre.setStyle("-fx-font-weight: bold; -fx-text-fill: black;");
 
             // 2. Imagen

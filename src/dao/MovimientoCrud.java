@@ -56,6 +56,7 @@ public class MovimientoCrud {
         return mov;
     }
 	
+	
 	public static Movimiento obtenerMovimientoInicial(Connection con, Tipo tipoPrincipal) throws SQLException {
 	    Movimiento mov = null;
 	    

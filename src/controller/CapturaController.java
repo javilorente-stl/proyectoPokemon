@@ -13,6 +13,7 @@ import java.util.Random;
 import javax.swing.JOptionPane;
 
 import dao.ConexionBD;
+import dao.EntrenadorCrud;
 import dao.PokemonCrud;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -28,6 +29,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import modelo.Entrenador;
+import modelo.Objeto;
 
 public class CapturaController {
 
@@ -39,7 +41,7 @@ public class CapturaController {
 	private Stage stage;
 	private int numPokemon;
 	private Entrenador e;
-	
+	ConexionBD conBD = new ConexionBD();
 	
     @FXML
     private ImageView imgPokemon;
@@ -56,6 +58,9 @@ public class CapturaController {
     @FXML
     private Button btnVolver;
     
+    @FXML
+    private Label lblPokeballs;
+
     @FXML
     private Label lblnombrePokemon;
     
@@ -139,32 +144,89 @@ public class CapturaController {
     }
     
    public void recibirDatos(Entrenador ent) {
-       this.e = ent;
-       System.out.println("Captura lista para: " + e.getNombre());
+	   this.e = ent;
+	    System.out.println("Cargando mochila para: " + e.getNombre());
+
+	    // 1. Necesitas una conexión real (asumo que tienes una clase Conexión o similar)
+	    try (Connection con = conBD.getConnection()) { 
+	        EntrenadorCrud.obtenerMochila(con, e);
+	    } catch (SQLException ex) {
+	        ex.printStackTrace();
+	    }
+
+	    // 2. Comprobar si la mochila tiene algo antes de actualizar el Label
+	    if (e.getMochila() != null && !e.getMochila().isEmpty()) {
+	        
+	        // Buscamos específicamente las Pokeballs en la lista
+	        Objeto pokeballs = null;
+	        for (Objeto obj : e.getMochila()) {
+	            if (obj.getNombre().equalsIgnoreCase("Pokeball")) {
+	                pokeballs = obj;
+	                break;
+	            }
+	        }
+
+	        // 3. Si las encontramos, ponemos la cantidad. Si no, ponemos 0.
+	        if (pokeballs != null) {
+	            lblPokeballs.setText("Pokeballs: " + pokeballs.getCantidad());
+	        } else {
+	            lblPokeballs.setText("Pokeballs: 0");
+	        }
+	        
+	    } else {
+	        lblPokeballs.setText("Pokeballs: 0");
+	    }
    }
 
     @FXML
     void lanzarPokeball(ActionEvent event) {
-    	Random rand = new Random();
-    	int numeroAleatorio = rand.nextInt(3) + 1;
-    	if(pokemonGenerado==false) {
-    		lblCaptura.setText("No has generado un pokemon");
-    		return;
-    	}
-    	
-    	if(numeroAleatorio==1) {
-    		lblCaptura.setText("Has capturado un pokemon");
-    		try {
-    		ConexionBD con = new ConexionBD();
-        	Connection conexion = con.getConnection();
-    		PokemonCrud.guardarPokemon(conexion, numPokemon, e, pedirMote(obtenerNombre(numPokemon)));
-    		generarPokemonAleatorio();
-    		}catch (SQLException e) {
-				System.out.println(e.getMessage());
-			}
-    	}else {
-    		lblCaptura.setText("La pokeball ha fallado");
-    	}
+    	if (!pokemonGenerado) {
+            lblCaptura.setText("No has generado un Pokémon");
+            return;
+        }
+
+        // 1. Buscamos el objeto "Pokeball" en la mochila del entrenador
+        Objeto pokeballEnMochila = null;
+        for (Objeto obj : e.getMochila()) {
+            if (obj.getNombre().equalsIgnoreCase("Pokeball")) {
+                pokeballEnMochila = obj;
+                break;
+            }
+        }
+
+        // 2. Verificamos si tiene Pokeballs
+        if (pokeballEnMochila == null || pokeballEnMochila.getCantidad() <= 0) {
+            lblCaptura.setText("¡No te quedan Pokeballs!");
+            return;
+        }
+
+        try (Connection conexion = new ConexionBD().getConnection()) {
+            // 3. RESTAMOS la Pokeball (en Java y en BD)
+            pokeballEnMochila.setCantidad(pokeballEnMochila.getCantidad() - 1);
+            EntrenadorCrud.usarObjeto(conexion, e.getIdEntrenador(), pokeballEnMochila.getId_objeto());
+            
+            // Actualizamos el Label de la interfaz
+            lblPokeballs.setText("Pokeballs: " + pokeballEnMochila.getCantidad());
+
+            // 4. Lógica de probabilidad de captura
+            Random rand = new Random();
+            int numeroAleatorio = rand.nextInt(3) + 1;
+
+            if (numeroAleatorio == 1) {
+                lblCaptura.setText("¡Has capturado a " + obtenerNombre(numPokemon) + "!");
+                String mote = pedirMote(obtenerNombre(numPokemon));
+                PokemonCrud.guardarPokemon(conexion, numPokemon, e, mote);
+                   
+                generarPokemonAleatorio();
+                // generarPokemonAleatorio(); // Opcional: generar otro automáticamente
+            } else {
+                lblCaptura.setText("La Pokeball ha fallado...");
+            }
+
+        } catch (SQLException ex) {
+            lblCaptura.setText("Error al conectar con la base de datos");
+            ex.printStackTrace();
+        }
     }
     
     

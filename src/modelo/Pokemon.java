@@ -319,62 +319,46 @@ public class Pokemon {
 
 
 
-	public void subirNivel(Pokemon pokemon, Scanner sc) {
-		if ((pokemon.getExperiencia() * 10) >= pokemon.getNivel()) {
-			System.out.println("Ha subido un nivel");
-			// Subimos un nivel del pokemon
-			pokemon.setNivel(pokemon.getNivel() + 1);
-			// Subimos todas las stats por la subida de nivel
-			pokemon.setVitalidad(pokemon.getVitalidad() + (int) (Math.random() * 5) + 1);
-			pokemon.setAtaque(pokemon.getAtaque() + (int) (Math.random() * 5) + 1);
-			pokemon.setDefensa(pokemon.getDefensa() + (int) (Math.random() * 5) + 1);
-			pokemon.setAtaqueEspecial(pokemon.getAtaqueEspecial() + (int) (Math.random() * 5) + 1);
-			pokemon.setDefensaEspecial(pokemon.getDefensaEspecial() + (int) (Math.random() * 5) + 1);
-			pokemon.setVelocidad(pokemon.getVelocidad() + (int) (Math.random() * 5) + 1);
-		} else if (pokemon.getNivel() == 100) {
-			System.out.println("Nivel 100 alcanzado, no puedes subir de nivel");
-		} else {
-			System.out.println("No tienes suficiente experiencia para subir de nivel");
-		}
+	public void subirNivel() {
+	    if (this.nivel < 100 && (this.experiencia * 10) >= this.nivel) {
+	        // Subimos un nivel
+	        this.nivel++;
 
-		if ((pokemon.getNivel() % 3) == 0) {
-			pokemon.aprenderMovimiento(pokemon, sc);
-		}
+	        // Subida aleatoria de stats (1-5 puntos)
+	        this.vitalidad += (int) (Math.random() * 5) + 1;
+	        this.ataque += (int) (Math.random() * 5) + 1;
+	        this.defensa += (int) (Math.random() * 5) + 1;
+	        this.ataqueEspecial += (int) (Math.random() * 5) + 1;
+	        this.defensaEspecial += (int) (Math.random() * 5) + 1;
+	        this.velocidad += (int) (Math.random() * 5) + 1;
+	        
+	        // La lógica de aprender movimiento se dispara aquí, 
+	        // pero la interacción (elegir qué olvidar) debe venir del Controller
+	    }
 	}
 
-	public void aprenderMovimiento(Pokemon pokemon, Scanner sc) {
-		pokemon.getMovimientosPosibles().get((int) (Math.random() * (pokemon.getMovimientosPosibles().size())) + 1);
-		if (pokemon.getMovimientos().size() == 4) {
-			System.out.println("Ya tienes cuatro movimientos, selecciona cual quieres olvidar: ");
-			int eleccion = sc.nextInt();
-			// pokemon.getMovimientosPosibles().add(eleccion-1,
-			// pokemon.getMovimientos().get(eleccion-1));;
-			Movimiento olvidado = pokemon.getMovimientos().get(eleccion - 1);
-			pokemon.getMovimientos().remove(eleccion - 1);
+	public void aprenderMovimiento(int indiceOlvidar) {
+	    if (this.movimientosPosibles.isEmpty()) return;
 
-			// int indiceAleatorio = (int)(Math.random() *
-			// pokemon.getMovimientosPosibles().size()-1);
-			// pokemon.getMovimientos().add(pokemon.getMovimientosPosibles().get(indiceAleatorio));
-			// pokemon.getMovimientos().add(pokemon.getMovimientosPosibles().get((int)(Math.random()
-			// * (pokemon.getMovimientosPosibles().size())) + 1));
+	    // 1. Elegimos el nuevo movimiento aleatorio (Índice corregido sin el +1)
+	    int r = (int) (Math.random() * this.movimientosPosibles.size());
+	    Movimiento nuevo = this.movimientosPosibles.get(r);
 
-			// otra forma de tratar que no repita el mismo movimiento que acaba de quitar
-
-			Movimiento elegido;
-
-			do {
-				int r = (int) (Math.random() * pokemon.getMovimientosPosibles().size());
-				elegido = pokemon.getMovimientosPosibles().get(r);
-			} while ((elegido.equals(olvidado)) && (pokemon.getMovimientosPosibles().size() > 1)); // Repite si elige el
-																									// mismo que
-																									// olvidaste
-			// tambien tratamos si los posibles solo tienen un movimiento en la lista
-			pokemon.getMovimientos().add(elegido);
-			pokemon.getMovimientosPosibles().remove(elegido);
-
-			// hay que completar esto con la info de movimientos, no se como se hace ahora
-			System.out.println("Ha olvidad: " + " y ha aprendido: ");
-		}
+	    if (this.movimientos.size() < 4) {
+	        // Si hay espacio, aprende directamente
+	        this.movimientos.add(nuevo);
+	        this.movimientosPosibles.remove(nuevo);
+	    } else {
+	        // Si está lleno, usamos el índice que nos pasa el Controller (elegido por el usuario en la UI)
+	        if (indiceOlvidar >= 0 && indiceOlvidar < this.movimientos.size()) {
+	            Movimiento olvidado = this.movimientos.get(indiceOlvidar);
+	            
+	            // Intercambiamos: el olvidado vuelve a posibles, el nuevo entra a movimientos
+	            this.movimientos.set(indiceOlvidar, nuevo);
+	            this.movimientosPosibles.remove(nuevo);
+	            this.movimientosPosibles.add(olvidado);
+	        }
+	    }
 	}
 
 	public double calcularMultiplicadorFinal(Movimiento movElegido, Pokemon defensor) {

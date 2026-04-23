@@ -114,21 +114,46 @@ public class MenuController {
     }
 
     public void sonido() {
-    	String sonido="./son/musicaMenu.mp3";
-    	Media sound = new Media(new File(sonido).toURI().toString());
-    	mediaPlayer = new MediaPlayer(sound);
-    	mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
-    	
-    	if(!this.sonido) {
-    	mediaPlayer.play();
-    	imgSonido.setImage(new Image(new File("./img/MeloettaFeliz.png").toURI().toString()));
-    	
-    	this.sonido=true;
-    	}else {
-    		mediaPlayer.stop();
-    		this.sonido=false;
-    		imgSonido.setImage(new Image(new File("./img/MeloettaTriste.png").toURI().toString()));
-    	}
+    	if (mediaPlayer == null) {
+            try {
+                String rutaSonido = "./son/musicaMenu.mp3";
+                File archivo = new File(rutaSonido);
+                
+                if (archivo.exists()) {
+                    Media sound = new Media(archivo.toURI().toString());
+                    mediaPlayer = new MediaPlayer(sound);
+                    mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+                } else {
+                    System.err.println("Error: No se encuentra el archivo de sonido en " + rutaSonido);
+                    return; // Si no hay archivo, no seguimos
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                return;
+            }
+        }
+
+        if (!this.sonido) {
+            // Estaba apagado -> Toca sonar
+            mediaPlayer.play();
+            this.sonido = true;
+            // Cambiamos a Meloetta Feliz
+            File imgFile = new File("./img/MeloettaFeliz.png");
+            if (imgFile.exists()) {
+                imgSonido.setImage(new Image(imgFile.toURI().toString()));
+            }    
+        } else {
+            // Estaba encendido -> Toca silenciar
+            // Usamos stop() para que la próxima vez empiece desde el principio
+            mediaPlayer.stop(); 
+            this.sonido = false;
+            
+            // Cambiamos a Meloetta Triste
+            File imgFile = new File("./img/MeloettaTriste.png");
+            if (imgFile.exists()) {
+                imgSonido.setImage(new Image(imgFile.toURI().toString()));
+            }
+        }
     }
     
     
@@ -298,6 +323,7 @@ public class MenuController {
         Connection conexion = con.getConnection();
         
         PokemonCrud.obtenerPokemon1(conexion, e);
+        
         
         if (conexion != null) {
             conexion.close();

@@ -44,7 +44,7 @@
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
-            <ImageView fitHeight="440.0" fitWidth="701.0" layoutX="-4.0" layoutY="-5.0" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="440.0" fitWidth="701.0" layoutX="-4.0" layoutY="-5.0" opacity="0.78" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../Downloads/Gemini_Generated_Image_u20xdwu20xdwu20x.png" />
                </image>
@@ -73,7 +73,12 @@
                </font>
             </Label>
             <Button fx:id="btnVolver" layoutX="38.0" layoutY="34.0" mnemonicParsing="false" onAction="#volverMenu" prefHeight="44.0" prefWidth="88.0" text="Volver" />
-            <Label fx:id="lblnombrePokemon" layoutX="480.0" layoutY="50.0" prefHeight="66.0" prefWidth="181.0" text="Pokemon">
+            <Label fx:id="lblnombrePokemon" layoutX="424.0" layoutY="45.0" prefHeight="66.0" prefWidth="181.0" text="Pokemon">
+               <font>
+                  <Font name="System Bold" size="31.0" />
+               </font>
+            </Label>
+            <Label fx:id="lblPokeballs" layoutX="424.0" layoutY="105.0" prefHeight="66.0" prefWidth="258.0" text="Pokeballs:">
                <font>
                   <Font name="System Bold" size="31.0" />
                </font>

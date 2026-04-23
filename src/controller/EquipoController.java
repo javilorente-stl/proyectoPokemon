@@ -767,13 +767,15 @@ public class EquipoController {
 	    	double maxStatGeneral = p.getNivel() * 5.0;
 	    	
 	    	double maxVidaSegunNivel = 15.0 + (p.getNivel() * 5.0);
+	    	//double minVidaSegunNivel = maxVidaSegunNivel - 5.0; 
+
 	    	
-	    	double minVidaSegunNivel = maxVidaSegunNivel - 5.0; 
+	    	statVitalidadLbl.setText(p.getVitalidadMax() + "");
 
-	    	statVitalidadLbl.setText(p.getVitalidadMax() + "/" + (int)maxVidaSegunNivel);
+	    	
+	    	double progresoRelativo = (p.getVitalidadMax()) / (maxVidaSegunNivel);
 
-	    	double progresoRelativo = (p.getVitalidadMax() - minVidaSegunNivel) / (maxVidaSegunNivel - minVidaSegunNivel);
-
+	    	progresoRelativo = Math.max(0.0, Math.min(1.0, progresoRelativo));
 	    	vitalidadBar.setProgress(progresoRelativo);
 	    	
 	    	statAtaqueLbl.setText(String.valueOf(p.getAtaque()));

@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -11,6 +12,9 @@ import dao.PokemonCrud;
 import javafx.animation.FadeTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -195,6 +199,10 @@ public class EntrenamientoController {
                 // 3. Si tuvo éxito, refrescamos los datos visuales
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
+                
+                if(pokemonSeleccionado1.getNivel() == 10) {
+                	PokemonCrud.asignarMovimiento(conexion, pokemonSeleccionado1.getId_pokemon(), 2, 20);
+                }
                 // Si tienes un Label para el dinero del entrenador, actualízalo aquí también:
                 // txtDinero.setText(String.valueOf(e.getCartera()));
                 
@@ -275,8 +283,31 @@ public class EntrenamientoController {
     }
 
     @FXML
-    void volver(ActionEvent event) {
-
+    void volver(ActionEvent event) throws IOException, SQLException {
+    	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
+        Parent root = loader.load();
+        
+        // 2. Obtenemos el controlador del menú
+        MenuController controller = loader.getController();
+        
+        // 3. Inicializamos el menú con los datos actualizados del entrenador
+        // Importante: Usamos el método init que ya tienes definido en tu MenuController
+        controller.init(this.e, (Stage) botonVolver.getScene().getWindow(), null);
+        
+        // 4. Gestión de música (detener música de entrenamiento si existe)
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+        
+        // 5. Cambio de escena
+        Stage stage = (Stage) botonVolver.getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        // 6. Ajustes visuales de la ventana
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        stage.show();
     }
 
     public void recibirDatos(Entrenador ent) {
@@ -436,8 +467,27 @@ public class EntrenamientoController {
         lblNivel.setText("Nivel: "+p.getNivel());
         
         // Imagen del Sexo (Enum)
-        String rutaSexo = (p.getSexo() == Sexo.M) ? "img/m.png" : "img/h.png";
-        imgCriadoSexo.setImage(new Image(new File(rutaSexo).toURI().toString()));
+        String rutaSexo = null;
+        if (p.getSexo() == Sexo.M) {
+            rutaSexo = "img/m.png";
+        } else if (p.getSexo() == Sexo.H) {
+            rutaSexo = "img/h.png";
+        }
+
+        // 2. Si hay ruta (M o H), cargamos la imagen. Si es null (Sexo.X), ocultamos.
+        if (rutaSexo != null) {
+            File fileSexo = new File(rutaSexo);
+            if (fileSexo.exists()) {
+                imgCriadoSexo.setImage(new Image(fileSexo.toURI().toString()));
+                imgCriadoSexo.setVisible(true);
+            } else {
+                imgCriadoSexo.setVisible(false);
+            }
+        } else {
+            // Caso Sexo.X: Limpiamos la imagen y ocultamos el ImageView
+            imgCriadoSexo.setImage(null);
+            imgCriadoSexo.setVisible(false);
+        }
 
         // Imagen del Pokémon
         File file = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");

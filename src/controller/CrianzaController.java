@@ -256,10 +256,7 @@ public class CrianzaController {
     public void recibirDatos(Entrenador ent) throws SQLException {
         // 1. Asignamos las referencias
         this.e = ent;
-        
-        
-        
-        
+
         // 3. Gestión de la conexión
         ConexionBD con = new ConexionBD();
         Connection conexion = con.getConnection();

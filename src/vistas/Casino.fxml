@@ -44,34 +44,39 @@
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
       <children>
-            <ImageView fitHeight="516.0" fitWidth="690.0" layoutY="-8.0" opacity="0.52" pickOnBounds="true" preserveRatio="true">
+            <ImageView fitHeight="594.0" fitWidth="845.0" layoutY="-3.0" opacity="0.52" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_5kp4b5kp4b5kp4b5.png" />
+                  <Image url="@../../img/Casino/Fondo.png" />
                </image>
             </ImageView>
-            <Button fx:id="botonVolver" layoutX="555.0" layoutY="20.0" mnemonicParsing="false" onAction="#volver" prefHeight="62.0" prefWidth="109.0" text="Volver">
+            <Button fx:id="botonVolver" layoutX="630.0" layoutY="19.0" mnemonicParsing="false" onAction="#volver" prefHeight="62.0" prefWidth="109.0" text="Volver">
                <font>
                   <Font name="System Bold" size="20.0" />
                </font>
             </Button>
-            <Label fx:id="lblPokedollars" layoutX="27.0" layoutY="31.0" prefHeight="39.0" prefWidth="206.0" text="Pokedollars">
+            <Label fx:id="lblPokedollars" layoutX="27.0" layoutY="31.0" prefHeight="39.0" prefWidth="450.0" text="Pokedollars">
                <font>
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <ImageView fx:id="imgCaraCruz" fitHeight="226.0" fitWidth="233.0" layoutX="67.0" layoutY="82.0" onMouseClicked="#jugarCaraCruz" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgCaraCruz" fitHeight="285.0" fitWidth="291.0" layoutX="99.0" layoutY="91.0" onMouseClicked="#jugarCaraCruz" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_9ne7by9ne7by9ne7-Photoroom.png" />
+                  <Image url="@../../img/Casino/JuegoCaraCruz.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgRuleta" fitHeight="226.0" fitWidth="233.0" layoutX="384.0" layoutY="82.0" onMouseClicked="#jugarRuleta" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgRuleta" fitHeight="300.0" fitWidth="310.0" layoutX="440.0" layoutY="84.0" onMouseClicked="#jugarRuleta" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_wla2cmwla2cmwla2-Photoroom.png" />
+                  <Image url="@../../img/Casino/JuegoRuleta.png" />
                </image>
             </ImageView>
-            <ImageView fx:id="imgAdivinarNumero" fitHeight="226.0" fitWidth="233.0" layoutX="230.0" layoutY="269.0" onMouseClicked="#jugarAdivinarNumero" pickOnBounds="true" preserveRatio="true">
+            <ImageView fx:id="imgAdivinarNumero" fitHeight="226.0" fitWidth="233.0" layoutX="300.0" layoutY="346.0" onMouseClicked="#jugarAdivinarNumero" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_bj4mxsbj4mxsbj4m-Photoroom.png" />
+                  <Image url="@../../img/Casino/JuegoCartas.png" />
+               </image>
+            </ImageView>
+            <ImageView fx:id="imgSonido" fitHeight="199.0" fitWidth="310.0" layoutX="581.0" layoutY="373.0" onMouseClicked="#activarSonido" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../img/Casino/SonidoActivo.png" />
                </image>
             </ImageView>
       </children>

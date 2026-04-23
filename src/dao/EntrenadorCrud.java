@@ -5,9 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.Random;
 
 import modelo.Entrenador;
+import modelo.Objeto;
 
 public class EntrenadorCrud {
 
@@ -67,4 +69,65 @@ public class EntrenadorCrud {
 		}
 	}
 	
+	
+	  
+	public static void obtenerMochila(Connection con, Entrenador e) throws SQLException {
+		    // 1. Nos aseguramos de que el entrenador tenga una mochila instanciada
+		    if (e.getMochila() == null) {
+		        e.setMochila(new LinkedList<Objeto>());
+		    }
+		    
+		    // 2. Inicializamos o limpiamos la LinkedList de objetos
+		    // (Asegúrate de que en la clase Mochila, el atributo sea LinkedList<Objeto>)
+		    LinkedList<Objeto> listaObjetos = new LinkedList<>();
+
+		    // 3. Consulta SQL con JOIN para obtener los datos base y la cantidad actual
+		    String sql = "SELECT O.ID_OBJETO, O.NOM_OBJETO, O.ATAQUE, O.DEFENSA, O.VELOCIDAD, " +
+		                 "O.ATA_ESPECIAL, O.DEF_ESPECIAL, O.ESTAMINA, O.RECUPERACION_ESTAMINA, M.CANTIDAD " +
+		                 "FROM OBJETO O " +
+		                 "JOIN MOCHILA M ON O.ID_OBJETO = M.ID_OBJETO " +
+		                 "WHERE M.ID_ENTRENADOR = ?";
+
+		    try (PreparedStatement ps = con.prepareStatement(sql)) {
+		        ps.setInt(1, e.getIdEntrenador());
+		        ResultSet rs = ps.executeQuery();
+
+		        while (rs.next()) {
+		            // Creamos el objeto y rellenamos sus atributos
+		            Objeto obj = new Objeto();
+		            obj.setId_objeto(rs.getInt("ID_OBJETO"));
+		            obj.setNombre(rs.getString("NOM_OBJETO"));
+		            obj.setAtaque(rs.getInt("ATAQUE"));
+		            obj.setDefensa(rs.getInt("DEFENSA"));
+		            obj.setVelocidad(rs.getInt("VELOCIDAD"));
+		            obj.setAta_especial(rs.getInt("ATA_ESPECIAL"));
+		            obj.setDef_especial(rs.getInt("DEF_ESPECIAL"));
+		            obj.setEstamina(rs.getInt("ESTAMINA"));
+		            obj.setRecuperacion_estamina(rs.getInt("RECUPERACION_ESTAMINA"));
+		            
+		            // La CANTIDAD viene de la tabla de relación (INVENTARIO)
+		            obj.setCantidad(rs.getInt("CANTIDAD"));
+
+		            // Añadimos al final de la LinkedList
+		            listaObjetos.add(obj);
+		        }
+		    }
+		    e.setMochila(listaObjetos);
+	}
+	
+	public static void usarObjeto(Connection con, int idEntrenador, int idObjeto) throws SQLException {
+	    //Usamos un UPDATE para restar 1 a la cantidad
+		String sql = "UPDATE MOCHILA SET CANTIDAD = CANTIDAD - 1 " +
+                "WHERE ID_ENTRENADOR = ? AND ID_OBJETO = ? AND CANTIDAD > 0";
+
+	    try (PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setInt(1, idEntrenador);
+	        ps.setInt(2, idObjeto);
+	        
+	        int filasAfectadas = ps.executeUpdate();
+	        if (filasAfectadas == 0) {
+	            throw new SQLException("No se pudo restar el objeto (¿Cantidad 0?)");
+	        }
+	    }
+	}
 }

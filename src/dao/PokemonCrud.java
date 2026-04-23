@@ -582,7 +582,7 @@ public class PokemonCrud {
 	
 	public static void asignarMovimiento(Connection con, int idPokemon, int idMovimiento, int ppMax) throws SQLException {
 	    // 1. Contar cuántos movimientos tiene ya el pokemon
-	    String sqlContar = "SELECT COUNT(*) FROM POKEMON_MOVIMIENTOS WHERE ID_POKEMON = ?";
+	    String sqlContar = "SELECT COUNT(*) FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
 	    
 	    int totalMovimientos = 0;
 	    try (PreparedStatement psCount = con.prepareStatement(sqlContar)) {
@@ -600,7 +600,7 @@ public class PokemonCrud {
 	    }
 
 	    // 3. Si tiene menos de 4, procedemos al INSERT
-	    String sqlInsert = "INSERT INTO POKEMON_MOVIMIENTOS (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, ?)";
+	    String sqlInsert = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, ?)";
 	    try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
 	        psInsert.setInt(1, idPokemon);
 	        psInsert.setInt(2, idMovimiento);
@@ -1111,6 +1111,25 @@ public class PokemonCrud {
 	        } catch (SQLException e) {
 	            e.printStackTrace();
 	        }
+	    }
+	}
+	
+	public static void actualizarNivelStats(Connection con, Pokemon p) throws SQLException {
+	    String sql = "UPDATE POKEMON SET NIVEL = ?, VITALIDAD = ?, ATAQUE = ?, DEFENSA = ?, "
+	               + "ATAQUE_ESPECIAL = ?, DEFENSA_ESPECIAL = ?, VELOCIDAD = ? "
+	               + "WHERE ID_POKEMON = ?";
+
+	    try (PreparedStatement ps = con.prepareStatement(sql)) {
+	        ps.setInt(1, p.getNivel());
+	        ps.setInt(2, p.getVitalidad());
+	        ps.setInt(3, p.getAtaque());
+	        ps.setInt(4, p.getDefensa());
+	        ps.setInt(5, p.getAtaqueEspecial());
+	        ps.setInt(6, p.getDefensaEspecial());
+	        ps.setInt(7, p.getVelocidad());
+	        ps.setInt(8, p.getId_pokemon());
+
+	        ps.executeUpdate();
 	    }
 	}
 	

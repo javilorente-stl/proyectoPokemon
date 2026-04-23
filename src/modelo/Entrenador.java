@@ -10,9 +10,9 @@ public class Entrenador {
 	private int pokedollars;
 	private String imagenEntrenador;
 	private int claseEntrenador;
-	private LinkedList<Pokemon> equipo1;
-	private LinkedList<Pokemon> equipo2;
-	private LinkedList<Objeto> mochila;
+	private LinkedList<Pokemon> equipo1 = new LinkedList<>();
+    private LinkedList<Pokemon> equipo2 = new LinkedList<>();
+    private LinkedList<Objeto> mochila = new LinkedList<>();
 
 	
 	
@@ -34,9 +34,9 @@ public class Entrenador {
 		this.nombre = usuario;
 		this.password = password;
 		this.pokedollars = 0;
-		this.equipo1 = null;
-		this.equipo2 = null;
-		this.mochila = null;
+		this.equipo1 = new LinkedList<>();
+	    this.equipo2 = new LinkedList<>(); 
+	    this.mochila = new LinkedList<>();
 	}
 
 

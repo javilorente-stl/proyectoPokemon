@@ -202,6 +202,11 @@
                   <Font name="System Bold" size="18.0" />
                </font></Label>
             <Button fx:id="botonMostrarStats" layoutX="14.0" layoutY="129.0" mnemonicParsing="false" onAction="#mostrarStats" prefHeight="48.0" prefWidth="128.0" text="Mostrar Stats" textAlignment="CENTER" wrapText="true" />
+            <Label fx:id="lblDineroInsuf" layoutX="32.0" layoutY="38.0" prefHeight="31.0" prefWidth="298.0" text="No tienes suficientes Pokedollars" visible="false">
+               <font>
+                  <Font name="System Bold" size="18.0" />
+               </font>
+            </Label>
       </children>
     </AnchorPane>
   </children>

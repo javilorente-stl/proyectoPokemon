@@ -21,6 +21,7 @@ import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import modelo.Entrenador;
+import modelo.Pokemon;
 
 public class MenuController {
 
@@ -78,8 +79,8 @@ public class MenuController {
     }
 
     @FXML
-    void abrirCombate(ActionEvent event) {
-
+    void abrirCombate(ActionEvent event) throws IOException, SQLException {
+    	cerrarMenutoCombate();
     }
 
     @FXML
@@ -263,6 +264,48 @@ public class MenuController {
         mediaPlayer.stop();
     }
     
+    public void cerrarMenutoCombate() throws IOException, SQLException {
+        // 1. Generamos el Pokémon enemigo (necesitamos conexión para el CRUD)
+        Pokemon enemigoRandom = null;
+        ConexionBD conBD = new ConexionBD();
+        
+        try (Connection con = conBD.getConnection()) {
+            if (con != null) {
+                // Usamos el método que creamos en PokemonCrud para generar el rival en memoria
+                enemigoRandom = PokemonCrud.generarPokemonAleatorio(con);
+            }
+        }
+
+        // 2. Cargamos el FXML de la vista de Combate
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Combate.fxml"));
+        Parent root = loader.load();
+        
+        // 3. Obtenemos el Stage actual
+        Stage stage = (Stage) btnSalir.getScene().getWindow();
+        
+        // 4. Obtenemos el controlador y pasamos los datos
+        CombateController controller = loader.getController();
+        
+        // IMPORTANTE: El CombateController ahora genera al rival dentro de su propio recibirDatos
+        // o lo recibe por aquí. Según lo último que programamos, el controlador lo genera 
+        // usando la conexión, así que solo le pasamos el entrenador.
+        controller.recibirDatos(this.e);
+        
+        // 5. Configuramos la nueva escena
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        
+        // 6. Ajustes de ventana y música
+        stage.sizeToScene();
+        stage.centerOnScreen();
+        
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
+        
+        stage.show();
+    }
+    
     public void cerrarMenutoCrianza() throws IOException, SQLException {
         // 1. Cargamos el FXML de la vista de Crianza
         FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/Crianza.fxml"));
@@ -310,6 +353,8 @@ public class MenuController {
             mediaPlayer.stop();
         }
     }
+    
+    
     
     public void init(Entrenador ent, Stage stage, LoginController loginController) throws SQLException {
         this.e = ent;

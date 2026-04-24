@@ -25,6 +25,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
 import modelo.Entrenador;
+import modelo.Estado;
 import modelo.Movimiento;
 import modelo.Pokemon;
 import modelo.Tipo;
@@ -44,9 +45,12 @@ public class EquipoController {
 	private int posicionOrigen = -1;
 	private boolean modoMover = false;
 	ConexionBD conBD = new ConexionBD();
+	private CombateController combatePadre;
+	private boolean modoCombate = false;
 	
 	//Para hacer el cambio despues de estar en la caja
 	private Pokemon pokemonVieneDeCaja;
+	private Pokemon pokemonCombatiendo;
 	private CajaController cajaPadre;
 	private boolean modoIntercambio = false;
 	private Button[] botones;
@@ -420,103 +424,156 @@ public class EquipoController {
 	    
 	    @FXML
 	    void pokemonSeleccionado1(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
+	        if (e.getEquipo1().size() < 1) return; 
+	        Pokemon p = e.getEquipo1().get(0);
+
+	        if (modoCombate) {
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                combatePadre.setPokemonSeleccionado1(p);
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(1); 
 	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	                actualizarPokemonSeleccionado(e.getEquipo1().get(0));
-	                cargarTiposMovimientos(e.getEquipo1().get(0));
-	                mostrarStats(e.getEquipo1().get(0));
-	                aplicarParpadeoSeleccion(1);
-	                activarMover(1);
-	            }
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(1);
+	            activarMover(1);
+	            mostrarStats(p);
 	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado2(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
+	    	if (e.getEquipo1().size() < 2) return; 
+	        
+	        Pokemon p = e.getEquipo1().get(1);
+
+	        if (modoCombate) {
+	            // 1. Verificamos que no esté debilitado
+	            // 2. Verificamos que NO sea el mismo que ya está combatiendo
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                
+	                combatePadre.setPokemonSeleccionado1(p);
+	                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+	                stage.close();
+	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(2); 
 	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(1));
-	    	cargarTiposMovimientos(e.getEquipo1().get(1));
-	    	aplicarParpadeoSeleccion(2);
-	    	activarMover(2);
-	    	mostrarStats(e.getEquipo1().get(1));
-	            }
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(2);
+	            activarMover(2);
+	            mostrarStats(p);
 	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado3(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
+	        if (e.getEquipo1().size() < 3) return; 
+	        Pokemon p = e.getEquipo1().get(2);
+
+	        if (modoCombate) {
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                combatePadre.setPokemonSeleccionado1(p);
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(3); 
 	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(2));
-	    	cargarTiposMovimientos(e.getEquipo1().get(2));
-	    	aplicarParpadeoSeleccion(3);
-	    	activarMover(3);
-	    	mostrarStats(e.getEquipo1().get(2));
-	            }
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(3);
+	            activarMover(3);
+	            mostrarStats(p);
 	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado4(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
+	        if (e.getEquipo1().size() < 4) return; 
+	        Pokemon p = e.getEquipo1().get(3);
+
+	        if (modoCombate) {
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                combatePadre.setPokemonSeleccionado1(p);
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(4); 
 	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(3));
-	    	cargarTiposMovimientos(e.getEquipo1().get(3));
-	    	aplicarParpadeoSeleccion(4);
-	    	activarMover(4);
-	    	mostrarStats(e.getEquipo1().get(3));
-	            }
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(4);
+	            activarMover(4);
+	            mostrarStats(p);
 	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado5(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
+	        if (e.getEquipo1().size() < 5) return; 
+	        Pokemon p = e.getEquipo1().get(4);
+
+	        if (modoCombate) {
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                combatePadre.setPokemonSeleccionado1(p);
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(5); 
 	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(4));
-	    	cargarTiposMovimientos(e.getEquipo1().get(4));
-	    	aplicarParpadeoSeleccion(5);
-	    	activarMover(5);
-	    	mostrarStats(e.getEquipo1().get(4));
-	            }
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(5);
+	            activarMover(5);
+	            mostrarStats(p);
 	        }
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado6(ActionEvent event) {
-	    	if (modoMover||modoIntercambio) {
-	            // Si estamos moviendo, el clic en el botón significa "destino"
-	            gestionarClickPokemon(1); 
-	        } else {
-	            // Si no, es una selección normal para ver datos
-	            if (e.getEquipo1().size() >= 1) {
-	    	actualizarPokemonSeleccionado(e.getEquipo1().get(5));
-	    	cargarTiposMovimientos(e.getEquipo1().get(5));
-	    	aplicarParpadeoSeleccion(6);
-	    	activarMover(6);
-	    	mostrarStats(e.getEquipo1().get(5));
+	        if (e.getEquipo1().size() < 6) return; 
+	        Pokemon p = e.getEquipo1().get(5);
+
+	        if (modoCombate) {
+	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
+	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                combatePadre.setPokemonSeleccionado1(p);
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
 	            }
+	            return;
+	        }
+
+	        if (modoMover || modoIntercambio) {
+	            gestionarClickPokemon(6); 
+	        } else {
+	            actualizarPokemonSeleccionado(p);
+	            cargarTiposMovimientos(p);
+	            aplicarParpadeoSeleccion(6);
+	            activarMover(6);
+	            mostrarStats(p);
 	        }
 	    }
 	    
@@ -599,7 +656,12 @@ public class EquipoController {
 	    
 	    @FXML
 	    void VolverMenu(ActionEvent event) throws IOException, SQLException {
-	    	    if (modoIntercambio) {
+	    	if (modoCombate) {
+	            // Si estamos en combate, solo cerramos la ventana modal
+	            Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
+	            stage.close();
+	    	}    
+	    	else if (modoIntercambio) {
 	    	        // ESCENARIO A: Cancelar intercambio
 	    	        // Simplemente cerramos esta ventana (el Stage actual)
 	    	        Stage stage = (Stage) botonVolver.getScene().getWindow();
@@ -650,7 +712,10 @@ public class EquipoController {
 
 	    public void recibirDatos(Entrenador ent) throws SQLException {
 	        this.e = ent;
-	        
+	     // IMPORTANTE: Limpiar el equipo antes de pedir los datos a la BD
+	        if (this.e.getEquipo1() != null) {
+	            this.e.getEquipo1().clear();
+	        }
 	        
 	        try (Connection conexion = conBD.getConnection()) {
 	            if (conexion != null) {
@@ -672,9 +737,10 @@ public class EquipoController {
 	    
 	    
 	    public void rellenarDatosEquipo() {
-	    	lblACaja.setStyle("-fx-background-color: white;");
-	    	
-	    	Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
+	        lblACaja.setStyle("-fx-background-color: white;");
+	        
+	        // Inicialización de arrays (esto está perfecto)
+	        Label[] nombres = {LblPokemon1, LblPokemon2, LblPokemon3, LblPokemon4, LblPokemon5, LblPokemon6};
 	        Label[] niveles = {LblNivel1, LblNivel2, LblNivel3, LblNivel4, LblNivel5, LblNivel6};
 	        Label[] vidas = {LblVida1, LblVida2, LblVida3, LblVida4, LblVida5, LblVida6};
 	        ProgressBar[] barrasVida = {barPokemon1, barPokemon2, barPokemon3, barPokemon4, barPokemon5, barPokemon6};
@@ -682,8 +748,8 @@ public class EquipoController {
 	        ImageView[] sexos = {imgSexo1, imgSexo2, imgSexo3, imgSexo4, imgSexo5, imgSexo6};
 	        ImageView[] estados = {imgEstado1, imgEstado2, imgEstado3, imgEstado4, imgEstado5, imgEstado6};
 	        botones = new Button[]{botonPokemon1, botonPokemon2, botonPokemon3, botonPokemon4, botonPokemon5, botonPokemon6};
+
 	        if (e == null || e.getEquipo1() == null) return;
-	        
 
 	        LinkedList<Pokemon> equipo1 = e.getEquipo1();
 
@@ -691,32 +757,36 @@ public class EquipoController {
 	            if (i < equipo1.size()) {
 	                Pokemon p = equipo1.get(i);
 	                
-	                // 1. TEXTOS Y VIDA
+	                // 1. TEXTOS
 	                String nombreAMostrar = (p.getMote() != null && !p.getMote().isEmpty()) ? p.getMote() : p.getNombre();
 	                nombres[i].setText(nombreAMostrar);
 	                niveles[i].setText("Nv. " + p.getNivel());
 	                vidas[i].setText(p.getVitalidad() + "/" + p.getVitalidadMax()); 
-	                //barrasVida[i].setProgress(p.getVitalidad() / p.getVitalidadMax());
 
 	                // 2. IMAGEN POKEMON
 	                File archivoPk = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
-	                if (archivoPk.exists()) imagenes[i].setImage(new Image(archivoPk.toURI().toString()));
+	                if (archivoPk.exists()) {
+	                    imagenes[i].setImage(new Image(archivoPk.toURI().toString()));
+	                } else {
+	                    imagenes[i].setImage(null); // Limpiar si no hay imagen
+	                }
 
-	                // 3. SEXO (Uso del Enum)
-	                // Asumiendo que el Enum Sexo tiene valores como MACHO, HEMBRA o M, H
+	                // 3. SEXO
 	                String nombreSexo = p.getSexo().name().toLowerCase(); 
 	                File fileSexo = new File("img/" + nombreSexo + ".png");
-	                if (fileSexo.exists()) sexos[i].setImage(new Image(fileSexo.toURI().toString()));
+	                if (fileSexo.exists()) {
+	                    sexos[i].setImage(new Image(fileSexo.toURI().toString()));
+	                } else {
+	                    sexos[i].setImage(null); // Limpiar restos visuales
+	                }
 
-	                // 4. ESTADO (Uso del Enum)
-	                // Buscamos el icono según el nombre del Enum (VIVO, DEBILITADO, PARALIZADO...)
+	                // 4. ESTADO
 	                String nombreEstado = p.getEstado().name().toLowerCase();
 	                File fileEstado = new File("img/estados/" + nombreEstado + ".png");
-	                
 	                if (fileEstado.exists()) {
 	                    estados[i].setImage(new Image(fileEstado.toURI().toString()));
 	                } else {
-	                    estados[i].setImage(null); // Si es VIVO y no tienes icono, se limpia
+	                    estados[i].setImage(null); // Muy importante para Pokémon VIVOS
 	                }
 	                
 	                // 5. BARRA DE VIDA
@@ -726,29 +796,18 @@ public class EquipoController {
 
 	                // VISIBILIDAD ON
 	                toggleSlotVisible(i, true, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
-
-	                final int posicion = i; // Necesitamos una variable final para el lambda
-	                /*
-	                botones[i].setOnAction(event -> {
-	                    if (modoIntercambio) {
-	                        ejecutarIntercambio(posicion);
-	                    } else {
-	                        // Aquí va tu lógica normal de cuando ves el equipo (ej: ver stats)
-	                        mostrarStats(e.getEquipo1().get(posicion));
-	                    }
-	                });*/
 	                
 	            } else {
-	                // VISIBILIDAD OFF
+	                // VISIBILIDAD OFF (Huecos vacíos del equipo)
 	                toggleSlotVisible(i, false, botones, nombres, niveles, vidas, barrasVida, imagenes, sexos, estados);
 	            }
 	        }
 	        
-	        if (!equipo1.isEmpty()) mostrarStats(equipo1.getFirst());
-	        
-
+	        // Mostrar stats del primero por defecto si el equipo no está vacío
+	        if (!equipo1.isEmpty()) {
+	            mostrarStats(equipo1.getFirst());
+	        }
 	    }
-
 	    // Método auxiliar para no repetir líneas de setVisible
 	    private void toggleSlotVisible(int i, boolean visible, Button[] b, Label[] n, Label[] nv, Label[] v, ProgressBar[] bar, ImageView[] img, ImageView[] s, ImageView[] e) {
 	        b[i].setVisible(visible);
@@ -1074,6 +1133,8 @@ public class EquipoController {
 	                
 	                // 2. Compactar el equipo
 	                PokemonCrud.compactarEquipo(conexion, e.getIdEntrenador());
+	                
+	                this.e.getEquipo1().clear();
 
 	                // 3. Volver a cargar los Pokémon de la DB al objeto Java 'e'
 	                PokemonCrud.obtenerPokemon1(conexion, this.e); 
@@ -1215,6 +1276,39 @@ public class EquipoController {
 	        } catch (SQLException ex) {
 	            System.err.println("Error en el intercambio: " + ex.getMessage());
 	            ex.printStackTrace();
+	        }
+	    }
+	    
+	    public void prepararParaCanjeCombate(Entrenador ent, CombateController padre) {
+	        this.e = ent;
+	        this.combatePadre = padre;
+	        this.modoCombate = true; // Una bandera booleana para cambiar el comportamiento del clic
+	        this.pokemonCombatiendo = padre.getPokemonSeleccionado1();
+	        // Rellenamos la vista del equipo normalmente
+	        rellenarDatosEquipo();
+	        aplicarParpadeoDestinos(posicionOrigen);
+	        mostrarStats(pokemonCombatiendo);
+	        actualizarPokemonSeleccionado(pokemonCombatiendo);
+	        cargarTiposMovimientos(pokemonCombatiendo);
+	        botonCaja.setDisable(true);
+	        
+	        
+	    }
+	    
+	    private void seleccionarPokemon(Pokemon pSeleccionado) {
+	        if (modoCombate) {
+	            if (pSeleccionado.getEstado() == Estado.DEBILITADO) {
+	                // No dejar elegir si está muerto
+	                //mostrarAlerta("Este Pokémon no puede luchar.");
+	                return;
+	            }
+	            
+	            // Asignamos el nuevo Pokémon al controlador de combate
+	            combatePadre.setPokemonSeleccionado1(pSeleccionado);
+	            
+	            // Cerramos la ventana de equipo automáticamente
+	            Stage stage = (Stage) botonVolver.getScene().getWindow();
+	            stage.close();
 	        }
 	    }
 	}

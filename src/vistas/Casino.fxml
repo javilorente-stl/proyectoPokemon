@@ -76,7 +76,7 @@
             </ImageView>
             <ImageView fx:id="imgSonido" fitHeight="199.0" fitWidth="310.0" layoutX="581.0" layoutY="373.0" onMouseClicked="#activarSonido" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../img/Casino/SonidoActivo.png" />
+                  <Image url="@../../img/Casino/SonidoApagado.png" />
                </image>
             </ImageView>
       </children>

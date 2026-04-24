@@ -12,11 +12,12 @@ public class Movimiento {
 	private String descMovimiento;
 	private int claseMov;
 	private int numPP;
+	private int numPPMax;
 	private int precision;
 	
 	
 	public Movimiento(int idMovimiento, String nombre, Tipo tipo, int potencia, Estado estado, int numTurnos,
-			String mejora, String descMovimiento, int claseMov, int numPP, int precision) {
+			String mejora, String descMovimiento, int claseMov, int numPP, int numPPMax, int precision) {
 		super();
 		this.idMovimiento = idMovimiento;
 		this.nombre = nombre;
@@ -28,6 +29,8 @@ public class Movimiento {
 		this.descMovimiento = descMovimiento;
 		this.claseMov = claseMov;
 		this.numPP = numPP;
+		this.numPPMax = numPPMax;
+		
 		this.precision = precision;
 	}
 	
@@ -127,6 +130,14 @@ public class Movimiento {
 
 	public void setPrecision(int precision) {
 		this.precision = precision;
+	}
+
+	public int getNumPPMax() {
+		return numPPMax;
+	}
+
+	public void setNumPPMax(int numPPMax) {
+		this.numPPMax = numPPMax;
 	}
 	
 	

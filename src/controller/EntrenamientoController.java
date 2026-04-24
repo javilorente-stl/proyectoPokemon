@@ -10,6 +10,8 @@ import java.util.List;
 import dao.ConexionBD;
 import dao.PokemonCrud;
 import javafx.animation.FadeTransition;
+import javafx.animation.ParallelTransition;
+import javafx.animation.ScaleTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -27,6 +29,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.MediaPlayer;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import modelo.Entrenador;
 import modelo.Pokemon;
 import modelo.Sexo;
@@ -107,6 +110,9 @@ public class EntrenamientoController {
     
     @FXML
     private Label statAtaqueLbl;
+    
+    @FXML
+    private Label lblDineroInsuf;
 
     @FXML
     private Label statAtaqueSpLbl;
@@ -167,11 +173,27 @@ public class EntrenamientoController {
                 // 3. Si tuvo éxito, refrescamos los datos visuales
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
+                lblDineroInsuf.setVisible(false);
                 // Si tienes un Label para el dinero del entrenador, actualízalo aquí también:
                 // txtDinero.setText(String.valueOf(e.getCartera()));
+                boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
+                
+                if (evoluciono) {
+                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
+                    
+                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    animarEvolucion(imgPokemonSeleccionado, nuevoGif);
+                    
+                    
+                    cargarImagenesTipos(pokemonSeleccionado1);
+                    // 5. Opcional: Actualizar el nombre si cambió
+                    // lblNombreP.setText(pokemonSeleccionado1.getNombre());
+                }
                 
                 System.out.println("Entrenamiento pesado realizado con éxito.");
             } else {
+            	lblDineroInsuf.setVisible(true);
                 System.err.println("No se pudo realizar el entrenamiento (Posible falta de dinero).");
                 // Aquí podrías mostrar una alerta visual al usuario
             }
@@ -199,6 +221,22 @@ public class EntrenamientoController {
                 // 3. Si tuvo éxito, refrescamos los datos visuales
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
+                lblDineroInsuf.setVisible(false);
+                
+                boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
+                
+                if (evoluciono) {
+                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
+                    
+                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    animarEvolucion(imgPokemonSeleccionado, nuevoGif);
+                    
+                    cargarImagenesTipos(pokemonSeleccionado1);
+                    
+                    // 5. Opcional: Actualizar el nombre si cambió
+                    // lblNombreP.setText(pokemonSeleccionado1.getNombre());
+                }
                 
                 if(pokemonSeleccionado1.getNivel() == 10) {
                 	PokemonCrud.asignarMovimiento(conexion, pokemonSeleccionado1.getId_pokemon(), 2, 20);
@@ -208,6 +246,7 @@ public class EntrenamientoController {
                 
                 System.out.println("Entrenamiento pesado realizado con éxito.");
             } else {
+            	lblDineroInsuf.setVisible(true);
                 System.err.println("No se pudo realizar el entrenamiento (Posible falta de dinero).");
                 // Aquí podrías mostrar una alerta visual al usuario
             }
@@ -235,11 +274,28 @@ public class EntrenamientoController {
                 // 3. Si tuvo éxito, refrescamos los datos visuales
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
+                lblDineroInsuf.setVisible(false);
                 // Si tienes un Label para el dinero del entrenador, actualízalo aquí también:
                 // txtDinero.setText(String.valueOf(e.getCartera()));
                 
+                boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
+                
+                if (evoluciono) {
+                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
+                    
+                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    animarEvolucion(imgPokemonSeleccionado, nuevoGif);
+                    
+                    cargarImagenesTipos(pokemonSeleccionado1);
+                    
+                    // 5. Opcional: Actualizar el nombre si cambió
+                    // lblNombreP.setText(pokemonSeleccionado1.getNombre());
+                }
+                
                 System.out.println("Entrenamiento pesado realizado con éxito.");
             } else {
+            	lblDineroInsuf.setVisible(true);
                 System.err.println("No se pudo realizar el entrenamiento (Posible falta de dinero).");
                 // Aquí podrías mostrar una alerta visual al usuario
             }
@@ -257,27 +313,37 @@ public class EntrenamientoController {
             return;
         }
 
-        // 1. Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
         try (Connection conexion = conBD.getConnection()) {
-            
-            // 2. Llamamos al método pasándole la conexión real
             boolean exito = PokemonCrud.entrenamientoPesado(conexion, e, pokemonSeleccionado1);
             
             if (exito) {
-                // 3. Si tuvo éxito, refrescamos los datos visuales
-                mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
-                lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
-                // Si tienes un Label para el dinero del entrenador, actualízalo aquí también:
-                // txtDinero.setText(String.valueOf(e.getCartera()));
+                // 1. Refrescamos stats básicos
+                mostrarStatsP(pokemonSeleccionado1); 
+                lblPokedollars.setText("Pokedollars: " + String.valueOf(e.getPokedollars()));
+                lblDineroInsuf.setVisible(false);
+                // 2. Comprobamos evolución (ahora devuelve un booleano)
+                boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
                 
+                if (evoluciono) {
+                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
+                    
+                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    animarEvolucion(imgPokemonSeleccionado, nuevoGif);
+                    
+                    cargarImagenesTipos(pokemonSeleccionado1);
+                    
+                    // 5. Opcional: Actualizar el nombre si cambió
+                    // lblNombreP.setText(pokemonSeleccionado1.getNombre());
+                }
+
                 System.out.println("Entrenamiento pesado realizado con éxito.");
             } else {
-                System.err.println("No se pudo realizar el entrenamiento (Posible falta de dinero).");
-                // Aquí podrías mostrar una alerta visual al usuario
+            	lblDineroInsuf.setVisible(true);
+                System.err.println("No se pudo realizar el entrenamiento.");
             }
             
         } catch (SQLException ex) {
-            System.err.println("Error de conexión al intentar entrenar.");
             ex.printStackTrace();
         }
     }
@@ -533,6 +599,43 @@ public class EntrenamientoController {
                 iv.setVisible(false);
             }
         }
+    }
+    
+    private void animarEvolucion(ImageView imgPokemon, File nuevoGif) {
+        // 1. Animación de parpadeo
+        FadeTransition fade = new FadeTransition(Duration.millis(150), imgPokemon);
+        fade.setFromValue(1.0);
+        fade.setToValue(0.1);
+        fade.setCycleCount(20); // Más ciclos pero más cortos para que coincida con el tiempo total
+        fade.setAutoReverse(true);
+
+        // 2. Animación de escalado
+        ScaleTransition scale = new ScaleTransition(Duration.millis(3000), imgPokemon);
+        scale.setFromX(1.0);
+        scale.setFromY(1.0);
+        scale.setToX(1.5);
+        scale.setToY(1.5);
+
+        // 3. Agrupamos ambas para que terminen juntas
+        ParallelTransition combinacion = new ParallelTransition(fade, scale);
+
+        // Cuando el GRUPO completo termine, ejecutamos el cambio
+        combinacion.setOnFinished(event -> {
+            // Primero: Cambiamos la imagen
+            if (nuevoGif.exists()) {
+                imgPokemon.setImage(new Image(nuevoGif.toURI().toString()));
+            }
+            
+            // Segundo: Forzamos el reseteo de escala
+            // Al usar ParallelTransition, nos aseguramos de que scale haya terminado del todo
+            imgPokemon.setScaleX(1.0);
+            imgPokemon.setScaleY(1.0);
+            imgPokemon.setOpacity(1.0);
+            
+            System.out.println("¡Evolución completada y tamaño reseteado!");
+        });
+
+        combinacion.play();
     }
     
 }

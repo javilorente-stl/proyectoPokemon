@@ -60,7 +60,8 @@ public class MovimientoCrud {
 	public static Movimiento obtenerMovimientoInicial(Connection con, Tipo tipoPrincipal) throws SQLException {
 	    Movimiento mov = null;
 	    
-	    // Buscamos solo del tipo principal, con potencia real, y ordenamos por la más baja
+	    // Buscamos un movimiento del tipo del Pokémon que haga daño (Potencia > 0)
+	    // Ordenamos por potencia de forma ascendente para que sea un ataque "básico"
 	    String sql = "SELECT * FROM MOVIMIENTO " +
 	                 "WHERE TIPO = ? AND POTENCIA > 0 " +
 	                 "ORDER BY POTENCIA ASC " +
@@ -73,27 +74,42 @@ public class MovimientoCrud {
 	            if (rs.next()) {
 	                mov = new Movimiento();
 	                
-	                // Datos esenciales para la vinculación y el objeto
+	                // 1. Identificadores básicos
 	                mov.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
 	                mov.setNombre(rs.getString("NOM_MOVIMIENTO"));
+	                mov.setDescMovimiento(rs.getString("DESC_MOVIMIENTO"));
+	                
+	                // 2. Lógica de Combate (LO QUE FALTABA)
+	                // Usamos CLASE_MOV que es el nombre real en tu BD
+	                mov.setClaseMov(rs.getInt("CLASE_MOVIMIENTO")); 
+	                mov.setMejora(rs.getString("MEJORA"));
+	                
+	                // 3. Atributos numéricos con control de nulos
+	                Object potObj = rs.getObject("POTENCIA");
+	                mov.setPotencia(potObj != null ? (Integer) potObj : 0);
+
+	                Object precObj = rs.getObject("PRECISION_MOV");
+	                mov.setPrecision(precObj != null ? (Integer) precObj : 100);
+
 	                mov.setNumPP(rs.getInt("PP"));
 	                
-	                // Mapeo del Tipo
+	                // 4. Mapeo de Enums (Tipo y Estado)
 	                String tipoBD = rs.getString("TIPO");
 	                if (tipoBD != null) {
-	                	mov.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
+	                    mov.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
 	                }
 
-	                // Datos de combate (con control de nulos por seguridad)
-	                Object potenciaObj = rs.getObject("POTENCIA");
-	                mov.setPotencia(potenciaObj != null ? (Integer) potenciaObj : 0);
+	                String estadoBD = rs.getString("ESTADO");
+	                if (estadoBD != null) {
+	                    mov.setEstado(Estado.valueOf(estadoBD.toUpperCase()));
+	                }
 
-	                Object precisionObj = rs.getObject("PRECISION_MOV");
-	                mov.setPrecision(precisionObj != null ? (Integer) precisionObj : 100);
+	                // 5. Otros datos
+	                mov.setNumTurnos(rs.getInt("NUM_TURNOS"));
 	            }
 	        }
 	    } catch (SQLException e) {
-	        System.err.println("Error al obtener el movimiento inicial: " + e.getMessage());
+	        System.err.println("Error al obtener el movimiento inicial para tipo " + tipoPrincipal + ": " + e.getMessage());
 	        throw e;
 	    }
 

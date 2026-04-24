@@ -24,16 +24,18 @@ public class Pokemon {
 	private int defensaEspecial;
 	private int velocidad;
 	private int experiencia;
+	private int precision;
 	private Tipo tipo1;
 	private Tipo tipo2;
 	private LinkedList<Movimiento> movimientos;
 	private LinkedList<Movimiento> movimientosPosibles;
 	private Objeto objeto;
 	private int caja;
+	
 
 	public Pokemon(int num_pokedex, String mote, int nivel, int fertilidad, Sexo sexo, Estado estado, int vitalidad,
 			int vitalidadMax ,int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad,
-			int experiencia, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> movimientos, Objeto objeto, int caja) {
+			int experiencia, int precision, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> movimientos, Objeto objeto, int caja) {
 		super();
 		this.num_pokedex = num_pokedex;
 		this.mote = mote;
@@ -49,6 +51,7 @@ public class Pokemon {
 		this.defensaEspecial = defensaEspecial;
 		this.velocidad = velocidad;
 		this.experiencia = experiencia;
+		this.precision = precision;
 		this.tipo1 = tipo1;
 		this.tipo1 = tipo2;
 		this.movimientos = movimientos;
@@ -60,7 +63,7 @@ public class Pokemon {
 	
 
 	public Pokemon(String mote, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> ataquesHijo, int vitalidad, int vitalidadMax, int ataque,
-			int defensa, int ataqueEspecial, int defensaEspecial, int velocidad) {
+			int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, int precision) {
 
 		this.mote = mote;
 		this.tipo1 = tipo1;
@@ -82,6 +85,7 @@ public class Pokemon {
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 		this.movimientosPosibles = new LinkedList<>();
 		this.num_pokedex = 0;
+		this.precision = 100;
 		//La caja por defecto es la 2
 		this.caja=2;
 	}
@@ -96,6 +100,7 @@ public class Pokemon {
 	    this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 	    this.vitalidadMax = 20; 
 	    this.vitalidad = 20;
+	    this.precision=100;
 	}
 	
 	
@@ -123,6 +128,7 @@ public class Pokemon {
 		this.movimientosPosibles = new LinkedList<>();
 		// esto hay que arreglarlo
 		this.num_pokedex = 0;
+		this.precision=100;
 	}
 	
 	
@@ -262,6 +268,18 @@ public class Pokemon {
 	public void setExperiencia(int experiencia) {
 		this.experiencia = experiencia;
 	}
+	
+
+	public int getPrecision() {
+		return precision;
+	}
+
+	public void setPrecision(int precision) {
+		this.precision = precision;
+	}
+
+
+
 
 	public Tipo getTipo1() {
 		return tipo1;
@@ -319,21 +337,27 @@ public class Pokemon {
 
 
 
-	public void subirNivel() {
-	    if (this.nivel < 100 && (this.experiencia * 10) >= this.nivel) {
-	        // Subimos un nivel
+	public void ganarExperiencia(int puntosExp) {
+	    this.experiencia += puntosExp;
+	    
+	    // Comprobamos si sube de nivel (y si puede subir más de uno)
+	    // He ajustado la fórmula a: Experiencia >= Nivel * 10
+	    while (this.nivel < 100 && this.experiencia >= (this.nivel * 10)) {
+	        this.experiencia -= (this.nivel * 10); // Consumimos la experiencia necesaria
 	        this.nivel++;
 
-	        // Subida aleatoria de stats (1-5 puntos)
-	        this.vitalidad += (int) (Math.random() * 5) + 1;
+	        // Subida de stats
+	        int subidaVida = (int) (Math.random() * 5) + 1;
+	        this.vitalidadMax += subidaVida;
+	        this.vitalidad += subidaVida; // También curamos lo que sube
+	        
 	        this.ataque += (int) (Math.random() * 5) + 1;
 	        this.defensa += (int) (Math.random() * 5) + 1;
 	        this.ataqueEspecial += (int) (Math.random() * 5) + 1;
 	        this.defensaEspecial += (int) (Math.random() * 5) + 1;
 	        this.velocidad += (int) (Math.random() * 5) + 1;
 	        
-	        // La lógica de aprender movimiento se dispara aquí, 
-	        // pero la interacción (elegir qué olvidar) debe venir del Controller
+	        System.out.println("¡" + this.nombre + " ha subido al nivel " + this.nivel + "!");
 	    }
 	}
 
@@ -438,7 +462,7 @@ public class Pokemon {
 		}
 	}
 
-	private double obtenerEfectividad(Tipo ataque, Tipo defensa) {
+	public static double obtenerEfectividad(Tipo ataque, Tipo defensa) {
 		// Si el ataque o la defensa son nulos, por seguridad devolvemos daño neutral
 		if (ataque == null || defensa == null)
 			return 1.0;

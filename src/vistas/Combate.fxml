@@ -53,7 +53,7 @@
         </Label>
             <ImageView fx:id="imgFondo" fitHeight="576.0" fitWidth="1000.0" layoutX="-13.0" layoutY="-51.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_46vifl46vifl46vi.png" />
+                  <Image url="@../../img/combate/FondoCombate.png" />
                </image>
             </ImageView>
             <Button fx:id="botonHuir" layoutX="579.0" layoutY="462.0" mnemonicParsing="false" onAction="#intentarHuir" opacity="0.0" prefHeight="53.0" prefWidth="162.0" text="Button" />
@@ -66,12 +66,12 @@
                </font></Label>
             <ImageView fitHeight="112.0" fitWidth="307.0" layoutX="456.0" layoutY="251.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_av7lgcav7lgcav7l-Photoroom.png" />
+                  <Image url="@../../img/combate/InfoPokemon.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="112.0" fitWidth="307.0" layoutX="55.0" layoutY="27.0" pickOnBounds="true" preserveRatio="true" rotate="180.0">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_av7lgcav7lgcav7l-Photoroom.png" />
+                  <Image url="@../../img/combate/InfoPokemon.png" />
                </image>
                <rotationAxis>
                   <Point3D y="-1.0" />
@@ -121,7 +121,7 @@
                   </ImageView>
                   <ImageView fx:id="imgVolverMov" fitHeight="62.0" fitWidth="148.0" layoutX="585.0" layoutY="37.0" onMouseClicked="#volverMenuCombate" pickOnBounds="true" preserveRatio="true">
                      <image>
-                        <Image url="@../../../../../Downloads/Gemini_Generated_Image_w30c8vw30c8vw30c-Photoroom.png" />
+                        <Image url="@../../img/combate/VolverCombate.png" />
                      </image>
                   </ImageView>
                   <ImageView fitHeight="58.0" fitWidth="261.0" layoutX="32.0" layoutY="63.0" pickOnBounds="true" preserveRatio="true">

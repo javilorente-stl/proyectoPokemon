@@ -55,7 +55,7 @@
             <Button fx:id="btnCaptura" layoutX="386.0" layoutY="267.0" mnemonicParsing="false" onAction="#abrirCaptura" prefHeight="9.0" prefWidth="148.0" text="Captura" />
             <Button fx:id="btnSalir" layoutX="386.0" layoutY="397.0" mnemonicParsing="false" onAction="#cerrarAplicacion" prefHeight="9.0" prefWidth="148.0" text="Salir" />
             <Button fx:id="btnCasino" layoutX="386.0" layoutY="330.0" mnemonicParsing="false" onAction="#abrirCasino" prefHeight="9.0" prefWidth="148.0" text="Casino" />
-            <Button fx:id="btnHospital" layoutX="386.0" layoutY="364.0" mnemonicParsing="false" onAction="#abrirHospital" prefHeight="9.0" prefWidth="148.0" text="Hospital" />
+            <Button fx:id="btnHospital" layoutX="386.0" layoutY="364.0" mnemonicParsing="false" onAction="#abrirHospital" prefHeight="9.0" prefWidth="148.0" text="LigaPokemon" />
             <ImageView fitHeight="225.0" fitWidth="257.0" layoutX="698.0" layoutY="376.0" pickOnBounds="true" preserveRatio="true">
                <image>
                   <Image url="@../../../../../Downloads/Gemini_Generated_Image_v2rjaxv2rjaxv2rj-Photoroom.png" />

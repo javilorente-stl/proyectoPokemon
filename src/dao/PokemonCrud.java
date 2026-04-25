@@ -1362,4 +1362,50 @@ public class PokemonCrud {
 	}
 	
 	
+	public static boolean curarPokemonTotal(Connection con, Pokemon p) {
+	    // Queries actualizadas: ESTADO ahora recibe el String 'VIVO'
+	    String SQL_POKEMON = "UPDATE POKEMON SET VITALIDAD = VITALIDAD_MAX, ESTADO = 'VIVO' WHERE ID_POKEMON = ?";
+	    
+	    String SQL_PP = "UPDATE POKEMON_MOVIMIENTO PM " +
+	                    "SET PM.NUM_PP = (SELECT M.PP FROM MOVIMIENTO M WHERE M.ID_MOVIMIENTO = PM.ID_MOVIMIENTO) " +
+	                    "WHERE PM.ID_POKEMON = ?";
+	    
+	    try {
+	        con.setAutoCommit(false);
+
+	        // 1. Restaurar Salud y poner estado en 'VIVO'
+	        try (PreparedStatement psPkm = con.prepareStatement(SQL_POKEMON)) {
+	            psPkm.setInt(1, p.getId_pokemon());
+	            psPkm.executeUpdate();
+	        }
+
+	        // 2. Restaurar PP
+	        try (PreparedStatement psMov = con.prepareStatement(SQL_PP)) {
+	            psMov.setInt(1, p.getId_pokemon());
+	            psMov.executeUpdate();
+	        }
+
+	        con.commit();
+	        
+	        // Sincronizar objeto Java
+	        p.setVitalidad(p.getVitalidadMax());
+	        p.setEstado(Estado.VIVO); // Asumiendo que tu Enum tiene VIVO
+	        
+	        if (p.getMovimientos() != null) {
+	            for (Movimiento m : p.getMovimientos()) {
+	                m.setNumPP(m.getNumPPMax()); 
+	            }
+	        }
+	        
+	        return true;
+
+	    } catch (SQLException e) {
+	        try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
+	        e.printStackTrace();
+	        return false;
+	    } finally {
+	        try { con.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
+	    }
+	}
+	
 }

@@ -58,7 +58,7 @@
         </Label>
             <ImageView fitHeight="550.0" fitWidth="823.0" layoutX="-13.0" layoutY="1.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../../../../Downloads/Gemini_Generated_Image_ikkoc6ikkoc6ikko.png" />
+                  <Image url="@../../img/FondoEntrenamiento.png" />
                </image>
             </ImageView>
             <Button fx:id="botonVolver" layoutX="667.0" layoutY="23.0" mnemonicParsing="false" onAction="#volver" prefHeight="62.0" prefWidth="109.0" text="Volver">

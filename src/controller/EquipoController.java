@@ -47,6 +47,7 @@ public class EquipoController {
 	ConexionBD conBD = new ConexionBD();
 	private CombateController combatePadre;
 	private boolean modoCombate = false;
+	private LigaPokemonController LigaPadre;
 	
 	//Para hacer el cambio despues de estar en la caja
 	private Pokemon pokemonVieneDeCaja;
@@ -360,6 +361,49 @@ public class EquipoController {
 
 	    @FXML
 	    private ProgressBar vitalidadBar;
+	    
+
+	    @FXML
+	    void curar(ActionEvent event) {
+	        // Verificamos que el equipo no sea nulo
+	        if (e.getEquipo1() == null || e.getEquipo1().isEmpty()) {
+	            return;
+	        }
+
+	        try (Connection conexion = conBD.getConnection()) {
+	            boolean exito = true;
+
+	            // 1. Curamos a todos los Pokémon que existan en la lista usando un bucle
+	            for (Pokemon p : e.getEquipo1()) {
+	                if (!PokemonCrud.curarPokemonTotal(conexion, p)) {
+	                    exito = false; // Si falla uno, marcamos error
+	                }
+	            }
+
+	            if (exito) {
+	                // 2. REFRESCO VISUAL
+	                rellenarDatosEquipo();
+	                aplicarParpadeoSeleccion(1);
+	                activarMover(1);
+	                
+	                // Refrescamos los datos con el primer Pokémon del equipo (posición 0)
+	                Pokemon primero = e.getEquipo1().get(0);
+	                actualizarPokemonSeleccionado(primero);
+	                cargarTiposMovimientos(primero);
+	                mostrarStats(primero);
+	                
+	                System.out.println("¡Todo el equipo ha sido restaurado!");
+	            } else {
+	                System.out.println("Hubo un problema al curar a algunos miembros del equipo.");
+	            }
+	            
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	    }
+	    
+	    @FXML
+	    private Button BotonCurar;
 
 
 	    @FXML
@@ -424,18 +468,40 @@ public class EquipoController {
 	    
 	    @FXML
 	    void pokemonSeleccionado1(ActionEvent event) {
-	        if (e.getEquipo1().size() < 1) return; 
+	    	if (e.getEquipo1().size() < 1) return; 
 	        Pokemon p = e.getEquipo1().get(0);
 
 	        if (modoCombate) {
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
-	                combatePadre.setPokemonSeleccionado1(p);
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
+	                
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
 	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(1); 
 	        } else {
@@ -445,27 +511,45 @@ public class EquipoController {
 	            activarMover(1);
 	            mostrarStats(p);
 	        }
+	    
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado2(ActionEvent event) {
 	    	if (e.getEquipo1().size() < 2) return; 
-	        
 	        Pokemon p = e.getEquipo1().get(1);
 
 	        if (modoCombate) {
-	            // 1. Verificamos que no esté debilitado
-	            // 2. Verificamos que NO sea el mismo que ya está combatiendo
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
 	                
-	                combatePadre.setPokemonSeleccionado1(p);
-	                Stage stage = (Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow();
-	                stage.close();
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
+	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(2); 
 	        } else {
@@ -475,22 +559,45 @@ public class EquipoController {
 	            activarMover(2);
 	            mostrarStats(p);
 	        }
+	    
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado3(ActionEvent event) {
-	        if (e.getEquipo1().size() < 3) return; 
+	    	if (e.getEquipo1().size() < 3) return; 
 	        Pokemon p = e.getEquipo1().get(2);
 
 	        if (modoCombate) {
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
-	                combatePadre.setPokemonSeleccionado1(p);
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
+	                
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
 	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(3); 
 	        } else {
@@ -500,22 +607,45 @@ public class EquipoController {
 	            activarMover(3);
 	            mostrarStats(p);
 	        }
+	    
 	    }
 
 	    @FXML
 	    void pokemonSeleccionado4(ActionEvent event) {
-	        if (e.getEquipo1().size() < 4) return; 
+	    	if (e.getEquipo1().size() < 4) return; 
 	        Pokemon p = e.getEquipo1().get(3);
 
 	        if (modoCombate) {
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
-	                combatePadre.setPokemonSeleccionado1(p);
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
+	                
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
 	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(4); 
 	        } else {
@@ -529,18 +659,40 @@ public class EquipoController {
 
 	    @FXML
 	    void pokemonSeleccionado5(ActionEvent event) {
-	        if (e.getEquipo1().size() < 5) return; 
+	    	if (e.getEquipo1().size() < 5) return; 
 	        Pokemon p = e.getEquipo1().get(4);
 
 	        if (modoCombate) {
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
-	                combatePadre.setPokemonSeleccionado1(p);
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
+	                
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
 	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(5); 
 	        } else {
@@ -550,22 +702,44 @@ public class EquipoController {
 	            activarMover(5);
 	            mostrarStats(p);
 	        }
+	    
 	    }
-
 	    @FXML
 	    void pokemonSeleccionado6(ActionEvent event) {
-	        if (e.getEquipo1().size() < 6) return; 
+	    	if (e.getEquipo1().size() < 6) return; 
 	        Pokemon p = e.getEquipo1().get(5);
 
 	        if (modoCombate) {
+	            //  Obtener el Pokémon que está combatiendo actualmente (evitando nulos)
+	            Pokemon actual = null;
+	            if (combatePadre != null) {
+	                actual = combatePadre.getPokemonSeleccionado1();
+	            } else if (LigaPadre != null) {
+	                actual = LigaPadre.getPokemonSeleccionado1();
+	            }
+
+	            // Verificamos si el Pokémon es apto para salir a luchar
 	            if (p.getEstado() != Estado.DEBILITADO && p.getVitalidad() > 0 
-	                && p.getId_pokemon() != combatePadre.getPokemonSeleccionado1().getId_pokemon()) {
-	                combatePadre.setPokemonSeleccionado1(p);
+	                && (actual == null || p.getId_pokemon() != actual.getId_pokemon())) {
+	                
+	                // 3. Asignar al nuevo Pokémon según quién sea el padre
+	                if (combatePadre != null) {
+	                    combatePadre.setPokemonSeleccionado1(p);
+	                } else if (LigaPadre != null) {
+	                    LigaPadre.setPokemonSeleccionado1(p);
+	                }
+
+	                //Cerrar la ventana del equipo para volver al combate
 	                ((Stage) ((javafx.scene.Node) event.getSource()).getScene().getWindow()).close();
+	            } else if (actual != null && p.getId_pokemon() == actual.getId_pokemon()) {
+	                System.out.println("Este Pokémon ya está en el combate.");
+	            } else {
+	                System.out.println("El Pokémon no puede luchar.");
 	            }
 	            return;
 	        }
 
+	        // Lógica fuera de combate (Mover/Ver Stats)
 	        if (modoMover || modoIntercambio) {
 	            gestionarClickPokemon(6); 
 	        } else {
@@ -575,6 +749,7 @@ public class EquipoController {
 	            activarMover(6);
 	            mostrarStats(p);
 	        }
+	    
 	    }
 	    
 	    @FXML
@@ -1282,6 +1457,22 @@ public class EquipoController {
 	    public void prepararParaCanjeCombate(Entrenador ent, CombateController padre) {
 	        this.e = ent;
 	        this.combatePadre = padre;
+	        this.modoCombate = true; // Una bandera booleana para cambiar el comportamiento del clic
+	        this.pokemonCombatiendo = padre.getPokemonSeleccionado1();
+	        // Rellenamos la vista del equipo normalmente
+	        rellenarDatosEquipo();
+	        aplicarParpadeoDestinos(posicionOrigen);
+	        mostrarStats(pokemonCombatiendo);
+	        actualizarPokemonSeleccionado(pokemonCombatiendo);
+	        cargarTiposMovimientos(pokemonCombatiendo);
+	        botonCaja.setDisable(true);
+	        
+	        
+	    }
+	    
+	    public void prepararParaCanjeLiga(Entrenador ent, LigaPokemonController padre) {
+	        this.e = ent;
+	        this.LigaPadre = padre;
 	        this.modoCombate = true; // Una bandera booleana para cambiar el comportamiento del clic
 	        this.pokemonCombatiendo = padre.getPokemonSeleccionado1();
 	        // Rellenamos la vista del equipo normalmente

@@ -27,8 +27,8 @@ public class Combate {
         this.turnosEstadoRival = 0;
 
         // Aseguramos que los Pokémon inicien en estado VIVO al comenzar la pelea
-        this.pJugador.setEstado(Estado.VIVO);
-        this.pRival.setEstado(Estado.VIVO);
+        //this.pJugador.setEstado(Estado.VIVO);
+        //this.pRival.setEstado(Estado.VIVO);
 
         // Decidimos quién empieza por velocidad
         this.esTurnoJugador = pJugador.getVelocidad() >= pRival.getVelocidad();
@@ -161,7 +161,8 @@ public class Combate {
         registrarSuceso(defensor.getNombre() + " pierde " + danio + " puntos de vida.");
         
         if (defensor.getVitalidad() <= 0) {
-            registrarSuceso(defensor.getNombre() + " se ha debilitado.");
+            //registrarSuceso(defensor.getNombre() + " se ha debilitado.");
+            
         }
     }
 
@@ -178,7 +179,7 @@ public class Combate {
 
         if (!puedeAtacar(atacante)) return; 
 
-        // 1. Chequeo de Precisión
+        // Chequeo de Precisión
         if (mov.getPrecision() > 0) {
             int precisionFinal = (atacante.getPrecision() * mov.getPrecision()) / 100;
             
@@ -196,7 +197,7 @@ public class Combate {
             System.out.println(">>> [INFO] " + mov.getNombre() + " es un movimiento infalible (Precisión 0).");
         }
 
-        // 2. Ejecución por Clase de Movimiento
+        // Ejecución por Clase de Movimiento
         int clase = mov.getClaseMov();
 
         if (clase == 1) { // ATAQUE CON DAÑO
@@ -212,8 +213,7 @@ public class Combate {
                 // --- DAÑO CON MEJORAS (Repetir, Drenado, etc.) ---
                 mejorasAtaque(mov, atacante, defensor);
                 
-                // Nota: Aquí también llamamos a aplicarEstadoAtaque por si el movimiento 
-                // tiene mejora Y además una probabilidad de estado (como un ataque repetitivo).
+
                 aplicarEstadoAtaque(mov, defensor);
             }
         } 
@@ -225,10 +225,10 @@ public class Combate {
             aplicarBuffs(mov, atacante);
         }
 
-        // 3. Descuento de recursos
+        // Descuento de recursos
         mov.setNumPP(Math.max(0, mov.getNumPP() - 1));
 
-        // 4. Verificación de derrota
+        // Verificación de derrota
         if (defensor.getVitalidad() <= 0) {
             defensor.setVitalidad(0);
             defensor.setEstado(Estado.DEBILITADO);
@@ -239,11 +239,7 @@ public class Combate {
             this.combateFinalizado = true; // ¡Importante marcar que terminó!
         }
 
-        // --- NUEVO: Gestión de flujo ---
-        this.esTurnoJugador = !this.esTurnoJugador; 
-        if (esTurnoJugador) {
-            this.turno++; // Solo aumentamos el número de turno tras la acción del rival
-        }
+
     }
     
     public boolean puedeAtacar(Pokemon p) {
@@ -354,10 +350,26 @@ public class Combate {
                 break;
 
             case DRENADORAS:
-                danioResidual = (int) (p.getVitalidadMax() * 0.12);
+            	danioResidual = (int) (p.getVitalidadMax() * 0.12);
                 registrarSuceso("Las drenadoras absorben energía de " + p.getNombre());
-                // Nota: Aquí faltaría curar al rival si quisieras ser 100% fiel
-                break;
+                
+                
+                // Con esto ponemos la curación en el pokemon que lanzó la habilidad
+                Pokemon beneficiario = (p == this.pJugador) ? this.pRival : this.pJugador;
+                
+                if (beneficiario != null && beneficiario.getVitalidad() > 0) {
+                    int saludACurar = danioResidual;
+                    int vidaAntes = beneficiario.getVitalidad();
+                    
+                    // Curamos sin sobrepasar el máximo
+                    beneficiario.setVitalidad(Math.min(beneficiario.getVitalidadMax(), 
+                                              beneficiario.getVitalidad() + saludACurar));
+                    
+                    int curadoReal = beneficiario.getVitalidad() - vidaAntes;
+                    if (curadoReal > 0) {
+                        registrarSuceso("¡" + beneficiario.getNombre() + " recupera salud!");
+                    }
+                }
 
             case ATRAPADO:
                 danioResidual = (int) (p.getVitalidadMax() * 0.06);
@@ -394,14 +406,14 @@ public class Combate {
         int repeticiones = 1;
         int danioTotalTurno = 0;
 
-        // 1. DETERMINAR REPETICIONES
+        // DETERMINAR REPETICIONES
         if ("Repetir2".equalsIgnoreCase(mejora)) {
             repeticiones = 2;
         } else if ("Repetir".equalsIgnoreCase(mejora)) {
             repeticiones = rand.nextInt(4) + 2; // De 2 a 5 veces
         }
 
-        // 2. BUCLE DE IMPACTOS
+        //  BUCLE DE IMPACTOS
         for (int i = 1; i <= repeticiones; i++) {
             int danioImpacto = 0;
 
@@ -432,7 +444,7 @@ public class Combate {
             registrarSuceso("¡Ha golpeado " + repeticiones + " veces!");
         }
 
-        // 3. EFECTOS SECUNDARIOS (Post-daño acumulado)
+        //  EFECTOS SECUNDARIOS (Post-daño acumulado)
         if (mejora != null) {
             switch (mejora.toLowerCase()) {
                 case "drenado":
@@ -482,7 +494,7 @@ public class Combate {
                 return;
             }
 
-            // 2. Lógica específica para el estado ATRAPADO
+            //  Lógica específica para el estado ATRAPADO
             if (estadoAAplicar == Estado.ATRAPADO) {
                 int duracion = Math.min(mov.getNumTurnos(), 5);
                 if (duracion <= 0) duracion = 2;
@@ -495,7 +507,7 @@ public class Combate {
                 registrarSuceso(defensor.getNombre() + " ha sido atrapado durante " + duracion + " turnos.");
             } 
             
-            // 3. Lógica para el resto de estados persistentes
+            //  Lógica para el resto de estados persistentes
             else {
                 // Solo aplicamos el estado si el Pokémon está VIVO (no sobreescribimos otros estados)
                 if (defensor.getEstado() == Estado.VIVO) {
@@ -528,8 +540,7 @@ public class Combate {
                 break;
 
             case "precision-1":
-                // Como la precisión inicial es 100, bajamos 10 puntos
-                // Nota: Deberías tener el atributo 'precision' en tu clase Pokemon
+                // Como la precisión inicial es 100, bajamos 10 puntos               
                 defensor.setPrecision(Math.max(10, defensor.getPrecision() - 10));
                 registrarSuceso("¡La precisión de " + defensor.getNombre() + " ha disminuido!");
                 break;
@@ -546,8 +557,7 @@ public class Combate {
                 break;
 
             default:
-                // Si la mejora no coincide con estas estadísticas (ej: es un estado), 
-                // la lógica se manejaría en el método aplicarEstadoAtaque
+                
                 break;
         }
     }
@@ -555,19 +565,17 @@ public class Combate {
     private void aplicarEstadoClase2(Movimiento mov, Pokemon defensor) {
         Estado estadoAAplicar = mov.getEstado();
         
-        // 1. Validaciones básicas
+        //  Validaciones básicas
         if (estadoAAplicar == null || defensor.getVitalidad() <= 0) return;
 
-        // 2. Comprobar si ya tiene un estado persistente (Veneno, Fuego, etc.)
-        // Los estados de Clase 2 suelen poder solaparse en algunos juegos, 
-        // pero si en tu lógica solo puede haber UN estado a la vez:
+        
         if (defensor.getEstado() != Estado.VIVO) {
             registrarSuceso("¡Pero " + defensor.getNombre() + " ya sufre un estado!");
             return; 
         }
 
         int duracion = 0;
-        // 3. Definir duraciones específicas
+        //  Definir duraciones específicas
         if (estadoAAplicar == Estado.CONFUSO || estadoAAplicar == Estado.DRENADORAS) {
             duracion = 3;
         } else if (estadoAAplicar == Estado.ATRAPADO) {
@@ -685,7 +693,7 @@ public class Combate {
         int atkUso;
         int defUso;
 
-        // 1. Clasificación por Tipo
+        //  Clasificación por Tipo (Físico/Especial)
         String clase = determinarClasePorTipo(m.getTipo());
         if ("ESPECIAL".equals(clase)) {
             atkUso = atacante.getAtaqueEspecial();
@@ -695,30 +703,30 @@ public class Combate {
             defUso = defensor.getDefensa();
         }
 
-        // 2. Cálculo de Efectividad
-        double efec = Pokemon.obtenerEfectividad(m.getTipo(), defensor.getTipo1());
-        if (defensor.getTipo2() != null) {
-            efec *= Pokemon.obtenerEfectividad(m.getTipo(), defensor.getTipo2());
-        }
-
-        // --- 3. NUEVA FÓRMULA ESTILO POKÉMON ---
-        // Nivel influye en la base del daño
-        double parteNivel = ((2.0 * atacante.getNivel()) / 5.0) + 2.0;
+        //  Cálculo de Efectividad 
         
-        // El daño es el ratio entre ataque y defensa multiplicado por la potencia
-        // Dividimos por 50 para normalizar el daño a valores bajos
+        double efec = atacante.calcularMultiplicadorFinal(m, defensor);
+
+        //  FÓRMULA DE DAÑO
+        double parteNivel = ((2.0 * atacante.getNivel()) / 5.0) + 2.0;
         double baseDanio = (parteNivel * m.getPotencia() * ((double)atkUso / defUso)) / 50.0;
         
-        // Aplicamos modificadores (Crítico, Efectividad y un factor de variación aleatoria)
-        // El 0.85 + Math.random() * 0.15 añade una variación del 85% al 100% (como en el juego real)
         double variacion = 0.85 + (Math.random() * 0.15);
         
+        // Cálculo inicial
         int danioFinal = (int) ((baseDanio + 2) * efec * multCritico * variacion);
 
-        // Debug
-        System.out.println(">>> [CALC] " + m.getNombre() + " | Atk/Def Ratio: " + ((double)atkUso/defUso) + " | Daño Final: " + Math.max(1, danioFinal));
+        
+        if (efec == 0) {
+            danioFinal = 0;
+        } else {
+            danioFinal = Math.max(1, danioFinal);
+        }
 
-        return Math.max(1, danioFinal); 
+        // Debug
+        System.out.println(">>> [CALC] " + m.getNombre() + " | Efec: x" + efec + " | Daño Final: " + danioFinal);
+
+        return danioFinal; 
     }
     
     public Pokemon getGanador() {

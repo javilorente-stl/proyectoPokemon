@@ -1,0 +1,3 @@
+2026-04-25 18:24:01.247 INFO inicioCombate pokemon = {“Venusaur”, 60, a, OK}, pokemonRival={“Charizard”, 50, pablo, OK}, turno=1
+2026-04-25 18:24:14.528 INFO cambio1 pokemon = {“Nidoqueen”, 100, a, OK}, pokemonRival={“Charizard”, 50, pablo, OK}, turno=1
+2026-04-25 18:24:24.799 INFO debilitado2 pokemon = {“Nidoqueen”, 100, a, OK}, pokemonRival={“Charizard”, 50, pablo, KO}, turno=3

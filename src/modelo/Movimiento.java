@@ -141,6 +141,10 @@ public class Movimiento {
 	}
 	
 	
+	@Override
+	public String toString() {
+	    return this.nombre + " (Pot: " + potencia + ")";
+	}
 
 	
 	

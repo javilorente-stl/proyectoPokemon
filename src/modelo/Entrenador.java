@@ -27,6 +27,14 @@ public class Entrenador {
 		this.pokedollars = pokedollars;
 		this.mochila = mochila;
 	}
+	
+	public Entrenador(String nombre, String password, LinkedList<Pokemon> equipo1) {
+		super();
+		this.nombre = nombre;
+		this.password = password;
+		this.equipo1 = equipo1;
+	
+	}
 
 	public Entrenador(String usuario, String password) {
 		super();
@@ -39,6 +47,10 @@ public class Entrenador {
 	    this.mochila = new LinkedList<>();
 	}
 
+	public Entrenador() {
+		super();
+
+	}
 
 
 

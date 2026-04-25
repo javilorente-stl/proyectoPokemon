@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Random;
 
 import modelo.Entrenador;
@@ -72,16 +74,16 @@ public class EntrenadorCrud {
 	
 	  
 	public static void obtenerMochila(Connection con, Entrenador e) throws SQLException {
-		    // 1. Nos aseguramos de que el entrenador tenga una mochila instanciada
+		    // Nos aseguramos de que el entrenador tenga una mochila instanciada
 		    if (e.getMochila() == null) {
 		        e.setMochila(new LinkedList<Objeto>());
 		    }
 		    
-		    // 2. Inicializamos o limpiamos la LinkedList de objetos
+		    //  Inicializamos o limpiamos la LinkedList de objetos
 		    // (Asegúrate de que en la clase Mochila, el atributo sea LinkedList<Objeto>)
 		    LinkedList<Objeto> listaObjetos = new LinkedList<>();
 
-		    // 3. Consulta SQL con JOIN para obtener los datos base y la cantidad actual
+		    // Consulta SQL con JOIN para obtener los datos base y la cantidad actual
 		    String sql = "SELECT O.ID_OBJETO, O.NOM_OBJETO, O.ATAQUE, O.DEFENSA, O.VELOCIDAD, " +
 		                 "O.ATA_ESPECIAL, O.DEF_ESPECIAL, O.ESTAMINA, O.RECUPERACION_ESTAMINA, M.CANTIDAD " +
 		                 "FROM OBJETO O " +
@@ -127,6 +129,121 @@ public class EntrenadorCrud {
 	        int filasAfectadas = ps.executeUpdate();
 	        if (filasAfectadas == 0) {
 	            throw new SQLException("No se pudo restar el objeto (¿Cantidad 0?)");
+	        }
+	    }
+	}
+	
+	public static Entrenador obtenerEntrenadorFijo(Connection conexion, int idRival) throws SQLException {
+	    Entrenador rival = new Entrenador();
+	    String sql = "SELECT ID_ENTRENADOR, NOM_ENTRENADOR, POKEDOLLARS FROM ENTRENADOR WHERE ID_ENTRENADOR = ?";
+
+	    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+	        ps.setInt(1, idRival);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            if (rs.next()) {
+	                rival.setIdEntrenador(rs.getInt("ID_ENTRENADOR"));
+	                rival.setNombre(rs.getString("NOM_ENTRENADOR"));
+	                
+
+	                // Aprovechamos el método que ya tienes para cargar sus Pokémon
+	                PokemonCrud.obtenerPokemon1(conexion, rival);
+	                
+	                System.out.println("Rival cargado: " + rival.getNombre() + " con " + rival.getEquipo1().size() + " Pokémon.");
+	            } else {
+	                System.err.println("No se encontró ningún entrenador con ID: " + idRival);
+	                return null;
+	            }
+	        }
+	    }
+	    return rival;
+	}
+	
+	public static void actualizarDinero(Connection con, int idEntrenador, int nuevoMonto) throws SQLException {
+	    String SQL = "UPDATE ENTRENADOR SET POKEDOLLARS = ? WHERE ID_ENTRENADOR = ?";
+	    try (PreparedStatement ps = con.prepareStatement(SQL)) {
+	        ps.setInt(1, nuevoMonto);
+	        ps.setInt(2, idEntrenador);
+	        ps.executeUpdate();
+	    }
+	}
+	
+	public static void prepararCampeonEspejo(Connection con, int idJugador, int idCampeon) throws SQLException {
+	    //  Limpieza del Campeón
+	    String sqlDelete = "DELETE FROM POKEMON WHERE ID_ENTRENADOR = ?";
+	    try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
+	        ps.setInt(1, idCampeon);
+	        ps.executeUpdate();
+	    }
+
+	    // Obtener el ID más alto
+	    int ultimoId = 0;
+	    String sqlMaxId = "SELECT MAX(ID_POKEMON) FROM POKEMON";
+	    try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlMaxId)) {
+	        if (rs.next()) ultimoId = rs.getInt(1);
+	    }
+
+	    // Obtener tus Pokémon actuales
+	    List<Integer> idsTusPokemon = new ArrayList<>();
+	    String sqlIds = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND UBICACION BETWEEN 1 AND 6";
+	    try (PreparedStatement ps = con.prepareStatement(sqlIds)) {
+	        ps.setInt(1, idJugador);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next()) idsTusPokemon.add(rs.getInt("ID_POKEMON"));
+	        }
+	    }
+
+	    // SQL de Inserción (Incluyendo UBICACION/CAJA)
+	    String sqlInsertPk = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, " +
+	                         "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, FERTILIDAD, SEXO, ESTADO, UBICACION) " +
+	                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	    
+	    String sqlInsertMov = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) " +
+	                          "SELECT ?, ID_MOVIMIENTO, ACTIVO, NUM_PP FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
+
+	    // Usamos un contador para asignar las posiciones 1-6 en el equipo del Campeón
+	    int contadorCaja = 1;
+
+	    for (int idOld : idsTusPokemon) {
+	        ultimoId++;
+	        int idNuevo = ultimoId;
+
+	        String sqlSelectOrig = "SELECT * FROM POKEMON WHERE ID_POKEMON = ?";
+	        try (PreparedStatement psSelect = con.prepareStatement(sqlSelectOrig)) {
+	            psSelect.setInt(1, idOld);
+	            try (ResultSet rsOri = psSelect.executeQuery()) {
+	                if (rsOri.next()) {
+	                    try (PreparedStatement psPk = con.prepareStatement(sqlInsertPk)) {
+	                        psPk.setInt(1, idNuevo);
+	                        psPk.setInt(2, rsOri.getInt("NUM_POKEDEX"));
+	                        psPk.setInt(3, idCampeon);
+	                        psPk.setString(4, rsOri.getString("MOTE") + " (Sombra)");
+	                        psPk.setInt(5, rsOri.getInt("VITALIDAD")); 
+	                        psPk.setInt(6, rsOri.getInt("VITALIDAD_MAX")); 
+	                        psPk.setInt(7, rsOri.getInt("ATAQUE"));
+	                        psPk.setInt(8, rsOri.getInt("ATA_ESPECIAL"));
+	                        psPk.setInt(9, rsOri.getInt("DEFENSA"));
+	                        psPk.setInt(10, rsOri.getInt("DEF_ESPECIAL"));
+	                        psPk.setInt(11, rsOri.getInt("VELOCIDAD"));
+	                        psPk.setInt(12, rsOri.getInt("NIVEL"));
+	                        psPk.setInt(13, rsOri.getInt("FERTILIDAD"));
+	                        psPk.setString(14, rsOri.getString("SEXO"));
+	                        psPk.setString(15, rsOri.getString("ESTADO"));
+	                        
+	                        // ASIGNACIÓN DE CAJA/UBICACIÓN (Parámetro 16)
+	                        psPk.setString(16, String.valueOf(contadorCaja));
+	                        
+	                        psPk.executeUpdate();
+	                        contadorCaja++; // Incrementamos para el siguiente Pokémon
+	                    }
+
+	                    // Clonar movimientos
+	                    try (PreparedStatement psMov = con.prepareStatement(sqlInsertMov)) {
+	                        psMov.setInt(1, idNuevo);
+	                        psMov.setInt(2, idOld);
+	                        psMov.executeUpdate();
+	                    }
+	                }
+	            }
 	        }
 	    }
 	}

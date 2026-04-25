@@ -7,7 +7,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import dao.ConexionBD;
+import dao.MovimientoCrud;
 import dao.PokemonCrud;
 import javafx.animation.FadeTransition;
 import javafx.animation.ParallelTransition;
@@ -163,14 +166,15 @@ public class EntrenamientoController {
             return;
         }
 
-        // 1. Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
+        //  Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
         try (Connection conexion = conBD.getConnection()) {
             
-            // 2. Llamamos al método pasándole la conexión real
+            //  Llamamos al método pasándole la conexión real
             boolean exito = PokemonCrud.entrenamientoFuncional(conexion, e, pokemonSeleccionado1);
             
             if (exito) {
-                // 3. Si tuvo éxito, refrescamos los datos visuales
+                //  Si tuvo éxito, refrescamos los datos visuales
+            	chequearMovimientoNuevo(pokemonSeleccionado1, conexion);
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
                 lblDineroInsuf.setVisible(false);
@@ -179,15 +183,15 @@ public class EntrenamientoController {
                 boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
                 
                 if (evoluciono) {
-                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    //  Si evolucionó, preparamos el nuevo GIF
                     File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
                     
-                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    //  Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
                     animarEvolucion(imgPokemonSeleccionado, nuevoGif);
                     
                     
                     cargarImagenesTipos(pokemonSeleccionado1);
-                    // 5. Opcional: Actualizar el nombre si cambió
+                    //  Opcional: Actualizar el nombre si cambió
                     // lblNombreP.setText(pokemonSeleccionado1.getNombre());
                 }
                 
@@ -211,14 +215,15 @@ public class EntrenamientoController {
             return;
         }
 
-        // 1. Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
+        //  Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
         try (Connection conexion = conBD.getConnection()) {
             
-            // 2. Llamamos al método pasándole la conexión real
+            //  Llamamos al método pasándole la conexión real
             boolean exito = PokemonCrud.entrenamientoFurioso(conexion, e, pokemonSeleccionado1);
             
             if (exito) {
-                // 3. Si tuvo éxito, refrescamos los datos visuales
+                //  Si tuvo éxito, refrescamos los datos visuales
+            	chequearMovimientoNuevo(pokemonSeleccionado1, conexion);
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
                 lblDineroInsuf.setVisible(false);
@@ -226,21 +231,19 @@ public class EntrenamientoController {
                 boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
                 
                 if (evoluciono) {
-                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    //  Si evolucionó, preparamos el nuevo GIF
                     File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
                     
-                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    //  Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
                     animarEvolucion(imgPokemonSeleccionado, nuevoGif);
                     
                     cargarImagenesTipos(pokemonSeleccionado1);
                     
-                    // 5. Opcional: Actualizar el nombre si cambió
+                    //  Opcional: Actualizar el nombre si cambió
                     // lblNombreP.setText(pokemonSeleccionado1.getNombre());
                 }
                 
-                if(pokemonSeleccionado1.getNivel() == 10) {
-                	PokemonCrud.asignarMovimiento(conexion, pokemonSeleccionado1.getId_pokemon(), 2, 20);
-                }
+                
                 // Si tienes un Label para el dinero del entrenador, actualízalo aquí también:
                 // txtDinero.setText(String.valueOf(e.getCartera()));
                 
@@ -264,14 +267,15 @@ public class EntrenamientoController {
             return;
         }
 
-        // 1. Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
+        //  Abrimos la conexión con un bloque try-with-resources para asegurar el cierre
         try (Connection conexion = conBD.getConnection()) {
             
-            // 2. Llamamos al método pasándole la conexión real
+            // Llamamos al método pasándole la conexión real
             boolean exito = PokemonCrud.entrenamientoOnirico(conexion, e, pokemonSeleccionado1);
             
             if (exito) {
-                // 3. Si tuvo éxito, refrescamos los datos visuales
+                // Si tuvo éxito, refrescamos los datos visuales
+            	chequearMovimientoNuevo(pokemonSeleccionado1, conexion);
                 mostrarStatsP(pokemonSeleccionado1); // Para actualizar las barras y labels
                 lblPokedollars.setText("Pokedollars: "+String.valueOf(e.getPokedollars()));
                 lblDineroInsuf.setVisible(false);
@@ -281,15 +285,15 @@ public class EntrenamientoController {
                 boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
                 
                 if (evoluciono) {
-                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    // Si evolucionó, preparamos el nuevo GIF
                     File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
                     
-                    // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
+                    // Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
                     animarEvolucion(imgPokemonSeleccionado, nuevoGif);
                     
                     cargarImagenesTipos(pokemonSeleccionado1);
                     
-                    // 5. Opcional: Actualizar el nombre si cambió
+                    // Opcional: Actualizar el nombre si cambió
                     // lblNombreP.setText(pokemonSeleccionado1.getNombre());
                 }
                 
@@ -317,15 +321,15 @@ public class EntrenamientoController {
             boolean exito = PokemonCrud.entrenamientoPesado(conexion, e, pokemonSeleccionado1);
             
             if (exito) {
-                // 1. Refrescamos stats básicos
+            	chequearMovimientoNuevo(pokemonSeleccionado1, conexion);
                 mostrarStatsP(pokemonSeleccionado1); 
                 lblPokedollars.setText("Pokedollars: " + String.valueOf(e.getPokedollars()));
                 lblDineroInsuf.setVisible(false);
-                // 2. Comprobamos evolución (ahora devuelve un booleano)
+                // Comprobamos evolución (ahora devuelve un booleano)
                 boolean evoluciono = PokemonCrud.intentarEvolucionar(conexion, pokemonSeleccionado1);
                 
                 if (evoluciono) {
-                    // 3. Si evolucionó, preparamos el nuevo GIF
+                    //  Si evolucionó, preparamos el nuevo GIF
                     File nuevoGif = new File("img/pokemon/front/" + pokemonSeleccionado1.getNum_pokedex() + ".gif");
                     
                     // 4. Lanzamos la animación sobre el ImageView de tu vista (ej: imgPokemonEntrenar)
@@ -333,7 +337,7 @@ public class EntrenamientoController {
                     
                     cargarImagenesTipos(pokemonSeleccionado1);
                     
-                    // 5. Opcional: Actualizar el nombre si cambió
+                    // Opcional: Actualizar el nombre si cambió
                     // lblNombreP.setText(pokemonSeleccionado1.getNombre());
                 }
 
@@ -353,10 +357,10 @@ public class EntrenamientoController {
     	FXMLLoader loader = new FXMLLoader(getClass().getResource("../vistas/menu.fxml"));
         Parent root = loader.load();
         
-        // 2. Obtenemos el controlador del menú
+        // Obtenemos el controlador del menú
         MenuController controller = loader.getController();
         
-        // 3. Inicializamos el menú con los datos actualizados del entrenador
+        // Inicializamos el menú con los datos actualizados del entrenador
         // Importante: Usamos el método init que ya tienes definido en tu MenuController
         controller.init(this.e, (Stage) botonVolver.getScene().getWindow(), null);
         
@@ -365,12 +369,12 @@ public class EntrenamientoController {
             mediaPlayer.stop();
         }
         
-        // 5. Cambio de escena
+        // Cambio de escena
         Stage stage = (Stage) botonVolver.getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         
-        // 6. Ajustes visuales de la ventana
+        //  Ajustes visuales de la ventana
         stage.sizeToScene();
         stage.centerOnScreen();
         stage.show();
@@ -381,16 +385,16 @@ public class EntrenamientoController {
 
         try (Connection conexion = conBD.getConnection()) {
             if (conexion != null) {
-                // 1. Organizamos el equipo en la BD (evitar huecos)
+                //  Organizamos el equipo en la BD (evitar huecos)
                 PokemonCrud.compactarEquipo(conexion, e.getIdEntrenador());
                 
-                // 2. Cargamos los Pokémon actualizados al objeto entrenador 'e'
+                //  Cargamos los Pokémon actualizados al objeto entrenador 'e'
                 // Asumiendo que estos métodos rellenan la lista de equipo del objeto 'e'
                 PokemonCrud.obtenerTodosLosPokemon(conexion, ent);
                 lblPokedollars.setText("Pokedollars: "+ent.getPokedollars());
                 
                 
-                // 3. ACTUALIZACIÓN DE LA INTERFAZ
+                // ACTUALIZACIÓN DE LA INTERFAZ
                 // Llamamos a un método que pinte los Pokémon en los botones o Grid de entrenamiento
                 //actualizarVistaEntrenamiento();
                 
@@ -405,7 +409,7 @@ public class EntrenamientoController {
     public void renderizarPokemon(GridPane gridPanePokemon, Pane cajaContenedora, int slot, Pokemon compatibleCon) {
         if (this.e == null || e.getEquipo1() == null) return;
 
-        // 1. FILTRADO PREVIO: Creamos una lista con solo los Pokémon que pasan las reglas
+        // FILTRADO PREVIO: Creamos una lista con solo los Pokémon que pasan las reglas
         List<Pokemon> listaFiltrada = new ArrayList<>();
         
         for (Pokemon p : e.getEquipo1()) {
@@ -427,14 +431,14 @@ public class EntrenamientoController {
             }
         }
 
-        // 2. COMPROBACIÓN: Si no hay nadie, no hacemos nada y salimos
+        //  COMPROBACIÓN: Si no hay nadie, no hacemos nada y salimos
         if (listaFiltrada.isEmpty()) {
             System.out.println("[SISTEMA] No hay Pokémon compatibles para mostrar.");
             if (cajaContenedora != null) cajaContenedora.setVisible(false); // Por si acaso estaba abierta
             return; 
         }
 
-        // 3. RENDERIZADO: Si llegamos aquí, es que hay al menos uno.
+        // RENDERIZADO: Si llegamos aquí, es que hay al menos uno.
         // Limpiamos y mostramos la caja.
         gridPanePokemon.getChildren().clear();
         gridPanePokemon.getRowConstraints().clear();
@@ -478,13 +482,13 @@ public class EntrenamientoController {
     }
     
     private void actualizarVistaSeleccion1(Pokemon p) {
-        // 1. Cambiamos la foto del primer slot
+        //  Cambiamos la foto del primer slot
         File file = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
         if (file.exists()) {
             imgPokemonSeleccionado.setImage(new Image(file.toURI().toString()));
         }
         
-        // 3. Cerramos el panel de selección 1
+        //  Cerramos el panel de selección 1
         cajaSeleccion1.setVisible(false);
     }
     
@@ -502,11 +506,11 @@ public class EntrenamientoController {
 
         statVitalidadLbl.setText(p.getVitalidad() + " / " + p.getVitalidadMax());
 
-        // 2. Cálculo de progreso relativo
+        // Cálculo de progreso relativo
         double numerador = (double) p.getVitalidadMax() - minVidaTeorica;
         double denominador = maxVidaTeorica - minVidaTeorica;
 
-        // 3. Normalización
+        //  Normalización
         double progresoRelativo = (denominador != 0) ? (numerador / denominador) : 0.0;
 
         // Ahora con 493 y nivel 100:
@@ -540,7 +544,7 @@ public class EntrenamientoController {
             rutaSexo = "img/h.png";
         }
 
-        // 2. Si hay ruta (M o H), cargamos la imagen. Si es null (Sexo.X), ocultamos.
+        // Si hay ruta (M o H), cargamos la imagen. Si es null (Sexo.X), ocultamos.
         if (rutaSexo != null) {
             File fileSexo = new File(rutaSexo);
             if (fileSexo.exists()) {
@@ -602,21 +606,21 @@ public class EntrenamientoController {
     }
     
     private void animarEvolucion(ImageView imgPokemon, File nuevoGif) {
-        // 1. Animación de parpadeo
+        //  Animación de parpadeo
         FadeTransition fade = new FadeTransition(Duration.millis(150), imgPokemon);
         fade.setFromValue(1.0);
         fade.setToValue(0.1);
         fade.setCycleCount(20); // Más ciclos pero más cortos para que coincida con el tiempo total
         fade.setAutoReverse(true);
 
-        // 2. Animación de escalado
+        //  Animación de escalado
         ScaleTransition scale = new ScaleTransition(Duration.millis(3000), imgPokemon);
         scale.setFromX(1.0);
         scale.setFromY(1.0);
         scale.setToX(1.5);
         scale.setToY(1.5);
 
-        // 3. Agrupamos ambas para que terminen juntas
+        //  Agrupamos ambas para que terminen juntas
         ParallelTransition combinacion = new ParallelTransition(fade, scale);
 
         // Cuando el GRUPO completo termine, ejecutamos el cambio
@@ -636,6 +640,41 @@ public class EntrenamientoController {
         });
 
         combinacion.play();
+    }
+    
+    public void chequearMovimientoNuevo(Pokemon pokemonSeleccionado, Connection con) {
+        // Comprobamos si el nivel es múltiplo de 10
+        if (pokemonSeleccionado.getNivel() % 10 == 0) {
+            
+            try {
+                // Buscamos en la base de datos qué puede aprender según sus tipos (Tipo1, Tipo2 y Normal)
+                // Este método rellena la lista movimientosPosibles del objeto Pokemon
+                MovimientoCrud.buscarMovimientosPosibles(con, pokemonSeleccionado);
+                
+                // Verificamos si la lista de posibles movimientos no está vacía
+                if (!pokemonSeleccionado.getMovimientosPosibles().isEmpty()) {
+                    
+                    int quiereAprender = JOptionPane.showConfirmDialog(null,
+                        "¡" + pokemonSeleccionado.getNombre() + " ha alcanzado el nivel " + 
+                        pokemonSeleccionado.getNivel() + "! \n¿Deseas que aprenda un nuevo movimiento aleatorio?",
+                        "Aprendizaje por Nivel",
+                        JOptionPane.YES_NO_OPTION);
+
+                    if (quiereAprender == JOptionPane.YES_OPTION) {
+                        // 4. Ejecutamos la lógica de aprendizaje aleatorio y persistencia en BD
+                        // Ahora pasamos 'con' para que pueda hacer el DELETE e INSERT
+                        MovimientoCrud.gestionarAprendizajeUI(con, pokemonSeleccionado);
+                    }
+                    
+                } else {
+                    System.out.println("Nivel múltiplo de 10 alcanzado, pero no hay movimientos compatibles nuevos en la BD.");
+                }
+
+            } catch (SQLException e) {
+                JOptionPane.showMessageDialog(null, "Error de base de datos al procesar el nuevo movimiento.");
+                e.printStackTrace();
+            }
+        }
     }
     
 }

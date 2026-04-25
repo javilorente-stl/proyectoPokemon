@@ -586,7 +586,8 @@ public class Pokemon {
 		return 1.0; // Caso por defecto si no entra en ningún 'if' dentro del switch
 	}
 
-	public void descansar() {
-
+	public String getInfoLog(String nombreEntrenador) {
+	    String status = (this.vitalidad > 0) ? "OK" : "KO";
+	    return String.format("“%s”, %d, %s, %s", this.getNombre(), this.getNivel(), nombreEntrenador, status);
 	}
 }

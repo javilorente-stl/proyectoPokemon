@@ -178,7 +178,7 @@ public class CrianzaController {
 
     @FXML
     void Criar(ActionEvent event) {
-    	// 1. Verificamos que los objetos no sean nulos
+    	// Verificamos que los objetos no sean nulos
     	if (PokemonCrud.sonCompatibles(pokemonSeleccionado1, pokemonSeleccionado2)==false) {
     		System.out.println("No son compatibles");
     		return;
@@ -187,10 +187,10 @@ public class CrianzaController {
     	
     	if (pokemonSeleccionado1 != null && pokemonSeleccionado2 != null) {
             
-            // 1. Necesitas instanciar tu clase de conexión
+            // Necesitas instanciar tu clase de conexión
             ConexionBD conBD = new ConexionBD(); 
             
-            // 2. Usar un try-with-resources para asegurar que se abra y cierre
+            // Usar un try-with-resources para asegurar que se abra y cierre
             try (Connection conexion = conBD.getConnection()) {
                 
                 if (conexion != null) {
@@ -254,22 +254,22 @@ public class CrianzaController {
     }
     
     public void recibirDatos(Entrenador ent) throws SQLException {
-        // 1. Asignamos las referencias
+        // Asignamos las referencias
         this.e = ent;
 
-        // 3. Gestión de la conexión
+        // Gestión de la conexión
         ConexionBD con = new ConexionBD();
         Connection conexion = con.getConnection();
         
         if (conexion != null) {
-            // 4. Cargamos los datos en el objeto entrenador
+            // Cargamos los datos en el objeto entrenador
             // Nota: He usado el método que me pasaste antes para traer a todos
             PokemonCrud.obtenerTodosLosPokemon(conexion, e);
             
-            // 5. IMPORTANTE: Renderizamos la vista AHORA que 'e' ya tiene datos
+            // IMPORTANTE: Renderizamos la vista AHORA que 'e' ya tiene datos
             //renderizarPokemon(gridSeleccion1);
             
-            // 6. Cerramos conexión
+            // Cerramos conexión
             conexion.close();
             System.out.println("VISTA DE CRIANZA INICIALIZADA CORRECTAMENTE.");
         }
@@ -278,7 +278,7 @@ public class CrianzaController {
     public void renderizarPokemon(GridPane gridPanePokemon, Pane cajaContenedora, int slot, Pokemon compatibleCon) {
         if (this.e == null || e.getEquipo1() == null) return;
 
-        // 1. FILTRADO PREVIO: Creamos una lista con solo los Pokémon que pasan las reglas
+        //  FILTRADO PREVIO: Creamos una lista con solo los Pokémon que pasan las reglas
         List<Pokemon> listaFiltrada = new ArrayList<>();
         
         for (Pokemon p : e.getEquipo1()) {
@@ -300,14 +300,14 @@ public class CrianzaController {
             }
         }
 
-        // 2. COMPROBACIÓN: Si no hay nadie, no hacemos nada y salimos
+        //  Si no hay nadie, no hacemos nada y salimos
         if (listaFiltrada.isEmpty()) {
             System.out.println("[SISTEMA] No hay Pokémon compatibles para mostrar.");
             if (cajaContenedora != null) cajaContenedora.setVisible(false); // Por si acaso estaba abierta
             return; 
         }
 
-        // 3. RENDERIZADO: Si llegamos aquí, es que hay al menos uno.
+        // Si llegamos aquí, es que hay al menos uno.
         // Limpiamos y mostramos la caja.
         gridPanePokemon.getChildren().clear();
         gridPanePokemon.getRowConstraints().clear();
@@ -351,73 +351,9 @@ public class CrianzaController {
             fila++;
         }
     }
- /*
-    public void renderizarPokemon1(GridPane gridPanePokemon, Pane cajaContenedora, int slot, Pokemon compatibleCon) {
 
-        if (this.e == null || e.getEquipo1() == null) return;
-
-        gridPanePokemon.getChildren().clear();
-        gridPanePokemon.getRowConstraints().clear();
-        gridPanePokemon.getColumnConstraints().clear();
-        
-        if (cajaContenedora != null) cajaContenedora.setVisible(true);
-
-        int fila = 0;
-        for (Pokemon p : e.getEquipo1()) {
-            
-            // --- LÓGICA DE FILTRO PARA EL SLOT 2 ---
-        	int compatibles = 0;
-        	// Si estamos en el slot 2 y ya elegimos al primero, filtramos
-            if (slot == 2 && compatibleCon != null) {
-                // Condición: Deben ser de la misma especie (mismo número de Pokédex)
-                // Y no puede ser el mismo objeto físico (no puede criar consigo mismo)
-            	if (p.getNum_pokedex() != compatibleCon.getNum_pokedex() || 
-            	        p.getId_pokemon() == compatibleCon.getId_pokemon() ||
-            	        p.getSexo().equals(compatibleCon.getSexo())) {
-            	        
-            	        continue; // Si se cumple cualquiera de estas, lo ignoramos y no lo dibujamos
-            	    }
-            }
-
-            // --- CREACIÓN DE LA TARJETA (Solo si pasa el filtro) ---
-            VBox card = new VBox(10);
-            card.setStyle("-fx-border-color: #ccc; -fx-padding: 15; -fx-alignment: center; "
-                        + "-fx-background-color: white; -fx-border-radius: 10;");
-            card.setPrefWidth(200);
-
-            // (Carga de imagen, labels, etc. - se mantiene igual que antes)
-            File file = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
-            if (file.exists()) {
-                ImageView img = new ImageView(new Image(file.toURI().toString()));
-                img.setFitHeight(65);
-                img.setPreserveRatio(true);
-                card.getChildren().add(img);
-            }
-
-            Label lblNombre = new Label(p.getMote().toUpperCase());
-            lblNombre.setStyle("-fx-font-weight: bold;");
-            Button btnSeleccionar = new Button("Seleccionar");
-            
-            btnSeleccionar.setOnAction(event -> {
-                if (slot == 1) {
-                    this.pokemonSeleccionado1 = p; // Guardamos en la variable de clase
-                    actualizarVistaSeleccion1(p);  // Llamamos al método 1
-                } else {
-                    this.pokemonSeleccionado2 = p; // Guardamos en la variable de clase
-                    actualizarVistaSeleccion2(p);  // Llamamos al método 2
-                }
-                System.out.println("Elegido: " + p.getNombre());
-            });
-
-            card.getChildren().addAll(lblNombre, new Label("NIVEL: " + p.getNivel()), btnSeleccionar);
-            gridPanePokemon.add(card, 0, fila);
-            fila++;
-        }
-    }*/
-    
-    
     private void actualizarVistaSeleccion1(Pokemon p) {
-        // 1. Cambiamos la foto del primer slot
+        //  Cambiamos la foto del primer slot
         File file = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
         if (file.exists()) {
             imgPokemon1.setImage(new Image(file.toURI().toString()));
@@ -433,16 +369,16 @@ public class CrianzaController {
             imgSexo1.setVisible(true);
         }
 
-        // 2. "Encendemos" visualmente el segundo slot para indicar que toca elegir pareja
+        //  "Encendemos" visualmente el segundo slot para indicar que toca elegir pareja
         imgPokemon2.setOpacity(1.0);
         imgPokemon2.setDisable(false);
         
-        // 3. Cerramos el panel de selección 1
+        //  Cerramos el panel de selección 1
         cajaSeleccion1.setVisible(false);
     }
     
     private void actualizarVistaSeleccion2(Pokemon p) {
-        // 1. Cambiamos la foto del segundo slot
+        //  Cambiamos la foto del segundo slot
         File file = new File("img/pokemon/front/" + p.getNum_pokedex() + ".gif");
         if (file.exists()) {
             imgPokemon2.setImage(new Image(file.toURI().toString()));
@@ -456,10 +392,10 @@ public class CrianzaController {
             imgSexo2.setVisible(true);
         }
 
-        // 2. Cerramos el panel de selección 2
+        //  Cerramos el panel de selección 2
         cajaSeleccion2.setVisible(false);
         
-        // 3. Opcional: Si ya tienes los dos, podrías habilitar el botón de Criar
+        //  Opcional: Si ya tienes los dos, podrías habilitar el botón de Criar
         if (pokemonSeleccionado1 != null && pokemonSeleccionado2 != null) {
             botonCriar.setDisable(false);
         }

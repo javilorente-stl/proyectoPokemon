@@ -1,0 +1,12 @@
+2026-04-25 20:15:42.720 INFO inicioCombate pokemon = {“Alakazam”, 64, a, OK}, pokemonRival={“Charizard”, 50, pablo, OK}, turno=1
+2026-04-25 20:15:55.902 INFO debilitado2 pokemon = {“Alakazam”, 64, a, OK}, pokemonRival={“Charizard”, 50, pablo, KO}, turno=1
+2026-04-25 20:16:07.481 INFO debilitado2 pokemon = {“Alakazam”, 64, a, OK}, pokemonRival={“Lapras”, 50, pablo, KO}, turno=1
+2026-04-25 20:16:31.529 INFO cambio1 pokemon = {“Venusaur”, 60, a, OK}, pokemonRival={“Jolteon”, 50, pablo, OK}, turno=1
+2026-04-25 20:17:24.763 INFO cambio1 pokemon = {“Alakazam”, 65, a, OK}, pokemonRival={“Jolteon”, 50, pablo, OK}, turno=6
+2026-04-25 20:17:31.131 INFO debilitado2 pokemon = {“Alakazam”, 65, a, OK}, pokemonRival={“Jolteon”, 50, pablo, KO}, turno=7
+2026-04-25 20:17:44.187 INFO debilitado2 pokemon = {“Alakazam”, 65, a, OK}, pokemonRival={“Snorlax”, 50, pablo, KO}, turno=1
+2026-04-25 20:18:13.658 INFO debilitado2 pokemon = {“Alakazam”, 66, a, OK}, pokemonRival={“Nidoking”, 50, pablo, KO}, turno=1
+2026-04-25 20:18:22.795 INFO debilitado2 pokemon = {“Alakazam”, 66, a, OK}, pokemonRival={“Alakazam”, 50, pablo, KO}, turno=1
+2026-04-25 20:18:27.932 INFO finGanaCombate pokemon = {“Alakazam”, 67, a, OK}, pokemonRival={“Alakazam”, 50, pablo, KO}, turno=2
+2026-04-25 20:18:41.307 INFO debilitado2 pokemon = {“Alakazam”, 67, a, OK}, pokemonRival={“Charizard”, 50, pablo, KO}, turno=1
+2026-04-25 20:18:46.430 INFO finGanaCombate pokemon = {“Alakazam”, 68, a, OK}, pokemonRival={“Charizard”, 50, pablo, KO}, turno=2

@@ -162,85 +162,81 @@ public class EntrenadorCrud {
 	}
 
 	public static void prepararCampeonEspejo(Connection con, int idJugador, int idCampeon) throws SQLException {
-		// Limpieza del Campeón
-		String sqlDelete = "DELETE FROM POKEMON WHERE ID_ENTRENADOR = ?";
-		try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
-			ps.setInt(1, idCampeon);
-			ps.executeUpdate();
-		}
+	    // LIMPIEZA: Eliminar los Pokémon anteriores del Campeón
+	    String SQL_DELETE = "DELETE FROM POKEMON WHERE ID_ENTRENADOR = ?";
+	    try (PreparedStatement ps = con.prepareStatement(SQL_DELETE)) {
+	        ps.setInt(1, idCampeon);
+	        ps.executeUpdate();
+	    }
 
-		// Obtener el ID más alto
-		int ultimoId = 0;
-		String sqlMaxId = "SELECT MAX(ID_POKEMON) FROM POKEMON";
-		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlMaxId)) {
-			if (rs.next())
-				ultimoId = rs.getInt(1);
-		}
+	    // OBTENER EL ÚLTIMO ID PARA NO DUPLICAR CLAVES PRIMARIAS
+	    int ultimoId = 0;
+	    String SQL_MAX_ID = "SELECT MAX(ID_POKEMON) FROM POKEMON";
+	    try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(SQL_MAX_ID)) {
+	        if (rs.next())
+	            ultimoId = rs.getInt(1);
+	    }
 
-		// Obtener tus Pokémon actuales
-		List<Integer> idsTusPokemon = new ArrayList<>();
-		String sqlIds = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND UBICACION BETWEEN 1 AND 6";
-		try (PreparedStatement ps = con.prepareStatement(sqlIds)) {
-			ps.setInt(1, idJugador);
-			try (ResultSet rs = ps.executeQuery()) {
-				while (rs.next())
-					idsTusPokemon.add(rs.getInt("ID_POKEMON"));
-			}
-		}
+	    // OBTENER TUS POKÉMON (Quitamos UBICACION de la consulta)
+	    List<Integer> idsTusPokemon = new ArrayList<>();
+	    String SQL_IDS = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ?";
+	    try (PreparedStatement ps = con.prepareStatement(SQL_IDS)) {
+	        ps.setInt(1, idJugador);
+	        try (ResultSet rs = ps.executeQuery()) {
+	            while (rs.next())
+	                idsTusPokemon.add(rs.getInt("ID_POKEMON"));
+	        }
+	    }
 
-		// SQL de Inserción (Incluyendo UBICACION/CAJA)
-		String sqlInsertPk = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, "
-				+ "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, FERTILIDAD, SEXO, ESTADO, UBICACION) "
-				+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	    //QUERIES DE INSERCIÓN (Ajustadas a 15 parámetros exactos)
+	    String SQL_INSERT_PK = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, "
+	            + "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, FERTILIDAD, SEXO, ESTADO) "
+	            + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-		String sqlInsertMov = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) "
-				+ "SELECT ?, ID_MOVIMIENTO, ACTIVO, NUM_PP FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
+	    String SQL_INSERT_MOV = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) "
+	            + "SELECT ?, ID_MOVIMIENTO, ACTIVO, NUM_PP FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
 
-		// Usamos un contador para asignar las posiciones 1-6 en el equipo del Campeón
-		int contadorCaja = 1;
+	    //PROCESO DE CLONACIÓN
+	    for (int idOld : idsTusPokemon) {
+	        ultimoId++;
+	        int idNuevo = ultimoId;
 
-		for (int idOld : idsTusPokemon) {
-			ultimoId++;
-			int idNuevo = ultimoId;
+	        String SQL_SELECT_ORIG = "SELECT * FROM POKEMON WHERE ID_POKEMON = ?";
+	        try (PreparedStatement psSelect = con.prepareStatement(SQL_SELECT_ORIG)) {
+	            psSelect.setInt(1, idOld);
+	            try (ResultSet rsOri = psSelect.executeQuery()) {
+	                if (rsOri.next()) {
+	                    // Insertar el Pokémon clonado
+	                    try (PreparedStatement psPk = con.prepareStatement(SQL_INSERT_PK)) {
+	                        psPk.setInt(1, idNuevo);
+	                        psPk.setInt(2, rsOri.getInt("NUM_POKEDEX"));
+	                        psPk.setInt(3, idCampeon);
+	                        psPk.setString(4, rsOri.getString("MOTE") + " (Sombra)");
+	                        psPk.setInt(5, rsOri.getInt("VITALIDAD"));
+	                        psPk.setInt(6, rsOri.getInt("VITALIDAD_MAX"));
+	                        psPk.setInt(7, rsOri.getInt("ATAQUE"));
+	                        psPk.setInt(8, rsOri.getInt("ATA_ESPECIAL"));
+	                        psPk.setInt(9, rsOri.getInt("DEFENSA"));
+	                        psPk.setInt(10, rsOri.getInt("DEF_ESPECIAL"));
+	                        psPk.setInt(11, rsOri.getInt("VELOCIDAD"));
+	                        psPk.setInt(12, rsOri.getInt("NIVEL"));
+	                        psPk.setInt(13, rsOri.getInt("FERTILIDAD"));
+	                        psPk.setString(14, rsOri.getString("SEXO"));
+	                        psPk.setString(15, rsOri.getString("ESTADO"));
 
-			String sqlSelectOrig = "SELECT * FROM POKEMON WHERE ID_POKEMON = ?";
-			try (PreparedStatement psSelect = con.prepareStatement(sqlSelectOrig)) {
-				psSelect.setInt(1, idOld);
-				try (ResultSet rsOri = psSelect.executeQuery()) {
-					if (rsOri.next()) {
-						try (PreparedStatement psPk = con.prepareStatement(sqlInsertPk)) {
-							psPk.setInt(1, idNuevo);
-							psPk.setInt(2, rsOri.getInt("NUM_POKEDEX"));
-							psPk.setInt(3, idCampeon);
-							psPk.setString(4, rsOri.getString("MOTE") + " (Sombra)");
-							psPk.setInt(5, rsOri.getInt("VITALIDAD"));
-							psPk.setInt(6, rsOri.getInt("VITALIDAD_MAX"));
-							psPk.setInt(7, rsOri.getInt("ATAQUE"));
-							psPk.setInt(8, rsOri.getInt("ATA_ESPECIAL"));
-							psPk.setInt(9, rsOri.getInt("DEFENSA"));
-							psPk.setInt(10, rsOri.getInt("DEF_ESPECIAL"));
-							psPk.setInt(11, rsOri.getInt("VELOCIDAD"));
-							psPk.setInt(12, rsOri.getInt("NIVEL"));
-							psPk.setInt(13, rsOri.getInt("FERTILIDAD"));
-							psPk.setString(14, rsOri.getString("SEXO"));
-							psPk.setString(15, rsOri.getString("ESTADO"));
+	                        psPk.executeUpdate();
+	                    }
 
-							// ASIGNACIÓN DE CAJA/UBICACIÓN (Parámetro 16)
-							psPk.setString(16, String.valueOf(contadorCaja));
-
-							psPk.executeUpdate();
-							contadorCaja++; // Incrementamos para el siguiente Pokémon
-						}
-
-						// Clonar movimientos
-						try (PreparedStatement psMov = con.prepareStatement(sqlInsertMov)) {
-							psMov.setInt(1, idNuevo);
-							psMov.setInt(2, idOld);
-							psMov.executeUpdate();
-						}
-					}
-				}
-			}
-		}
+	                    // CLONAR MOVIMIENTOS asociados
+	                    try (PreparedStatement psMov = con.prepareStatement(SQL_INSERT_MOV)) {
+	                        psMov.setInt(1, idNuevo);
+	                        psMov.setInt(2, idOld);
+	                        psMov.executeUpdate();
+	                    }
+	                }
+	            }
+	        }
+	    }
+	    System.out.println(">>> LIGA: Campeón Espejo preparado con " + idsTusPokemon.size() + " Pokémon.");
 	}
 }

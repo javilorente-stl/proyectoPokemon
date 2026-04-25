@@ -20,13 +20,12 @@ import modelo.Tipo;
 
 public class PokemonCrud {
 
-	
-	
 	/**
-	 * Este metodo guarda un pokemon, se usa en la vista de la captura
-	 * genera el insert dentro del entrenador que esta realizando la captura
-	 * Se le dan los datos aleatorios adecuados y se tratan valores como el sexo
-	 * También se le hace una llamada al método para asignarle un movimiento
+	 * Este metodo guarda un pokemon, se usa en la vista de la captura genera el
+	 * insert dentro del entrenador que esta realizando la captura Se le dan los
+	 * datos aleatorios adecuados y se tratan valores como el sexo También se le
+	 * hace una llamada al método para asignarle un movimiento
+	 * 
 	 * @param con
 	 * @param numPokedex
 	 * @param ent
@@ -34,280 +33,261 @@ public class PokemonCrud {
 	 * @throws SQLException
 	 */
 	public static void guardarPokemon(Connection con, int numPokedex, Entrenador ent, String mote) throws SQLException {
-	    
-	    String sqlInsert = "INSERT INTO POKEMON ("
-	            + "    ID_POKEMON, "
-	            + "    NUM_POKEDEX, "
-	            + "    ID_ENTRENADOR, "
-	            + "    MOTE, "
-	            + "    VITALIDAD, "
-	            + "    VITALIDAD_MAX, " 
-	            + "    ATAQUE, "
-	            + "    ATA_ESPECIAL, "
-	            + "    DEFENSA, "
-	            + "    DEF_ESPECIAL, "
-	            + "    VELOCIDAD, "
-	            + "    NIVEL, "
-	            + "    EXPERIENCIA, "
-	            + "    FERTILIDAD, "
-	            + "    SEXO, "
-	            + "    ESTADO, "
-	            + "    CAJA, "
-	            + "    ID_OBJETO"
-	            + ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-	    String sqlSelect = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX=?";
+		String sqlInsert = "INSERT INTO POKEMON (" + "    ID_POKEMON, " + "    NUM_POKEDEX, " + "    ID_ENTRENADOR, "
+				+ "    MOTE, " + "    VITALIDAD, " + "    VITALIDAD_MAX, " + "    ATAQUE, " + "    ATA_ESPECIAL, "
+				+ "    DEFENSA, " + "    DEF_ESPECIAL, " + "    VELOCIDAD, " + "    NIVEL, " + "    EXPERIENCIA, "
+				+ "    FERTILIDAD, " + "    SEXO, " + "    ESTADO, " + "    CAJA, " + "    ID_OBJETO"
+				+ ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-	 // Obtener el nuevo ID_POKEMON
-	    int nuevoId = 1;
-	    try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
-	         ResultSet rsMax = psMax.executeQuery()) {
-	        if (rsMax.next()) {
-	            nuevoId = rsMax.getInt(1) + 1;
-	        }
-	    }
+		String sqlSelect = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX=?";
 
-	    
-	    // Obtenemos todas las posiciones ocupadas por este entrenador, ordenadas
-	    int proximaPosicion = 1;
-	    String sqlHuecos = "SELECT CAJA FROM POKEMON WHERE ID_ENTRENADOR = ? ORDER BY CAJA ASC";
-	    try (PreparedStatement psHuecos = con.prepareStatement(sqlHuecos)) {
-	        psHuecos.setInt(1, ent.getIdEntrenador());
-	        try (ResultSet rsHuecos = psHuecos.executeQuery()) {
-	            // Lógica de relleno:
-	            // Si tenemos ocupados 1, 2, 4... el bucle detectará que falta el 3.
-	            while (rsHuecos.next()) {
-	                int ocupado = rsHuecos.getInt("CAJA");
-	                if (ocupado == proximaPosicion) {
-	                    proximaPosicion++; // Si el hueco está ocupado, probamos el siguiente
-	                } else if (ocupado > proximaPosicion) {
-	                    break; 
-	                }
-	            }
-	        }
-	    }
+		// Obtener el nuevo ID_POKEMON
+		int nuevoId = 1;
+		try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
+				ResultSet rsMax = psMax.executeQuery()) {
+			if (rsMax.next()) {
+				nuevoId = rsMax.getInt(1) + 1;
+			}
+		}
 
-	    //Obtener datos de la Pokedex e insertar
-	    try (PreparedStatement psSel = con.prepareStatement(sqlSelect)) {
-	        psSel.setInt(1, numPokedex);
-	        try (ResultSet rs = psSel.executeQuery()) {
-	            if (rs.next()) {
-	            	int vitalidadAleatoria = (int) (Math.random() * 6) + 16;
-	            	Sexo sexoAleatorio = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
-	            	if (numPokedex >= 29 && numPokedex <= 31) { // Nidoran♀
-	            	    sexoAleatorio = Sexo.H;
-	            	} else if (numPokedex >= 32 && numPokedex <= 34) { // Nidoran♂
-	            	    sexoAleatorio = Sexo.M;
-	            	} else if (numPokedex == 81 || numPokedex == 82 || // Magnemite, Magneton
-	            	           numPokedex == 100 || numPokedex == 101 || // Voltorb, Electrode
-	            	           numPokedex == 120 || numPokedex == 121 || // Staryu, Starmie
-	            	           numPokedex == 132 || // Ditto
-	            	           numPokedex == 137 || // Porygon
-	            	           numPokedex == 144 || numPokedex == 145 || numPokedex == 146 || // Aves Legendarias
-	            	           numPokedex == 150 || numPokedex == 151) { // Mewtwo, Mew
-	            	    sexoAleatorio = Sexo.X;
-	            	}
-	            	Estado estadoInicial = Estado.VIVO;
-	            	
-	                
-	                try (PreparedStatement psIns = con.prepareStatement(sqlInsert)) {
-	                    psIns.setInt(1, nuevoId);
-	                    psIns.setInt(2, numPokedex);
-	                    psIns.setInt(3, ent.getIdEntrenador());
-	                    psIns.setString(4, mote);
-	                    psIns.setInt(5, vitalidadAleatoria);
-	                    psIns.setInt(6, vitalidadAleatoria);
-	                    psIns.setInt(7, (int) (Math.random() * 5) + 1);
-	                    psIns.setInt(8, (int) (Math.random() * 5) + 1);
-	                    psIns.setInt(9, (int) (Math.random() * 5) + 1);
-	                    psIns.setInt(10, (int) (Math.random() * 5) + 1);
-	                    psIns.setInt(11, (int) (Math.random() * 5) + 1);
-	                    psIns.setInt(12, 1);
-	                    psIns.setInt(13, 0);
-	                    psIns.setInt(14, 5);
-	                    psIns.setString(15, sexoAleatorio.name()); 
-	                    psIns.setString(16, estadoInicial.name());
-	                    psIns.setInt(17, proximaPosicion); // El hueco encontrado
-	                    psIns.setNull(18, java.sql.Types.INTEGER);
+		// Obtenemos todas las posiciones ocupadas por este entrenador, ordenadas
+		int proximaPosicion = 1;
+		String sqlHuecos = "SELECT CAJA FROM POKEMON WHERE ID_ENTRENADOR = ? ORDER BY CAJA ASC";
+		try (PreparedStatement psHuecos = con.prepareStatement(sqlHuecos)) {
+			psHuecos.setInt(1, ent.getIdEntrenador());
+			try (ResultSet rsHuecos = psHuecos.executeQuery()) {
+				// Lógica de relleno:
+				// Si tenemos ocupados 1, 2, 4... el bucle detectará que falta el 3.
+				while (rsHuecos.next()) {
+					int ocupado = rsHuecos.getInt("CAJA");
+					if (ocupado == proximaPosicion) {
+						proximaPosicion++; // Si el hueco está ocupado, probamos el siguiente
+					} else if (ocupado > proximaPosicion) {
+						break;
+					}
+				}
+			}
+		}
 
-	                    psIns.executeUpdate();
-	                    
-	                 // Obtenemos el tipo principal directamente del ResultSet de la Pokedex
-	                    Tipo tipoPrincipal = Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase());
+		// Obtener datos de la Pokedex e insertar
+		try (PreparedStatement psSel = con.prepareStatement(sqlSelect)) {
+			psSel.setInt(1, numPokedex);
+			try (ResultSet rs = psSel.executeQuery()) {
+				if (rs.next()) {
+					int vitalidadAleatoria = (int) (Math.random() * 6) + 16;
+					Sexo sexoAleatorio = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
+					if (numPokedex >= 29 && numPokedex <= 31) { // Nidoran♀
+						sexoAleatorio = Sexo.H;
+					} else if (numPokedex >= 32 && numPokedex <= 34) { // Nidoran♂
+						sexoAleatorio = Sexo.M;
+					} else if (numPokedex == 81 || numPokedex == 82 || // Magnemite, Magneton
+							numPokedex == 100 || numPokedex == 101 || // Voltorb, Electrode
+							numPokedex == 120 || numPokedex == 121 || // Staryu, Starmie
+							numPokedex == 132 || // Ditto
+							numPokedex == 137 || // Porygon
+							numPokedex == 144 || numPokedex == 145 || numPokedex == 146 || // Aves Legendarias
+							numPokedex == 150 || numPokedex == 151) { // Mewtwo, Mew
+						sexoAleatorio = Sexo.X;
+					}
+					Estado estadoInicial = Estado.VIVO;
 
-	                    // Llamamos al método que busca el ataque más débil (Potencia > 0) de ese tipo
-	                    Movimiento inicial = MovimientoCrud.obtenerMovimientoInicial(con, tipoPrincipal);
+					try (PreparedStatement psIns = con.prepareStatement(sqlInsert)) {
+						psIns.setInt(1, nuevoId);
+						psIns.setInt(2, numPokedex);
+						psIns.setInt(3, ent.getIdEntrenador());
+						psIns.setString(4, mote);
+						psIns.setInt(5, vitalidadAleatoria);
+						psIns.setInt(6, vitalidadAleatoria);
+						psIns.setInt(7, (int) (Math.random() * 5) + 1);
+						psIns.setInt(8, (int) (Math.random() * 5) + 1);
+						psIns.setInt(9, (int) (Math.random() * 5) + 1);
+						psIns.setInt(10, (int) (Math.random() * 5) + 1);
+						psIns.setInt(11, (int) (Math.random() * 5) + 1);
+						psIns.setInt(12, 1);
+						psIns.setInt(13, 0);
+						psIns.setInt(14, 5);
+						psIns.setString(15, sexoAleatorio.name());
+						psIns.setString(16, estadoInicial.name());
+						psIns.setInt(17, proximaPosicion); // El hueco encontrado
+						psIns.setNull(18, java.sql.Types.INTEGER);
 
-	                    // Verificamos que se haya encontrado algo antes de insertar
-	                    if (inicial != null) {
-	                        // Depuración: Verifica en consola que el ID ya no sea 0
-	                        System.out.println("Asignando Movimiento: " + inicial.getNombre() + " (ID: " + inicial.getIdMovimiento() + ") al Pokemon ID: " + nuevoId);
+						psIns.executeUpdate();
 
-	                        String sqlInsMov = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, NUM_PP, ACTIVO) VALUES (?, ?, ?, ?)";
-	                        
-	                        try (PreparedStatement psMov = con.prepareStatement(sqlInsMov)) {
-	                            psMov.setInt(1, nuevoId);
-	                            psMov.setInt(2, inicial.getIdMovimiento()); 
-	                            psMov.setInt(3, inicial.getNumPP());        // PP oficiales de la tabla MOVIMIENTO
-	                            psMov.setInt(4, 1);                         // 1 = Movimiento activo
-	                            
-	                            psMov.executeUpdate();
-	                        }
-	                    } else {
-	                        System.out.println("Aviso: No se encontró ningún movimiento de ataque para el tipo " + tipoPrincipal);
-	                    }
-	                    
-	                }
-	            }
-	        }
-	    }
+						// Obtenemos el tipo principal directamente del ResultSet de la Pokedex
+						Tipo tipoPrincipal = Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase());
+
+						// Llamamos al método que busca el ataque más débil (Potencia > 0) de ese tipo
+						Movimiento inicial = MovimientoCrud.obtenerMovimientoInicial(con, tipoPrincipal);
+
+						// Verificamos que se haya encontrado algo antes de insertar
+						if (inicial != null) {
+							// Depuración: Verifica en consola que el ID ya no sea 0
+							System.out.println("Asignando Movimiento: " + inicial.getNombre() + " (ID: "
+									+ inicial.getIdMovimiento() + ") al Pokemon ID: " + nuevoId);
+
+							String sqlInsMov = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, NUM_PP, ACTIVO) VALUES (?, ?, ?, ?)";
+
+							try (PreparedStatement psMov = con.prepareStatement(sqlInsMov)) {
+								psMov.setInt(1, nuevoId);
+								psMov.setInt(2, inicial.getIdMovimiento());
+								psMov.setInt(3, inicial.getNumPP()); // PP oficiales de la tabla MOVIMIENTO
+								psMov.setInt(4, 1); // 1 = Movimiento activo
+
+								psMov.executeUpdate();
+							}
+						} else {
+							System.out.println(
+									"Aviso: No se encontró ningún movimiento de ataque para el tipo " + tipoPrincipal);
+						}
+
+					}
+				}
+			}
+		}
 	}
-	
+
 	/**
 	 * Este metodo es para obtener los pokemon que están en el equipo principal
 	 * todos sus datos
+	 * 
 	 * @param conexion
 	 * @param e
 	 * @throws SQLException
 	 */
 	public static void obtenerPokemon1(Connection conexion, Entrenador e) throws SQLException {
-	    // 1. Limpieza inicial por seguridad
-	    e.getEquipo1().clear();
+		// 1. Limpieza inicial por seguridad
+		e.getEquipo1().clear();
 
-	    // Añadimos P.EXPERIENCIA a la consulta
-	    String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
-	            + "P.VITALIDAD_MAX, P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
-	            + "P.NIVEL, P.EXPERIENCIA, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
-	            + "PX.TIPO1, PX.TIPO2 "
-	            + "FROM POKEMON P "
-	            + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
-	            + "WHERE P.ID_ENTRENADOR = ? AND P.CAJA BETWEEN 1 AND 6 "
-	            + "ORDER BY P.CAJA ASC";
+		// Añadimos P.EXPERIENCIA a la consulta
+		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
+				+ "P.VITALIDAD_MAX, P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
+				+ "P.NIVEL, P.EXPERIENCIA, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
+				+ "PX.TIPO1, PX.TIPO2 " + "FROM POKEMON P " + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
+				+ "WHERE P.ID_ENTRENADOR = ? AND P.CAJA BETWEEN 1 AND 6 " + "ORDER BY P.CAJA ASC";
 
-	    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-	        ps.setInt(1, e.getIdEntrenador()); 
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            LinkedList<Pokemon> listadoPokemon = new LinkedList<Pokemon>();
+		try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+			ps.setInt(1, e.getIdEntrenador());
 
-	            while (rs.next()) {
-	                Pokemon p = new Pokemon();
-	                
-	                // Seteo de datos básicos
-	                p.setId_pokemon(rs.getInt("ID_POKEMON"));
-	                p.setNombre(rs.getString("NOM_POKEMON"));
-	                p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
-	                p.setMote(rs.getString("MOTE"));
-	                p.setVitalidad(rs.getInt("VITALIDAD"));
-	                p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
-	                p.setAtaque(rs.getInt("ATAQUE"));
-	                p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
-	                p.setDefensa(rs.getInt("DEFENSA"));
-	                p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
-	                p.setVelocidad(rs.getInt("VELOCIDAD"));
-	                p.setNivel(rs.getInt("NIVEL"));
-	                
-	                // --- CARGAMOS LA EXPERIENCIA ---
-	                p.setExperiencia(rs.getInt("EXPERIENCIA"));
-	                
-	                p.setFertilidad(rs.getInt("FERTILIDAD"));
-	                p.setPrecision(100); // Valor base por defecto
+			try (ResultSet rs = ps.executeQuery()) {
+				LinkedList<Pokemon> listadoPokemon = new LinkedList<Pokemon>();
 
-	                // Mapeo de Enums con conversión desde String
-	                if (rs.getString("TIPO1") != null) {
-	                    p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
-	                }
-	                if (rs.getString("TIPO2") != null) {
-	                    p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
-	                }
-	                if (rs.getString("SEXO") != null) {
-	                    p.setSexo(Sexo.convertirSexoDesdeString(rs.getString("SEXO").toUpperCase()));
-	                }
-	                if (rs.getString("ESTADO") != null) {
-	                    p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
-	                }
+				while (rs.next()) {
+					Pokemon p = new Pokemon();
 
-	                // Carga de movimientos
-	                cargarMovimientosPokemon(conexion, p);
-	                
-	                // Añadir a la lista
-	                listadoPokemon.add(p);
-	            }
+					// Seteo de datos básicos
+					p.setId_pokemon(rs.getInt("ID_POKEMON"));
+					p.setNombre(rs.getString("NOM_POKEMON"));
+					p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
+					p.setMote(rs.getString("MOTE"));
+					p.setVitalidad(rs.getInt("VITALIDAD"));
+					p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
+					p.setAtaque(rs.getInt("ATAQUE"));
+					p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
+					p.setDefensa(rs.getInt("DEFENSA"));
+					p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
+					p.setVelocidad(rs.getInt("VELOCIDAD"));
+					p.setNivel(rs.getInt("NIVEL"));
 
-	            // Guardar la lista final en el entrenador
-	            e.setEquipo1(listadoPokemon); 
-	        }
-	    } 
+					// --- CARGAMOS LA EXPERIENCIA ---
+					p.setExperiencia(rs.getInt("EXPERIENCIA"));
+
+					p.setFertilidad(rs.getInt("FERTILIDAD"));
+					p.setPrecision(100); // Valor base por defecto
+
+					// Mapeo de Enums con conversión desde String
+					if (rs.getString("TIPO1") != null) {
+						p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
+					}
+					if (rs.getString("TIPO2") != null) {
+						p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
+					}
+					if (rs.getString("SEXO") != null) {
+						p.setSexo(Sexo.convertirSexoDesdeString(rs.getString("SEXO").toUpperCase()));
+					}
+					if (rs.getString("ESTADO") != null) {
+						p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
+					}
+
+					// Carga de movimientos
+					cargarMovimientosPokemon(conexion, p);
+
+					// Añadir a la lista
+					listadoPokemon.add(p);
+				}
+
+				// Guardar la lista final en el entrenador
+				e.setEquipo1(listadoPokemon);
+			}
+		}
 	}
-	
+
 	public static void obtenerTodosLosPokemon(Connection conexion, Entrenador e) throws SQLException {
-	    // Eliminamos el filtro de CAJA para traer a todos
-	    String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
-	                + "P.VITALIDAD_MAX, "
-	                + "P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
-	                + "P.NIVEL, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
-	                + "PX.TIPO1, PX.TIPO2 "
-	                + "FROM POKEMON P "
-	                + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
-	                + "WHERE P.ID_ENTRENADOR = ? " // Filtramos solo por el dueño
-	                + "ORDER BY P.CAJA ASC";
+		// Eliminamos el filtro de CAJA para traer a todos
+		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, " + "P.VITALIDAD_MAX, "
+				+ "P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
+				+ "P.NIVEL, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, " + "PX.TIPO1, PX.TIPO2 "
+				+ "FROM POKEMON P " + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
+				+ "WHERE P.ID_ENTRENADOR = ? " // Filtramos solo por el dueño
+				+ "ORDER BY P.CAJA ASC";
 
-	    PreparedStatement ps = conexion.prepareStatement(sql);
-	    ps.setInt(1, e.getIdEntrenador()); 
-	    
-	    ResultSet rs = ps.executeQuery();
-	    LinkedList<Pokemon> listadoCompleto = new LinkedList<Pokemon>();
+		PreparedStatement ps = conexion.prepareStatement(sql);
+		ps.setInt(1, e.getIdEntrenador());
 
-	    while (rs.next()) {
-	        Pokemon p = new Pokemon();
-	        p.setId_pokemon(rs.getInt("ID_POKEMON"));
-	        p.setNombre(rs.getString("NOM_POKEMON"));
-	        p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
-	        p.setMote(rs.getString("MOTE"));
-	        p.setVitalidad(rs.getInt("VITALIDAD"));
-	        p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
-	        p.setAtaque(rs.getInt("ATAQUE"));
-	        p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
-	        p.setDefensa(rs.getInt("DEFENSA"));
-	        p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
-	        p.setVelocidad(rs.getInt("VELOCIDAD"));
-	        p.setNivel(rs.getInt("NIVEL"));
-	        p.setFertilidad(rs.getInt("FERTILIDAD"));
-	        p.setCaja(rs.getInt("CAJA")); // Importante setear esto para saber dónde están
+		ResultSet rs = ps.executeQuery();
+		LinkedList<Pokemon> listadoCompleto = new LinkedList<Pokemon>();
 
-	        // Manejo de Enums y Tipos
-	        if (rs.getString("TIPO1") != null) {
-	            p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
-	        }
-	        if (rs.getString("TIPO2") != null) {
-	            p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
-	        }
-	        if (rs.getString("SEXO") != null) {
-	            p.setSexo(Sexo.convertirSexoDesdeString(rs.getString("SEXO").toUpperCase()));
-	        }
-	        if (rs.getString("ESTADO") != null) {
-	            p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
-	        }
+		while (rs.next()) {
+			Pokemon p = new Pokemon();
+			p.setId_pokemon(rs.getInt("ID_POKEMON"));
+			p.setNombre(rs.getString("NOM_POKEMON"));
+			p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
+			p.setMote(rs.getString("MOTE"));
+			p.setVitalidad(rs.getInt("VITALIDAD"));
+			p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
+			p.setAtaque(rs.getInt("ATAQUE"));
+			p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
+			p.setDefensa(rs.getInt("DEFENSA"));
+			p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
+			p.setVelocidad(rs.getInt("VELOCIDAD"));
+			p.setNivel(rs.getInt("NIVEL"));
+			p.setFertilidad(rs.getInt("FERTILIDAD"));
+			p.setCaja(rs.getInt("CAJA")); // Importante setear esto para saber dónde están
 
-	        // Cargamos sus movimientos (reutilizando tu método existente)
-	        cargarMovimientosPokemon(conexion, p);
-	        
-	        listadoCompleto.add(p);
-	    }
+			// Manejo de Enums y Tipos
+			if (rs.getString("TIPO1") != null) {
+				p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
+			}
+			if (rs.getString("TIPO2") != null) {
+				p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
+			}
+			if (rs.getString("SEXO") != null) {
+				p.setSexo(Sexo.convertirSexoDesdeString(rs.getString("SEXO").toUpperCase()));
+			}
+			if (rs.getString("ESTADO") != null) {
+				p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
+			}
 
-	    // OPCIÓN A: Guardarlos en una lista general del entrenador (si la tienes)
-	    // e.setTodosLosPokemon(listadoCompleto); 
-	    
-	    // OPCIÓN B: Si quieres que sustituya al equipo actual
-	    e.setEquipo1(listadoCompleto); 
+			// Cargamos sus movimientos (reutilizando tu método existente)
+			cargarMovimientosPokemon(conexion, p);
 
-	    rs.close();
-	    ps.close();
+			listadoCompleto.add(p);
+		}
+
+		// OPCIÓN A: Guardarlos en una lista general del entrenador (si la tienes)
+		// e.setTodosLosPokemon(listadoCompleto);
+
+		// OPCIÓN B: Si quieres que sustituya al equipo actual
+		e.setEquipo1(listadoCompleto);
+
+		rs.close();
+		ps.close();
 	}
-	
+
 	/**
-	 * Este es el mismo metodo de obtener pokemon, pero se usa para los pokemon de la caja
-	 * También se cargan los movimientos
+	 * Este es el mismo metodo de obtener pokemon, pero se usa para los pokemon de
+	 * la caja También se cargan los movimientos
+	 * 
 	 * @param conexion
 	 * @param e
 	 * @throws SQLException
@@ -315,1097 +295,1119 @@ public class PokemonCrud {
 	public static void obtenerPokemon2(Connection conexion, Entrenador e) throws SQLException {
 		e.getEquipo2().clear();
 		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
-	                + "P.VITALIDAD_MAX, P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
-	                + "P.NIVEL, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
-	                + "PX.TIPO1, PX.TIPO2 "
-	                + "FROM POKEMON P "
-	                + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
-	                + "WHERE P.ID_ENTRENADOR = ? AND P.CAJA > 6 "
-	                + "ORDER BY P.CAJA ASC";
+				+ "P.VITALIDAD_MAX, P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
+				+ "P.NIVEL, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, " + "PX.TIPO1, PX.TIPO2 "
+				+ "FROM POKEMON P " + "INNER JOIN POKEDEX PX ON PX.NUM_POKEDEX = P.NUM_POKEDEX "
+				+ "WHERE P.ID_ENTRENADOR = ? AND P.CAJA > 6 " + "ORDER BY P.CAJA ASC";
 
-	    //Usamos try-with-resources para manejar el cierre de recursos automáticamente
-	    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-	        ps.setInt(1, e.getIdEntrenador()); 
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            LinkedList<Pokemon> listadoCaja = new LinkedList<Pokemon>();
+		// Usamos try-with-resources para manejar el cierre de recursos automáticamente
+		try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+			ps.setInt(1, e.getIdEntrenador());
 
-	            while (rs.next()) {
-	                Pokemon p = new Pokemon();
-	                
-	                //Seteo de datos básicos
-	                p.setId_pokemon(rs.getInt("ID_POKEMON"));
-	                p.setNombre(rs.getString("NOM_POKEMON"));
-	                p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
-	                p.setMote(rs.getString("MOTE"));
-	                p.setVitalidad(rs.getInt("VITALIDAD"));
-	                p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
-	                p.setAtaque(rs.getInt("ATAQUE"));
-	                p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
-	                p.setDefensa(rs.getInt("DEFENSA"));
-	                p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
-	                p.setVelocidad(rs.getInt("VELOCIDAD"));
-	                p.setNivel(rs.getInt("NIVEL"));
-	                
-	                //Guardamos la posición exacta en la caja (7, 8, 9...)
-	                p.setCaja(rs.getInt("CAJA"));
+			try (ResultSet rs = ps.executeQuery()) {
+				LinkedList<Pokemon> listadoCaja = new LinkedList<Pokemon>();
 
-	                //Manejo de Tipos con tu método conversor
-	                if (rs.getString("TIPO1") != null) {
-	                    p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
-	                }
-	                if (rs.getString("TIPO2") != null) {
-	                    p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
-	                }
+				while (rs.next()) {
+					Pokemon p = new Pokemon();
 
-	                cargarMovimientosPokemon(conexion, p);	              
-	                listadoCaja.add(p);
-	            }
-	            e.setEquipo2(listadoCaja); 
-	        }
-	    }
+					// Seteo de datos básicos
+					p.setId_pokemon(rs.getInt("ID_POKEMON"));
+					p.setNombre(rs.getString("NOM_POKEMON"));
+					p.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
+					p.setMote(rs.getString("MOTE"));
+					p.setVitalidad(rs.getInt("VITALIDAD"));
+					p.setVitalidadMax(rs.getInt("VITALIDAD_MAX"));
+					p.setAtaque(rs.getInt("ATAQUE"));
+					p.setAtaqueEspecial(rs.getInt("ATA_ESPECIAL"));
+					p.setDefensa(rs.getInt("DEFENSA"));
+					p.setDefensaEspecial(rs.getInt("DEF_ESPECIAL"));
+					p.setVelocidad(rs.getInt("VELOCIDAD"));
+					p.setNivel(rs.getInt("NIVEL"));
+
+					// Guardamos la posición exacta en la caja (7, 8, 9...)
+					p.setCaja(rs.getInt("CAJA"));
+
+					// Manejo de Tipos con tu método conversor
+					if (rs.getString("TIPO1") != null) {
+						p.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1").toUpperCase()));
+					}
+					if (rs.getString("TIPO2") != null) {
+						p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
+					}
+
+					cargarMovimientosPokemon(conexion, p);
+					listadoCaja.add(p);
+				}
+				e.setEquipo2(listadoCaja);
+			}
+		}
 	}
-	
+
 	/**
 	 * Carga los movimientos de un Pokémon específico desde la base de datos,
 	 * obteniendo los datos estáticos del movimiento y los PP actuales del Pokémon.
 	 */
 	public static void cargarMovimientosPokemon(Connection conexion, Pokemon p) {
-	    // Definimos la consulta con un JOIN para traer datos de ambas tablas
-	    // M.PP es el valor base (máximo) y PM.NUM_PP es lo que le queda al Pokémon
-	    String sql = "SELECT M.ID_MOVIMIENTO, M.NOM_MOVIMIENTO, M.POTENCIA, " +
-	                 "M.CLASE_MOVIMIENTO, M.PRECISION_MOV, M.MEJORA, M.TIPO, M.ESTADO, " +
-	                 "M.PP AS PP_MAXIMO, PM.NUM_PP AS PP_ACTUAL " +
-	                 "FROM MOVIMIENTO M " +
-	                 "INNER JOIN POKEMON_MOVIMIENTO PM ON M.ID_MOVIMIENTO = PM.ID_MOVIMIENTO " +
-	                 "WHERE PM.ID_POKEMON = ?";
+		// Definimos la consulta con un JOIN para traer datos de ambas tablas
+		// M.PP es el valor base (máximo) y PM.NUM_PP es lo que le queda al Pokémon
+		String sql = "SELECT M.ID_MOVIMIENTO, M.NOM_MOVIMIENTO, M.POTENCIA, "
+				+ "M.CLASE_MOVIMIENTO, M.PRECISION_MOV, M.MEJORA, M.TIPO, M.ESTADO, "
+				+ "M.PP AS PP_MAXIMO, PM.NUM_PP AS PP_ACTUAL " + "FROM MOVIMIENTO M "
+				+ "INNER JOIN POKEMON_MOVIMIENTO PM ON M.ID_MOVIMIENTO = PM.ID_MOVIMIENTO " + "WHERE PM.ID_POKEMON = ?";
 
-	    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-	        ps.setInt(1, p.getId_pokemon());
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            LinkedList<Movimiento> listaMovs = new LinkedList<>();
-	            
-	            while (rs.next()) {
-	                Movimiento m = new Movimiento();
-	                
-	                // 1. Datos de identificación y combate
-	                m.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
-	                m.setNombre(rs.getString("NOM_MOVIMIENTO"));
-	                m.setPotencia(rs.getInt("POTENCIA"));
-	                m.setClaseMov(rs.getInt("CLASE_MOVIMIENTO"));
-	                m.setPrecision(rs.getInt("PRECISION_MOV"));
-	                m.setMejora(rs.getString("MEJORA"));
-	                
-	                // 2. Gestión de PPs (Diferenciando Max de Actual)
-	                // Asegúrate de que en tu clase Movimiento tengas setPpMax o similar para el total
-	                m.setNumPPMax(rs.getInt("PP_MAXIMO")); 
-	                m.setNumPP(rs.getInt("PP_ACTUAL")); 
+		try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+			ps.setInt(1, p.getId_pokemon());
 
-	                // 3. Cargar el Estado que puede aplicar el movimiento
-	                String estadoBD = rs.getString("ESTADO");
-	                if (estadoBD != null && !estadoBD.isEmpty()) {
-	                    try {
-	                        m.setEstado(Estado.valueOf(estadoBD.toUpperCase()));
-	                    } catch (IllegalArgumentException e) {
-	                        System.err.println("Estado no reconocido: " + estadoBD);
-	                    }
-	                }
+			try (ResultSet rs = ps.executeQuery()) {
+				LinkedList<Movimiento> listaMovs = new LinkedList<>();
 
-	                // 4. Cargar el Tipo (importante para lógica de daño y UI)
-	                String tipoBD = rs.getString("TIPO");
-	                if (tipoBD != null) {
-	                    try {
-	                        m.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
-	                    } catch (IllegalArgumentException e) {
-	                        System.err.println("Tipo no reconocido: " + tipoBD);
-	                    }
-	                }
-	                
-	                listaMovs.add(m);
-	            }
-	            
-	            // Asignamos la lista completa al objeto Pokemon
-	            p.setMovimientos(listaMovs);
-	            
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error crítico al cargar movimientos del Pokémon ID " + p.getId_pokemon() + ": " + e.getMessage());
-	    }
+				while (rs.next()) {
+					Movimiento m = new Movimiento();
+
+					// 1. Datos de identificación y combate
+					m.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
+					m.setNombre(rs.getString("NOM_MOVIMIENTO"));
+					m.setPotencia(rs.getInt("POTENCIA"));
+					m.setClaseMov(rs.getInt("CLASE_MOVIMIENTO"));
+					m.setPrecision(rs.getInt("PRECISION_MOV"));
+					m.setMejora(rs.getString("MEJORA"));
+
+					// 2. Gestión de PPs (Diferenciando Max de Actual)
+					// Asegúrate de que en tu clase Movimiento tengas setPpMax o similar para el
+					// total
+					m.setNumPPMax(rs.getInt("PP_MAXIMO"));
+					m.setNumPP(rs.getInt("PP_ACTUAL"));
+
+					// 3. Cargar el Estado que puede aplicar el movimiento
+					String estadoBD = rs.getString("ESTADO");
+					if (estadoBD != null && !estadoBD.isEmpty()) {
+						try {
+							m.setEstado(Estado.valueOf(estadoBD.toUpperCase()));
+						} catch (IllegalArgumentException e) {
+							System.err.println("Estado no reconocido: " + estadoBD);
+						}
+					}
+
+					// 4. Cargar el Tipo (importante para lógica de daño y UI)
+					String tipoBD = rs.getString("TIPO");
+					if (tipoBD != null) {
+						try {
+							m.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
+						} catch (IllegalArgumentException e) {
+							System.err.println("Tipo no reconocido: " + tipoBD);
+						}
+					}
+
+					listaMovs.add(m);
+				}
+
+				// Asignamos la lista completa al objeto Pokemon
+				p.setMovimientos(listaMovs);
+
+			}
+		} catch (SQLException e) {
+			System.err.println(
+					"Error crítico al cargar movimientos del Pokémon ID " + p.getId_pokemon() + ": " + e.getMessage());
+		}
 	}
-	
+
 	/**
-	 * Dejando el primero en un lugar inaccesible y luego actualizadolo
-	 * ya que los valores de CAJA en la base de datos es UNIQUE y puede
-	 * dar conflicto.
+	 * Dejando el primero en un lugar inaccesible y luego actualizadolo ya que los
+	 * valores de CAJA en la base de datos es UNIQUE y puede dar conflicto.
+	 * 
 	 * @param con
 	 * @param idEntrenador
 	 * @param posA
 	 * @param posB
 	 * @throws SQLException
 	 */
-	
+
 	public static void intercambiarPosicion(Connection con, int idEntrenador, int posA, int posB) throws SQLException {
-	    String sql1 = "UPDATE POKEMON SET CAJA = -1 WHERE ID_ENTRENADOR = ? AND CAJA = ?";
-	    String sql2 = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = ?";
-	    String sql3 = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = -1";
+		String sql1 = "UPDATE POKEMON SET CAJA = -1 WHERE ID_ENTRENADOR = ? AND CAJA = ?";
+		String sql2 = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = ?";
+		String sql3 = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = -1";
 
+		try {
+			con.setAutoCommit(false);
+			// Quitar el pokemon 1
+			PreparedStatement ps1 = con.prepareStatement(sql1);
+			ps1.setInt(1, idEntrenador);
+			ps1.setInt(2, posA);
+			ps1.executeUpdate();
 
-	    try {
-	        con.setAutoCommit(false);
-	        //Quitar el pokemon 1
-	        PreparedStatement ps1 = con.prepareStatement(sql1);
-	        ps1.setInt(1, idEntrenador);
-	        ps1.setInt(2, posA);
-	        ps1.executeUpdate();
+			// Mover el pokemon 2 a la posicion 1
+			PreparedStatement ps2 = con.prepareStatement(sql2);
+			ps2.setInt(1, posA);
+			ps2.setInt(2, idEntrenador);
+			ps2.setInt(3, posB);
+			ps2.executeUpdate();
 
-	        //Mover el pokemon 2 a la posicion 1
-	        PreparedStatement ps2 = con.prepareStatement(sql2);
-	        ps2.setInt(1, posA);
-	        ps2.setInt(2, idEntrenador);
-	        ps2.setInt(3, posB);
-	        ps2.executeUpdate();
+			// Saca el pokemon del sitio perdido
+			PreparedStatement ps3 = con.prepareStatement(sql3);
+			ps3.setInt(1, posB);
+			ps3.setInt(2, idEntrenador);
+			ps3.executeUpdate();
 
-	        //Saca el pokemon del sitio perdido
-	        PreparedStatement ps3 = con.prepareStatement(sql3);
-	        ps3.setInt(1, posB);
-	        ps3.setInt(2, idEntrenador);
-	        ps3.executeUpdate();
-
-	        con.commit(); 
-	    } catch (SQLException e) {
-	        con.rollback(); 
-	        throw e;
-	    }
+			con.commit();
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		}
 	}
-	
-	public static void moverPokemon(Connection con, int idEntrenador, int posOrigen, int posDestino) throws SQLException {
-	    
-	    // Comprobar si hay alguien en la posición de destino
-	    String sqlCheck = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA = ?";
-	    
-	    PreparedStatement psCheck = con.prepareStatement(sqlCheck);
-	    psCheck.setInt(1, idEntrenador);
-	    psCheck.setInt(2, posDestino);
-	    ResultSet rs = psCheck.executeQuery();
 
-	    if (rs.next()) {
-	        // Usar metodo de intercambio por UNIQUE
-	        System.out.println("Posición ocupada. Intercambiando...");
-	        intercambiarPosicion(con, idEntrenador, posOrigen, posDestino);
-	    } else {
-	        // Si no hay nadie
-	        String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = ?";
-	        PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
-	        psUpd.setInt(1, posDestino);
-	        psUpd.setInt(2, idEntrenador);
-	        psUpd.setInt(3, posOrigen);
-	        psUpd.executeUpdate();
-	        System.out.println("Movimiento realizado con éxito.");
-	    }
+	public static void moverPokemon(Connection con, int idEntrenador, int posOrigen, int posDestino)
+			throws SQLException {
+
+		// Comprobar si hay alguien en la posición de destino
+		String sqlCheck = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA = ?";
+
+		PreparedStatement psCheck = con.prepareStatement(sqlCheck);
+		psCheck.setInt(1, idEntrenador);
+		psCheck.setInt(2, posDestino);
+		ResultSet rs = psCheck.executeQuery();
+
+		if (rs.next()) {
+			// Usar metodo de intercambio por UNIQUE
+			System.out.println("Posición ocupada. Intercambiando...");
+			intercambiarPosicion(con, idEntrenador, posOrigen, posDestino);
+		} else {
+			// Si no hay nadie
+			String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = ?";
+			PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
+			psUpd.setInt(1, posDestino);
+			psUpd.setInt(2, idEntrenador);
+			psUpd.setInt(3, posOrigen);
+			psUpd.executeUpdate();
+			System.out.println("Movimiento realizado con éxito.");
+		}
 	}
+
 	public static void compactarEquipo(Connection con, int idEntrenador) throws SQLException {
-	   
-	    String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA BETWEEN 1 AND 6 ORDER BY CAJA ASC";
-	    String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
 
-	    LinkedList<Integer> ids = new LinkedList<>();
+		String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA BETWEEN 1 AND 6 ORDER BY CAJA ASC";
+		String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
 
-	    try {
-	        con.setAutoCommit(false);
-	        PreparedStatement psSel = con.prepareStatement(sqlSelect);
-	        psSel.setInt(1, idEntrenador);
-	        ResultSet rs = psSel.executeQuery();
-	        while (rs.next()) {
-	            ids.add(rs.getInt("ID_POKEMON"));
-	        }
+		LinkedList<Integer> ids = new LinkedList<>();
 
-	     
-	        PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
-	        int nuevaPosicion = 1;
+		try {
+			con.setAutoCommit(false);
+			PreparedStatement psSel = con.prepareStatement(sqlSelect);
+			psSel.setInt(1, idEntrenador);
+			ResultSet rs = psSel.executeQuery();
+			while (rs.next()) {
+				ids.add(rs.getInt("ID_POKEMON"));
+			}
 
-	        for (int id : ids) {
-	            psUpd.setInt(1, nuevaPosicion);
-	            psUpd.setInt(2, id);
-	            psUpd.executeUpdate();
-	            nuevaPosicion++;
-	        }
+			PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
+			int nuevaPosicion = 1;
 
-	        con.commit();
-	        System.out.println("Equipo compactado: se han reordenado " + ids.size() + " pokémon.");
-	        
-	    } catch (SQLException e) {
-	        con.rollback();
-	        throw e;
-	    } finally {
-	        con.setAutoCommit(true);
-	    }
+			for (int id : ids) {
+				psUpd.setInt(1, nuevaPosicion);
+				psUpd.setInt(2, id);
+				psUpd.executeUpdate();
+				nuevaPosicion++;
+			}
+
+			con.commit();
+			System.out.println("Equipo compactado: se han reordenado " + ids.size() + " pokémon.");
+
+		} catch (SQLException e) {
+			con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(true);
+		}
 	}
-	
+
 	public static void compactarCaja(Connection con, int idEntrenador) throws SQLException {
-	    //Buscamos solo los que tienen caja mayor a 6
-	    String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA > 6 ORDER BY CAJA ASC";
-	    String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
+		// Buscamos solo los que tienen caja mayor a 6
+		String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA > 6 ORDER BY CAJA ASC";
+		String sqlUpdate = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
 
-	    LinkedList<Integer> ids = new LinkedList<>();
+		LinkedList<Integer> ids = new LinkedList<>();
 
-	    try {
-	        con.setAutoCommit(false);
-	        
-	        //Obtenemos los IDs de los pokémon que están en la caja
-	        PreparedStatement psSel = con.prepareStatement(sqlSelect);
-	        psSel.setInt(1, idEntrenador);
-	        ResultSet rs = psSel.executeQuery();
-	        while (rs.next()) {
-	            ids.add(rs.getInt("ID_POKEMON"));
-	        }
+		try {
+			con.setAutoCommit(false);
 
-	        PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
-	        
-	        //La primera posición de la caja es la 7 (1-6 son el equipo)
-	        int nuevaPosicionCaja = 7;
+			// Obtenemos los IDs de los pokémon que están en la caja
+			PreparedStatement psSel = con.prepareStatement(sqlSelect);
+			psSel.setInt(1, idEntrenador);
+			ResultSet rs = psSel.executeQuery();
+			while (rs.next()) {
+				ids.add(rs.getInt("ID_POKEMON"));
+			}
 
-	        for (int id : ids) {
-	            psUpd.setInt(1, nuevaPosicionCaja);
-	            psUpd.setInt(2, id);
-	            psUpd.executeUpdate();
-	            nuevaPosicionCaja++;
-	        }
+			PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
 
-	        con.commit();
-	        System.out.println("Caja compactada: se han reordenado " + ids.size() + " pokémon a partir de la posición 7.");
-	        
-	    } catch (SQLException e) {
-	        if (con != null) con.rollback();
-	        throw e;
-	    } finally {
-	        con.setAutoCommit(true);
-	    }
+			// La primera posición de la caja es la 7 (1-6 son el equipo)
+			int nuevaPosicionCaja = 7;
+
+			for (int id : ids) {
+				psUpd.setInt(1, nuevaPosicionCaja);
+				psUpd.setInt(2, id);
+				psUpd.executeUpdate();
+				nuevaPosicionCaja++;
+			}
+
+			con.commit();
+			System.out.println(
+					"Caja compactada: se han reordenado " + ids.size() + " pokémon a partir de la posición 7.");
+
+		} catch (SQLException e) {
+			if (con != null)
+				con.rollback();
+			throw e;
+		} finally {
+			con.setAutoCommit(true);
+		}
 	}
-	
+
 	public static int obtenerSiguienteHuecoCaja(Connection conexion, int idEntrenador) throws SQLException {
-	    // Buscamos el valor máximo de la columna CAJA para este entrenador
-	    String sql = "SELECT MAX(CAJA) AS ultimo_hueco FROM POKEMON WHERE ID_ENTRENADOR = ?";
-	    
-	    try (PreparedStatement ps = conexion.prepareStatement(sql)) {
-	        ps.setInt(1, idEntrenador);
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
-	                int ultimoHueco = rs.getInt("ultimo_hueco");
-	                // Si la consulta devuelve 0 o un valor menor a 6 (porque no hay pokémon en la caja),
-	                // el siguiente hueco disponible debe ser el 7.
-	                if (ultimoHueco < 6) {
-	                    return 7;
-	                }
-	                return ultimoHueco + 1;
-	            }
-	        }
-	    }
-	    // Por si acaso falla algo
-	    return 7;
+		// Buscamos el valor máximo de la columna CAJA para este entrenador
+		String sql = "SELECT MAX(CAJA) AS ultimo_hueco FROM POKEMON WHERE ID_ENTRENADOR = ?";
+
+		try (PreparedStatement ps = conexion.prepareStatement(sql)) {
+			ps.setInt(1, idEntrenador);
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int ultimoHueco = rs.getInt("ultimo_hueco");
+					// Si la consulta devuelve 0 o un valor menor a 6 (porque no hay pokémon en la
+					// caja),
+					// el siguiente hueco disponible debe ser el 7.
+					if (ultimoHueco < 6) {
+						return 7;
+					}
+					return ultimoHueco + 1;
+				}
+			}
+		}
+		// Por si acaso falla algo
+		return 7;
 	}
-	
+
 	public static void actualizarPosicionPokemon(Connection con, int idPokemon, int nuevaCaja) throws SQLException {
-	    String sql = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, nuevaCaja);
-	        ps.setInt(2, idPokemon);
-	        ps.executeUpdate();
-	    }
+		String sql = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, nuevaCaja);
+			ps.setInt(2, idPokemon);
+			ps.executeUpdate();
+		}
 	}
-	
-	public static void asignarMovimiento(Connection con, int idPokemon, int idMovimiento, int ppMax) throws SQLException {
-	    // 1. Contar cuántos movimientos tiene ya el pokemon
-	    String sqlContar = "SELECT COUNT(*) FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
-	    
-	    int totalMovimientos = 0;
-	    try (PreparedStatement psCount = con.prepareStatement(sqlContar)) {
-	        psCount.setInt(1, idPokemon);
-	        ResultSet rs = psCount.executeQuery();
-	        if (rs.next()) {
-	            totalMovimientos = rs.getInt(1);
-	        }
-	    }
 
-	    // 2. Comprobar el límite
-	    if (totalMovimientos >= 4) {
-	        System.out.println("Error: El Pokémon ya tiene 4 movimientos. Debes olvidar uno primero.");
-	        return; // Salimos sin insertar
-	    }
+	public static void asignarMovimiento(Connection con, int idPokemon, int idMovimiento, int ppMax)
+			throws SQLException {
+		// 1. Contar cuántos movimientos tiene ya el pokemon
+		String sqlContar = "SELECT COUNT(*) FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
 
-	    // 3. Si tiene menos de 4, procedemos al INSERT
-	    String sqlInsert = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, ?)";
-	    try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
-	        psInsert.setInt(1, idPokemon);
-	        psInsert.setInt(2, idMovimiento);
-	        psInsert.setInt(3, ppMax);
-	        psInsert.executeUpdate();
-	        System.out.println("Movimiento asignado con éxito.");
-	    }
-	    
+		int totalMovimientos = 0;
+		try (PreparedStatement psCount = con.prepareStatement(sqlContar)) {
+			psCount.setInt(1, idPokemon);
+			ResultSet rs = psCount.executeQuery();
+			if (rs.next()) {
+				totalMovimientos = rs.getInt(1);
+			}
+		}
+
+		// 2. Comprobar el límite
+		if (totalMovimientos >= 4) {
+			System.out.println("Error: El Pokémon ya tiene 4 movimientos. Debes olvidar uno primero.");
+			return; // Salimos sin insertar
+		}
+
+		// 3. Si tiene menos de 4, procedemos al INSERT
+		String sqlInsert = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, ?)";
+		try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
+			psInsert.setInt(1, idPokemon);
+			psInsert.setInt(2, idMovimiento);
+			psInsert.setInt(3, ppMax);
+			psInsert.executeUpdate();
+			System.out.println("Movimiento asignado con éxito.");
+		}
+
 	}
-	
+
 	public static boolean eliminarPokemon(Connection con, int idPokemon, int idEntrenador) throws SQLException {
-	    String sqlDelete = "DELETE FROM POKEMON WHERE ID_POKEMON = ?";
-	    
-	    // FASE 1: Borrado atómico
-	    try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
-	        ps.setInt(1, idPokemon);
-	        int filasAfec = ps.executeUpdate();
-	        
-	        if (filasAfec > 0) {
-	            // Confirmamos el borrado inmediatamente si la conexión lo requiere
-	            if (!con.getAutoCommit()) con.commit(); 
+		String sqlDelete = "DELETE FROM POKEMON WHERE ID_POKEMON = ?";
 
-	            // FASE 2: Llamadas independientes
-	            // Como no queremos tocar estos métodos, los llamamos por separado.
-	            // Cada uno gestionará su propio setAutoCommit y Commit internamente.
-	            compactarEquipo(con, idEntrenador);
-	            compactarCaja(con, idEntrenador);
-	            
-	            return true;
-	        }
-	    } catch (SQLException e) {
-	        // Si falla el borrado, aquí no hay riesgo de rollback cruzado
-	        throw e;
-	    }
-	    return false;
+		// FASE 1: Borrado atómico
+		try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
+			ps.setInt(1, idPokemon);
+			int filasAfec = ps.executeUpdate();
+
+			if (filasAfec > 0) {
+				// Confirmamos el borrado inmediatamente si la conexión lo requiere
+				if (!con.getAutoCommit())
+					con.commit();
+
+				// FASE 2: Llamadas independientes
+				// Como no queremos tocar estos métodos, los llamamos por separado.
+				// Cada uno gestionará su propio setAutoCommit y Commit internamente.
+				compactarEquipo(con, idEntrenador);
+				compactarCaja(con, idEntrenador);
+
+				return true;
+			}
+		} catch (SQLException e) {
+			// Si falla el borrado, aquí no hay riesgo de rollback cruzado
+			throw e;
+		}
+		return false;
 	}
+
 	/**
-	 * Este metodo busca la pareja del pokemon del hueco uno, si no hay pareja pues me salta un mensaje
+	 * Este metodo busca la pareja del pokemon del hueco uno, si no hay pareja pues
+	 * me salta un mensaje
+	 * 
 	 * @param con
 	 * @param idEntrenador
 	 * @param p
 	 * @throws SQLException
 	 */
 	public static boolean sonCompatibles(Pokemon p1, Pokemon p2) {
-	    // 1. No pueden ser el mismo Pokémon físicamente
-	    if (p1.getId_pokemon() == p2.getId_pokemon()) {
-	        return false;
-	    }
+		// 1. No pueden ser el mismo Pokémon físicamente
+		if (p1.getId_pokemon() == p2.getId_pokemon()) {
+			return false;
+		}
 
-	    // 2. Deben ser de la misma especie (mismo número de Pokédex)
-	    if (p1.getNum_pokedex() != p2.getNum_pokedex()) {
-	        return false;
-	    }
+		// 2. Deben ser de la misma especie (mismo número de Pokédex)
+		if (p1.getNum_pokedex() != p2.getNum_pokedex()) {
+			return false;
+		}
 
-	    // 3. Deben ser de distinto sexo
-	    // Asumiendo que usas un Enum o String para el sexo
-	    if (p1.getSexo() == p2.getSexo()) {
-	        return false;
-	    }
+		// 3. Deben ser de distinto sexo
+		// Asumiendo que usas un Enum o String para el sexo
+		if (p1.getSexo() == p2.getSexo()) {
+			return false;
+		}
 
-	    // 4. Deben tener fertilidad mayor a 0
-	    if (p1.getFertilidad() <= 0 || p2.getFertilidad() <= 0) {
-	        return false;
-	    }
+		// 4. Deben tener fertilidad mayor a 0
+		if (p1.getFertilidad() <= 0 || p2.getFertilidad() <= 0) {
+			return false;
+		}
 
-	    // Si pasa todos los filtros, son compatibles
-	    return true;
+		// Si pasa todos los filtros, son compatibles
+		return true;
 	}
-	
-	
-	
+
 	public static Pokemon pokemonCriado(Connection con, Entrenador entrenador, Pokemon p1, Pokemon p2) {
 		Pokemon hijo = null;
 		try {
-	        // Desactivamos el auto-commit para manejar la transacción manualmente
-	        con.setAutoCommit(false);
+			// Desactivamos el auto-commit para manejar la transacción manualmente
+			con.setAutoCommit(false);
 
-	        // 1. GENERAR MOTE MEZCLADO
-	        String moteHijo;
-	        int mitad1 = p1.getMote().length() / 2;
-	        int mitad2 = p2.getMote().length() / 2;
-	        
-	        if (Math.random() > 0.5) {
-	            moteHijo = p1.getMote().substring(0, mitad1) + p2.getMote().substring(mitad2);
-	        } else {
-	            moteHijo = p2.getMote().substring(0, mitad2) + p1.getMote().substring(mitad1);
-	        }
+			// 1. GENERAR MOTE MEZCLADO
+			String moteHijo;
+			int mitad1 = p1.getMote().length() / 2;
+			int mitad2 = p2.getMote().length() / 2;
 
-	        // 2. OBTENER EL NUEVO ID_POKEMON (Manual)
-	        int nuevoId = 1;
-	        try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
-	             ResultSet rsMax = psMax.executeQuery()) {
-	            if (rsMax.next()) {
-	                nuevoId = rsMax.getInt(1) + 1;
-	            }
-	        }
+			if (Math.random() > 0.5) {
+				moteHijo = p1.getMote().substring(0, mitad1) + p2.getMote().substring(mitad2);
+			} else {
+				moteHijo = p2.getMote().substring(0, mitad2) + p1.getMote().substring(mitad1);
+			}
 
-	        // 3. OBTENER EL PRIMER HUECO LIBRE EN LA CAJA PARA ESTE ENTRENADOR
-	        int proximaPosicion = 1;
-	        String sqlHuecos = "SELECT CAJA FROM POKEMON WHERE ID_ENTRENADOR = ? ORDER BY CAJA ASC";
-	        try (PreparedStatement psHuecos = con.prepareStatement(sqlHuecos)) {
-	            psHuecos.setInt(1, entrenador.getIdEntrenador()); // Usamos el ID del objeto Entrenador
-	            try (ResultSet rsHuecos = psHuecos.executeQuery()) {
-	                while (rsHuecos.next()) {
-	                    int ocupado = rsHuecos.getInt("CAJA");
-	                    if (ocupado == proximaPosicion) {
-	                        proximaPosicion++;
-	                    } else if (ocupado > proximaPosicion) {
-	                        break; 
-	                    }
-	                }
-	            }
-	        }
+			// 2. OBTENER EL NUEVO ID_POKEMON (Manual)
+			int nuevoId = 1;
+			try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
+					ResultSet rsMax = psMax.executeQuery()) {
+				if (rsMax.next()) {
+					nuevoId = rsMax.getInt(1) + 1;
+				}
+			}
 
-	        // 4. MEJORES CARACTERÍSTICAS
-	        int hp = Math.max(p1.getVitalidad(), p2.getVitalidad());
-	        int ataque = Math.max(p1.getAtaque(), p2.getAtaque());
-	        int ataqueEsp = Math.max(p1.getAtaqueEspecial(), p2.getAtaqueEspecial());
-	        int defensa = Math.max(p1.getDefensa(), p2.getDefensa());
-	        int defensaEsp = Math.max(p1.getDefensaEspecial(), p2.getDefensaEspecial());
-	        int velocidad = Math.max(p1.getVelocidad(), p2.getVelocidad());
+			// 3. OBTENER EL PRIMER HUECO LIBRE EN LA CAJA PARA ESTE ENTRENADOR
+			int proximaPosicion = 1;
+			String sqlHuecos = "SELECT CAJA FROM POKEMON WHERE ID_ENTRENADOR = ? ORDER BY CAJA ASC";
+			try (PreparedStatement psHuecos = con.prepareStatement(sqlHuecos)) {
+				psHuecos.setInt(1, entrenador.getIdEntrenador()); // Usamos el ID del objeto Entrenador
+				try (ResultSet rsHuecos = psHuecos.executeQuery()) {
+					while (rsHuecos.next()) {
+						int ocupado = rsHuecos.getInt("CAJA");
+						if (ocupado == proximaPosicion) {
+							proximaPosicion++;
+						} else if (ocupado > proximaPosicion) {
+							break;
+						}
+					}
+				}
+			}
 
-	        // 5. INSERTAR EL POKÉMON EN LA TABLA POKEMON
-	        String sqlPoke = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, " +
-	                         "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, EXPERIENCIA, " +
-	                         "FERTILIDAD, SEXO, ESTADO, CAJA) " +
-	                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 5, ?, 'VIVO', ?)";
+			// 4. MEJORES CARACTERÍSTICAS
+			int hp = Math.max(p1.getVitalidad(), p2.getVitalidad());
+			int ataque = Math.max(p1.getAtaque(), p2.getAtaque());
+			int ataqueEsp = Math.max(p1.getAtaqueEspecial(), p2.getAtaqueEspecial());
+			int defensa = Math.max(p1.getDefensa(), p2.getDefensa());
+			int defensaEsp = Math.max(p1.getDefensaEspecial(), p2.getDefensaEspecial());
+			int velocidad = Math.max(p1.getVelocidad(), p2.getVelocidad());
 
-	        Sexo sexoEnumHijo = (Math.random() > 0.5) ? Sexo.M : Sexo.H;
-	        
-	        try (PreparedStatement ps = con.prepareStatement(sqlPoke)) {
-	        	hijo = new Pokemon();
-	        	ps.setInt(1, nuevoId);
-	            ps.setInt(2, p1.getNum_pokedex());
-	            ps.setInt(3, entrenador.getIdEntrenador()); // Usamos el ID del objeto Entrenador
-	            ps.setString(4, moteHijo);
-	            ps.setInt(5, hp);
-	            ps.setInt(6, hp); // VITALIDAD_MAX
-	            ps.setInt(7, ataque);
-	            ps.setInt(8, ataqueEsp);
-	            ps.setInt(9, defensa);
-	            ps.setInt(10, defensaEsp);
-	            ps.setInt(11, velocidad);
-	            ps.setString(12, Math.random() > 0.5 ? "M" : "H");
-	            ps.setInt(13, proximaPosicion);
-	            
-	            ps.executeUpdate();
-	            
-	            hijo = new Pokemon();
-	            hijo.setId_pokemon(nuevoId);
-	            hijo.setNum_pokedex(p1.getNum_pokedex());
-	            hijo.setNombre(p1.getNombre());
-	            hijo.setMote(moteHijo);
-	            hijo.setVitalidad(hp);
-	            hijo.setVitalidadMax(hp);
-	            hijo.setAtaque(ataque);
-	            hijo.setAtaqueEspecial(ataqueEsp);
-	            hijo.setDefensa(defensa);
-	            hijo.setDefensaEspecial(defensaEsp);
-	            hijo.setVelocidad(velocidad);
-	            hijo.setSexo(sexoEnumHijo); // Guardamos el Enum
-	            hijo.setNivel(1);
-	            hijo.setCaja(proximaPosicion);
-	            hijo.setTipo1(p1.getTipo1());
-	            hijo.setTipo2(p1.getTipo2());
-	        }
+			// 5. INSERTAR EL POKÉMON EN LA TABLA POKEMON
+			String sqlPoke = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, "
+					+ "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, EXPERIENCIA, "
+					+ "FERTILIDAD, SEXO, ESTADO, CAJA) "
+					+ "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1, 0, 5, ?, 'VIVO', ?)";
 
-	        // 6. LÓGICA DE HERENCIA DE MOVIMIENTOS (De los padres al hijo)
-	        List<Integer> movimientosHijo = new ArrayList<>();
-	        String sqlGetMovs = "SELECT ID_MOVIMIENTO FROM pokemon_movimiento WHERE ID_POKEMON = ? AND ACTIVO = 1";
-	        
-	        try (PreparedStatement psGet = con.prepareStatement(sqlGetMovs)) {
-	            // Movimientos del Padre 1
-	            psGet.setInt(1, p1.getId_pokemon());
-	            try (ResultSet rs = psGet.executeQuery()) {
-	                List<Integer> movsP1 = new ArrayList<>();
-	                while (rs.next()) movsP1.add(rs.getInt("ID_MOVIMIENTO"));
-	                Collections.shuffle(movsP1);
-	                for (int i = 0; i < Math.min(2, movsP1.size()); i++) {
-	                    movimientosHijo.add(movsP1.get(i));
-	                }
-	            }
-	            // Movimientos del Padre 2
-	            psGet.setInt(1, p2.getId_pokemon());
-	            try (ResultSet rs = psGet.executeQuery()) {
-	                List<Integer> movsP2 = new ArrayList<>();
-	                while (rs.next()) movsP2.add(rs.getInt("ID_MOVIMIENTO"));
-	                Collections.shuffle(movsP2);
-	                for (int i = 0; i < Math.min(2, movsP2.size()); i++) {
-	                    if (!movimientosHijo.contains(movsP2.get(i))) {
-	                        movimientosHijo.add(movsP2.get(i));
-	                    }
-	                }
-	            }
-	        }
+			Sexo sexoEnumHijo = (Math.random() > 0.5) ? Sexo.M : Sexo.H;
 
-	        // 7. INSERTAR MOVIMIENTOS AL HIJO
-	        String sqlInsMov = "INSERT INTO pokemon_movimiento (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, 15)";
-	        try (PreparedStatement psInsMov = con.prepareStatement(sqlInsMov)) {
-	            for (Integer idMov : movimientosHijo) {
-	                psInsMov.setInt(1, nuevoId);
-	                psInsMov.setInt(2, idMov);
-	                psInsMov.addBatch();
-	            }
-	            psInsMov.executeBatch();
-	        }
+			try (PreparedStatement ps = con.prepareStatement(sqlPoke)) {
+				hijo = new Pokemon();
+				ps.setInt(1, nuevoId);
+				ps.setInt(2, p1.getNum_pokedex());
+				ps.setInt(3, entrenador.getIdEntrenador()); // Usamos el ID del objeto Entrenador
+				ps.setString(4, moteHijo);
+				ps.setInt(5, hp);
+				ps.setInt(6, hp); // VITALIDAD_MAX
+				ps.setInt(7, ataque);
+				ps.setInt(8, ataqueEsp);
+				ps.setInt(9, defensa);
+				ps.setInt(10, defensaEsp);
+				ps.setInt(11, velocidad);
+				ps.setString(12, Math.random() > 0.5 ? "M" : "H");
+				ps.setInt(13, proximaPosicion);
 
-	        // 8. RESTAR FERTILIDAD A LOS PADRES
-	        String sqlUpdate = "UPDATE POKEMON SET FERTILIDAD = FERTILIDAD - 1 WHERE ID_POKEMON = ?";
-	        try (PreparedStatement psUp = con.prepareStatement(sqlUpdate)) {
-	            psUp.setInt(1, p1.getId_pokemon());
-	            psUp.executeUpdate();
-	            psUp.setInt(1, p2.getId_pokemon());
-	            psUp.executeUpdate();
-	        }
+				ps.executeUpdate();
 
-	        // --- FINALIZAR TRANSACCIÓN ---
-	        con.commit();
-	        System.out.println("[LOG] Crianza finalizada. El entrenador " + entrenador.getNombre() + " tiene un nuevo Pokemon: " + moteHijo);
+				hijo = new Pokemon();
+				hijo.setId_pokemon(nuevoId);
+				hijo.setNum_pokedex(p1.getNum_pokedex());
+				hijo.setNombre(p1.getNombre());
+				hijo.setMote(moteHijo);
+				hijo.setVitalidad(hp);
+				hijo.setVitalidadMax(hp);
+				hijo.setAtaque(ataque);
+				hijo.setAtaqueEspecial(ataqueEsp);
+				hijo.setDefensa(defensa);
+				hijo.setDefensaEspecial(defensaEsp);
+				hijo.setVelocidad(velocidad);
+				hijo.setSexo(sexoEnumHijo); // Guardamos el Enum
+				hijo.setNivel(1);
+				hijo.setCaja(proximaPosicion);
+				hijo.setTipo1(p1.getTipo1());
+				hijo.setTipo2(p1.getTipo2());
+			}
 
-	    } catch (SQLException e) {
-	        try {
-	            if (con != null) con.rollback();
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	        System.err.println("[ERROR] Error al procesar la crianza en BD");
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            if (con != null) con.setAutoCommit(true);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
-	    return hijo;
+			// 6. LÓGICA DE HERENCIA DE MOVIMIENTOS (De los padres al hijo)
+			List<Integer> movimientosHijo = new ArrayList<>();
+			String sqlGetMovs = "SELECT ID_MOVIMIENTO FROM pokemon_movimiento WHERE ID_POKEMON = ? AND ACTIVO = 1";
+
+			try (PreparedStatement psGet = con.prepareStatement(sqlGetMovs)) {
+				// Movimientos del Padre 1
+				psGet.setInt(1, p1.getId_pokemon());
+				try (ResultSet rs = psGet.executeQuery()) {
+					List<Integer> movsP1 = new ArrayList<>();
+					while (rs.next())
+						movsP1.add(rs.getInt("ID_MOVIMIENTO"));
+					Collections.shuffle(movsP1);
+					for (int i = 0; i < Math.min(2, movsP1.size()); i++) {
+						movimientosHijo.add(movsP1.get(i));
+					}
+				}
+				// Movimientos del Padre 2
+				psGet.setInt(1, p2.getId_pokemon());
+				try (ResultSet rs = psGet.executeQuery()) {
+					List<Integer> movsP2 = new ArrayList<>();
+					while (rs.next())
+						movsP2.add(rs.getInt("ID_MOVIMIENTO"));
+					Collections.shuffle(movsP2);
+					for (int i = 0; i < Math.min(2, movsP2.size()); i++) {
+						if (!movimientosHijo.contains(movsP2.get(i))) {
+							movimientosHijo.add(movsP2.get(i));
+						}
+					}
+				}
+			}
+
+			// 7. INSERTAR MOVIMIENTOS AL HIJO
+			String sqlInsMov = "INSERT INTO pokemon_movimiento (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, 15)";
+			try (PreparedStatement psInsMov = con.prepareStatement(sqlInsMov)) {
+				for (Integer idMov : movimientosHijo) {
+					psInsMov.setInt(1, nuevoId);
+					psInsMov.setInt(2, idMov);
+					psInsMov.addBatch();
+				}
+				psInsMov.executeBatch();
+			}
+
+			// 8. RESTAR FERTILIDAD A LOS PADRES
+			String sqlUpdate = "UPDATE POKEMON SET FERTILIDAD = FERTILIDAD - 1 WHERE ID_POKEMON = ?";
+			try (PreparedStatement psUp = con.prepareStatement(sqlUpdate)) {
+				psUp.setInt(1, p1.getId_pokemon());
+				psUp.executeUpdate();
+				psUp.setInt(1, p2.getId_pokemon());
+				psUp.executeUpdate();
+			}
+
+			// --- FINALIZAR TRANSACCIÓN ---
+			con.commit();
+			System.out.println("[LOG] Crianza finalizada. El entrenador " + entrenador.getNombre()
+					+ " tiene un nuevo Pokemon: " + moteHijo);
+
+		} catch (SQLException e) {
+			try {
+				if (con != null)
+					con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			System.err.println("[ERROR] Error al procesar la crianza en BD");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (con != null)
+					con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return hijo;
 	}
-	
+
 	public static boolean entrenamientoPesado(Connection con, Entrenador entrenador, Pokemon p) {
-	    // 0. COMPROBACIÓN DE NIVEL MÁXIMO
-	    if (p.getNivel() >= 100) {
-	        System.out.println("El Pokémon ya está al nivel máximo (100).");
-	        return false;
-	    }
+		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		if (p.getNivel() >= 100) {
+			System.out.println("El Pokémon ya está al nivel máximo (100).");
+			return false;
+		}
 
-	    // Calculamos el coste: 20 * Nivel
-	    int coste = 20 * p.getNivel();
+		// Calculamos el coste: 20 * Nivel
+		int coste = 20 * p.getNivel();
 
-	    // Verificamos si el entrenador tiene dinero suficiente
-	    if (entrenador.getPokedollars() < coste) {
-	        System.out.println("Dinero insuficiente para el entrenamiento pesado.");
-	        return false;
-	    }
+		// Verificamos si el entrenador tiene dinero suficiente
+		if (entrenador.getPokedollars() < coste) {
+			System.out.println("Dinero insuficiente para el entrenamiento pesado.");
+			return false;
+		}
 
-	    try {
-	        con.setAutoCommit(false);
+		try {
+			con.setAutoCommit(false);
 
-	        // 1. Descontar dinero al entrenador
-	        String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
-	        try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
-	            psDinero.setInt(1, coste);
-	            psDinero.setInt(2, entrenador.getIdEntrenador());
-	            psDinero.executeUpdate();
-	        }
+			// 1. Descontar dinero al entrenador
+			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
+			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
+				psDinero.setInt(1, coste);
+				psDinero.setInt(2, entrenador.getIdEntrenador());
+				psDinero.executeUpdate();
+			}
 
-	        // 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
-	        // Usamos LEAST(NIVEL + 1, 100) en SQL por seguridad, aunque ya lo controlamos en Java
-	        String sqlStats = "UPDATE POKEMON SET DEFENSA = DEFENSA + 5, DEF_ESPECIAL = DEF_ESPECIAL + 5, " +
-	                          "VITALIDAD = VITALIDAD + 5, VITALIDAD_MAX = VITALIDAD_MAX + 5, " +
-	                          "NIVEL = NIVEL + 1 " +
-	                          "WHERE ID_POKEMON = ?";
-	        try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
-	            psStats.setInt(1, p.getId_pokemon());
-	            psStats.executeUpdate();
-	        }
+			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Usamos LEAST(NIVEL + 1, 100) en SQL por seguridad, aunque ya lo controlamos
+			// en Java
+			String sqlStats = "UPDATE POKEMON SET DEFENSA = DEFENSA + 5, DEF_ESPECIAL = DEF_ESPECIAL + 5, "
+					+ "VITALIDAD = VITALIDAD + 5, VITALIDAD_MAX = VITALIDAD_MAX + 5, " + "NIVEL = NIVEL + 1 "
+					+ "WHERE ID_POKEMON = ?";
+			try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
+				psStats.setInt(1, p.getId_pokemon());
+				psStats.executeUpdate();
+			}
 
-	        con.commit();
+			con.commit();
 
-	        // 3. Actualizamos los objetos en memoria
-	        entrenador.setPokedollars(entrenador.getPokedollars() - coste);
-	        p.setDefensa(p.getDefensa() + 5);
-	        p.setDefensaEspecial(p.getDefensaEspecial() + 5);
-	        p.setVitalidad(p.getVitalidad() + 5);
-	        p.setVitalidadMax(p.getVitalidadMax() + 5);
-	        p.setNivel(p.getNivel() + 1); // Subimos el nivel en el objeto
+			// 3. Actualizamos los objetos en memoria
+			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
+			p.setDefensa(p.getDefensa() + 5);
+			p.setDefensaEspecial(p.getDefensaEspecial() + 5);
+			p.setVitalidad(p.getVitalidad() + 5);
+			p.setVitalidadMax(p.getVitalidadMax() + 5);
+			p.setNivel(p.getNivel() + 1); // Subimos el nivel en el objeto
 
-	        System.out.println("[LOG] Entrenamiento pesado completado. " + p.getMote() + " ahora es nivel " + p.getNivel());
-	        return true;
+			System.out.println(
+					"[LOG] Entrenamiento pesado completado. " + p.getMote() + " ahora es nivel " + p.getNivel());
+			return true;
 
-	    } catch (SQLException e) {
-	        try {
-	            if (con != null) con.rollback();
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        try {
-	            con.setAutoCommit(true);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			try {
+				if (con != null)
+					con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
+
 	public static boolean entrenamientoFurioso(Connection con, Entrenador entrenador, Pokemon p) {
-	    // 0. COMPROBACIÓN DE NIVEL MÁXIMO
-	    if (p.getNivel() >= 100) {
-	        System.out.println("El Pokémon ya está al nivel máximo (100).");
-	        return false;
-	    }
+		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		if (p.getNivel() >= 100) {
+			System.out.println("El Pokémon ya está al nivel máximo (100).");
+			return false;
+		}
 
-	    // Calculamos el coste: 30 * Nivel
-	    int coste = 30 * p.getNivel();
+		// Calculamos el coste: 30 * Nivel
+		int coste = 30 * p.getNivel();
 
-	    // Verificamos si el entrenador tiene dinero suficiente
-	    if (entrenador.getPokedollars() < coste) {
-	        System.out.println("Dinero insuficiente para el entrenamiento furioso.");
-	        return false;
-	    }
+		// Verificamos si el entrenador tiene dinero suficiente
+		if (entrenador.getPokedollars() < coste) {
+			System.out.println("Dinero insuficiente para el entrenamiento furioso.");
+			return false;
+		}
 
-	    try {
-	        // Desactivamos auto-commit para manejar la transacción
-	        con.setAutoCommit(false);
+		try {
+			// Desactivamos auto-commit para manejar la transacción
+			con.setAutoCommit(false);
 
-	        // 1. Descontar dinero al entrenador
-	        String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
-	        try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
-	            psDinero.setInt(1, coste);
-	            psDinero.setInt(2, entrenador.getIdEntrenador());
-	            psDinero.executeUpdate();
-	        }
+			// 1. Descontar dinero al entrenador
+			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
+			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
+				psDinero.setInt(1, coste);
+				psDinero.setInt(2, entrenador.getIdEntrenador());
+				psDinero.executeUpdate();
+			}
 
-	        // 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
-	        // Estadísticas afectadas: ATAQUE, ATA_ESPECIAL, VELOCIDAD
-	        String sqlStats = "UPDATE POKEMON SET ATAQUE = ATAQUE + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, " +
-	                          "VELOCIDAD = VELOCIDAD + 5, NIVEL = NIVEL + 1 " +
-	                          "WHERE ID_POKEMON = ?";
-	        try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
-	            psStats.setInt(1, p.getId_pokemon());
-	            psStats.executeUpdate();
-	        }
+			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Estadísticas afectadas: ATAQUE, ATA_ESPECIAL, VELOCIDAD
+			String sqlStats = "UPDATE POKEMON SET ATAQUE = ATAQUE + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, "
+					+ "VELOCIDAD = VELOCIDAD + 5, NIVEL = NIVEL + 1 " + "WHERE ID_POKEMON = ?";
+			try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
+				psStats.setInt(1, p.getId_pokemon());
+				psStats.executeUpdate();
+			}
 
-	        // Confirmar cambios
-	        con.commit();
+			// Confirmar cambios
+			con.commit();
 
-	        // 3. Actualizamos los objetos en memoria para que la interfaz se vea al día
-	        entrenador.setPokedollars(entrenador.getPokedollars() - coste);
-	        p.setAtaque(p.getAtaque() + 5);
-	        p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
-	        p.setVelocidad(p.getVelocidad() + 5);
-	        p.setNivel(p.getNivel() + 1);
+			// 3. Actualizamos los objetos en memoria para que la interfaz se vea al día
+			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
+			p.setAtaque(p.getAtaque() + 5);
+			p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
+			p.setVelocidad(p.getVelocidad() + 5);
+			p.setNivel(p.getNivel() + 1);
 
-	        System.out.println("[LOG] Entrenamiento furioso completado. " + p.getMote() + " ahora es nivel " + p.getNivel());
-	        return true;
+			System.out.println(
+					"[LOG] Entrenamiento furioso completado. " + p.getMote() + " ahora es nivel " + p.getNivel());
+			return true;
 
-	    } catch (SQLException e) {
-	        // En caso de error, deshacer cambios
-	        try {
-	            if (con != null) con.rollback();
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        // Restaurar estado del auto-commit
-	        try {
-	            if (con != null) con.setAutoCommit(true);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			// En caso de error, deshacer cambios
+			try {
+				if (con != null)
+					con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			// Restaurar estado del auto-commit
+			try {
+				if (con != null)
+					con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 	public static boolean entrenamientoFuncional(Connection con, Entrenador entrenador, Pokemon p) {
-	    // 0. COMPROBACIÓN DE NIVEL MÁXIMO
-	    if (p.getNivel() >= 100) {
-	        System.out.println("El Pokémon ya está al nivel máximo (100).");
-	        return false;
-	    }
+		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		if (p.getNivel() >= 100) {
+			System.out.println("El Pokémon ya está al nivel máximo (100).");
+			return false;
+		}
 
-	    // Calculamos el coste: 40 * Nivel
-	    int coste = 40 * p.getNivel();
+		// Calculamos el coste: 40 * Nivel
+		int coste = 40 * p.getNivel();
 
-	    // Verificamos si el entrenador tiene dinero suficiente
-	    if (entrenador.getPokedollars() < coste) {
-	        System.out.println("Dinero insuficiente para el entrenamiento funcional.");
-	        return false;
-	    }
+		// Verificamos si el entrenador tiene dinero suficiente
+		if (entrenador.getPokedollars() < coste) {
+			System.out.println("Dinero insuficiente para el entrenamiento funcional.");
+			return false;
+		}
 
-	    try {
-	        con.setAutoCommit(false);
+		try {
+			con.setAutoCommit(false);
 
-	        // 1. Descontar dinero al entrenador
-	        String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
-	        try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
-	            psDinero.setInt(1, coste);
-	            psDinero.setInt(2, entrenador.getIdEntrenador());
-	            psDinero.executeUpdate();
-	        }
+			// 1. Descontar dinero al entrenador
+			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
+			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
+				psDinero.setInt(1, coste);
+				psDinero.setInt(2, entrenador.getIdEntrenador());
+				psDinero.executeUpdate();
+			}
 
-	        // 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
-	        // Afecta a: VELOCIDAD, ATAQUE, DEFENSA, VITALIDAD y VITALIDAD_MAX
-	        String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATAQUE = ATAQUE + 5, " +
-	                          "DEFENSA = DEFENSA + 5, VITALIDAD = VITALIDAD + 5, " +
-	                          "VITALIDAD_MAX = VITALIDAD_MAX + 5, NIVEL = NIVEL + 1 " +
-	                          "WHERE ID_POKEMON = ?";
-	        try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
-	            psStats.setInt(1, p.getId_pokemon());
-	            psStats.executeUpdate();
-	        }
+			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Afecta a: VELOCIDAD, ATAQUE, DEFENSA, VITALIDAD y VITALIDAD_MAX
+			String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATAQUE = ATAQUE + 5, "
+					+ "DEFENSA = DEFENSA + 5, VITALIDAD = VITALIDAD + 5, "
+					+ "VITALIDAD_MAX = VITALIDAD_MAX + 5, NIVEL = NIVEL + 1 " + "WHERE ID_POKEMON = ?";
+			try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
+				psStats.setInt(1, p.getId_pokemon());
+				psStats.executeUpdate();
+			}
 
-	        con.commit();
+			con.commit();
 
-	        // 3. Actualizamos los objetos en memoria
-	        entrenador.setPokedollars(entrenador.getPokedollars() - coste);
-	        p.setVelocidad(p.getVelocidad() + 5);
-	        p.setAtaque(p.getAtaque() + 5);
-	        p.setDefensa(p.getDefensa() + 5);
-	        p.setVitalidad(p.getVitalidad() + 5);
-	        p.setVitalidadMax(p.getVitalidadMax() + 5);
-	        p.setNivel(p.getNivel() + 1);
+			// 3. Actualizamos los objetos en memoria
+			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
+			p.setVelocidad(p.getVelocidad() + 5);
+			p.setAtaque(p.getAtaque() + 5);
+			p.setDefensa(p.getDefensa() + 5);
+			p.setVitalidad(p.getVitalidad() + 5);
+			p.setVitalidadMax(p.getVitalidadMax() + 5);
+			p.setNivel(p.getNivel() + 1);
 
-	        System.out.println("[LOG] Entrenamiento funcional completado para " + p.getMote());
-	        return true;
+			System.out.println("[LOG] Entrenamiento funcional completado para " + p.getMote());
+			return true;
 
-	    } catch (SQLException e) {
-	        try {
-	            if (con != null) con.rollback();
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        try {
-	            if (con != null) con.setAutoCommit(true);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			try {
+				if (con != null)
+					con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (con != null)
+					con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 	public static boolean entrenamientoOnirico(Connection con, Entrenador entrenador, Pokemon p) {
-	    // 0. COMPROBACIÓN DE NIVEL MÁXIMO
-	    if (p.getNivel() >= 100) {
-	        System.out.println("El Pokémon ya está al nivel máximo (100).");
-	        return false;
-	    }
+		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		if (p.getNivel() >= 100) {
+			System.out.println("El Pokémon ya está al nivel máximo (100).");
+			return false;
+		}
 
-	    // Calculamos el coste: 40 * Nivel
-	    int coste = 40 * p.getNivel();
+		// Calculamos el coste: 40 * Nivel
+		int coste = 40 * p.getNivel();
 
-	    // Verificamos si el entrenador tiene dinero suficiente
-	    if (entrenador.getPokedollars() < coste) {
-	        System.out.println("Dinero insuficiente para el entrenamiento onírico.");
-	        return false;
-	    }
+		// Verificamos si el entrenador tiene dinero suficiente
+		if (entrenador.getPokedollars() < coste) {
+			System.out.println("Dinero insuficiente para el entrenamiento onírico.");
+			return false;
+		}
 
-	    try {
-	        con.setAutoCommit(false);
+		try {
+			con.setAutoCommit(false);
 
-	        // 1. Descontar dinero al entrenador
-	        String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
-	        try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
-	            psDinero.setInt(1, coste);
-	            psDinero.setInt(2, entrenador.getIdEntrenador());
-	            psDinero.executeUpdate();
-	        }
+			// 1. Descontar dinero al entrenador
+			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
+			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
+				psDinero.setInt(1, coste);
+				psDinero.setInt(2, entrenador.getIdEntrenador());
+				psDinero.executeUpdate();
+			}
 
-	        // 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
-	        // Afecta a: VELOCIDAD, ATA_ESPECIAL, DEF_ESPECIAL, VITALIDAD y VITALIDAD_MAX
-	        String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, " +
-	                          "DEF_ESPECIAL = DEF_ESPECIAL + 5, VITALIDAD = VITALIDAD + 5, " +
-	                          "VITALIDAD_MAX = VITALIDAD_MAX + 5, NIVEL = NIVEL + 1 " +
-	                          "WHERE ID_POKEMON = ?";
-	        try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
-	            psStats.setInt(1, p.getId_pokemon());
-	            psStats.executeUpdate();
-	        }
+			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Afecta a: VELOCIDAD, ATA_ESPECIAL, DEF_ESPECIAL, VITALIDAD y VITALIDAD_MAX
+			String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, "
+					+ "DEF_ESPECIAL = DEF_ESPECIAL + 5, VITALIDAD = VITALIDAD + 5, "
+					+ "VITALIDAD_MAX = VITALIDAD_MAX + 5, NIVEL = NIVEL + 1 " + "WHERE ID_POKEMON = ?";
+			try (PreparedStatement psStats = con.prepareStatement(sqlStats)) {
+				psStats.setInt(1, p.getId_pokemon());
+				psStats.executeUpdate();
+			}
 
-	        con.commit();
+			con.commit();
 
-	        // 3. Actualizamos los objetos en memoria
-	        entrenador.setPokedollars(entrenador.getPokedollars() - coste);
-	        p.setVelocidad(p.getVelocidad() + 5);
-	        p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
-	        p.setDefensaEspecial(p.getDefensaEspecial() + 5);
-	        p.setVitalidad(p.getVitalidad() + 5);
-	        p.setVitalidadMax(p.getVitalidadMax() + 5);
-	        p.setNivel(p.getNivel() + 1);
+			// 3. Actualizamos los objetos en memoria
+			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
+			p.setVelocidad(p.getVelocidad() + 5);
+			p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
+			p.setDefensaEspecial(p.getDefensaEspecial() + 5);
+			p.setVitalidad(p.getVitalidad() + 5);
+			p.setVitalidadMax(p.getVitalidadMax() + 5);
+			p.setNivel(p.getNivel() + 1);
 
-	        System.out.println("[LOG] Entrenamiento onírico completado para " + p.getMote());
-	        return true;
+			System.out.println("[LOG] Entrenamiento onírico completado para " + p.getMote());
+			return true;
 
-	    } catch (SQLException e) {
-	        try {
-	            if (con != null) con.rollback();
-	        } catch (SQLException ex) {
-	            ex.printStackTrace();
-	        }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        try {
-	            if (con != null) con.setAutoCommit(true);
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+		} catch (SQLException e) {
+			try {
+				if (con != null)
+					con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				if (con != null)
+					con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 	public static void actualizarNivelStats(Connection con, Pokemon p) throws SQLException {
-	    String sql = "UPDATE POKEMON SET NIVEL = ?, VITALIDAD = ?, ATAQUE = ?, DEFENSA = ?, "
-	               + "ATAQUE_ESPECIAL = ?, DEFENSA_ESPECIAL = ?, VELOCIDAD = ? "
-	               + "WHERE ID_POKEMON = ?";
+		String sql = "UPDATE POKEMON SET NIVEL = ?, VITALIDAD = ?, ATAQUE = ?, DEFENSA = ?, "
+				+ "ATAQUE_ESPECIAL = ?, DEFENSA_ESPECIAL = ?, VELOCIDAD = ? " + "WHERE ID_POKEMON = ?";
 
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, p.getNivel());
-	        ps.setInt(2, p.getVitalidad());
-	        ps.setInt(3, p.getAtaque());
-	        ps.setInt(4, p.getDefensa());
-	        ps.setInt(5, p.getAtaqueEspecial());
-	        ps.setInt(6, p.getDefensaEspecial());
-	        ps.setInt(7, p.getVelocidad());
-	        ps.setInt(8, p.getId_pokemon());
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, p.getNivel());
+			ps.setInt(2, p.getVitalidad());
+			ps.setInt(3, p.getAtaque());
+			ps.setInt(4, p.getDefensa());
+			ps.setInt(5, p.getAtaqueEspecial());
+			ps.setInt(6, p.getDefensaEspecial());
+			ps.setInt(7, p.getVelocidad());
+			ps.setInt(8, p.getId_pokemon());
 
-	        ps.executeUpdate();
-	    }
+			ps.executeUpdate();
+		}
 	}
+
 	public static Pokemon generarPokemonAleatorio(Connection con) throws SQLException {
-	    Pokemon enemigo = null;
-	    
-	    // 1. Consultamos la tabla POKEDEX (que es la que tiene la info de la especie)
-	    String sqlRandom = "SELECT * FROM POKEDEX ORDER BY RAND() LIMIT 1";
-	    
-	    try (Statement st = con.createStatement();
-	         ResultSet rs = st.executeQuery(sqlRandom)) {
-	        
-	        if (rs.next()) {
-	            enemigo = new Pokemon();
-	            
-	            // --- DATOS DE LA TABLA POKEDEX ---
-	            enemigo.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
-	            enemigo.setNombre(rs.getString("NOM_POKEMON"));
-	            
-	            // Enums de Tipo (Asegúrate de que el Enum Tipo tenga los mismos nombres)
-	            enemigo.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1")));
+		Pokemon enemigo = null;
 
-	            String t2BD = rs.getString("TIPO2");
-	            if (t2BD != null && !t2BD.isEmpty()) {
-	                enemigo.setTipo2(Tipo.convertirTpoDesdeString(t2BD));
-	            }
+		// 1. Consultamos la tabla POKEDEX (que es la que tiene la info de la especie)
+		String sqlRandom = "SELECT * FROM POKEDEX ORDER BY RAND() LIMIT 1";
 
-	            // --- GENERACIÓN DE STATS (Ya que no están en Pokedex) ---
-	            // Generamos un nivel aleatorio para el enemigo
-	            int nivel = (int) (Math.random() * 50) + 45; 
-	            enemigo.setNivel(nivel);
-	            
-	            // Fórmulas estándar para un enemigo aleatorio
-	            int hpBase = 20 + (nivel * 3);
-	            enemigo.setVitalidadMax(hpBase);
-	            enemigo.setVitalidad(hpBase);
-	            
-	            enemigo.setAtaque(10 + (nivel * 2));
-	            enemigo.setDefensa(8 + (nivel * 2));
-	            enemigo.setVelocidad(10 + nivel);
-	            
-	            int especialBase = 10 + (nivel * 2); 
-	            enemigo.setAtaqueEspecial(especialBase);
-	            enemigo.setDefensaEspecial(especialBase);
-	            
-	            enemigo.setPrecision(100);
-	            
-	            // Sexo aleatorio
-	            enemigo.setSexo(Math.random() > 0.5 ? Sexo.M : Sexo.H);
-	            enemigo.setEstado(Estado.VIVO);
+		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlRandom)) {
 
-	            // 2. Asignar movimientos en memoria
-	            asignarMovimientosEnMemoria(con, enemigo);
-	        }
-	    }
-	    return enemigo;
+			if (rs.next()) {
+				enemigo = new Pokemon();
+
+				// --- DATOS DE LA TABLA POKEDEX ---
+				enemigo.setNum_pokedex(rs.getInt("NUM_POKEDEX"));
+				enemigo.setNombre(rs.getString("NOM_POKEMON"));
+
+				// Enums de Tipo (Asegúrate de que el Enum Tipo tenga los mismos nombres)
+				enemigo.setTipo1(Tipo.convertirTpoDesdeString(rs.getString("TIPO1")));
+
+				String t2BD = rs.getString("TIPO2");
+				if (t2BD != null && !t2BD.isEmpty()) {
+					enemigo.setTipo2(Tipo.convertirTpoDesdeString(t2BD));
+				}
+
+				// --- GENERACIÓN DE STATS (Ya que no están en Pokedex) ---
+				// Generamos un nivel aleatorio para el enemigo
+				int nivel = (int) (Math.random() * 50) + 45;
+				enemigo.setNivel(nivel);
+
+				// Fórmulas estándar para un enemigo aleatorio
+				int hpBase = 20 + (nivel * 3);
+				enemigo.setVitalidadMax(hpBase);
+				enemigo.setVitalidad(hpBase);
+
+				enemigo.setAtaque(10 + (nivel * 2));
+				enemigo.setDefensa(8 + (nivel * 2));
+				enemigo.setVelocidad(10 + nivel);
+
+				int especialBase = 10 + (nivel * 2);
+				enemigo.setAtaqueEspecial(especialBase);
+				enemigo.setDefensaEspecial(especialBase);
+
+				enemigo.setPrecision(100);
+
+				// Sexo aleatorio
+				enemigo.setSexo(Math.random() > 0.5 ? Sexo.M : Sexo.H);
+				enemigo.setEstado(Estado.VIVO);
+
+				// 2. Asignar movimientos en memoria
+				asignarMovimientosEnMemoria(con, enemigo);
+			}
+		}
+		return enemigo;
 	}
+
 	private static void asignarMovimientosEnMemoria(Connection con, Pokemon p) throws SQLException {
-	    // Buscamos 4 movimientos de sus tipos o Normal al azar
-	    String sqlMovs = "SELECT * FROM MOVIMIENTO WHERE TIPO IN (?, ?, 'NORMAL') ORDER BY RAND() LIMIT 4";
-	    
-	    try (PreparedStatement ps = con.prepareStatement(sqlMovs)) {
-	        ps.setString(1, p.getTipo1().name());
-	        ps.setString(2, p.getTipo2() != null ? p.getTipo2().name() : p.getTipo1().name());
+		// Buscamos 4 movimientos de sus tipos o Normal al azar
+		String sqlMovs = "SELECT * FROM MOVIMIENTO WHERE TIPO IN (?, ?, 'NORMAL') ORDER BY RAND() LIMIT 4";
 
-	        try (ResultSet rs = ps.executeQuery()) {
-	            LinkedList<Movimiento> lista = new LinkedList<>();
-	            
-	            while (rs.next()) {
-	                Movimiento m = new Movimiento();
-	                m.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
-	                m.setNombre(rs.getString("NOM_MOVIMIENTO"));
-	                m.setPotencia(rs.getInt("POTENCIA"));
-	                m.setNumPP(rs.getInt("PP")); 
-	                m.setPrecision(rs.getInt("PRECISION_MOV"));
-	                m.setClaseMov(rs.getInt("CLASE_MOVIMIENTO"));
-	                
-	                // --- CONVERSIÓN DE ESTADO (ENUM) ---
-	                String estadoBD = rs.getString("ESTADO");
-	                if (estadoBD != null && !estadoBD.isEmpty()) {
-	                    // Convertimos el String de la BD al Enum Estado
-	                    m.setEstado(Estado.valueOf(estadoBD.toUpperCase()));
-	                } else {
-	                    // Si el movimiento no tiene estado (es solo daño), lo ponemos como VIVO o NULL
-	                    m.setEstado(Estado.VIVO); 
-	                }
-	                
-	                // Conversión de Tipo (Enum)
-	                String tipoBD = rs.getString("TIPO");
-	                if (tipoBD != null) {
-	                    m.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
-	                }
-	                
-	                m.setMejora(rs.getString("MEJORA"));
-	                
-	                lista.add(m);
-	            }
-	            p.setMovimientos(lista);
-	        }
-	    }
+		try (PreparedStatement ps = con.prepareStatement(sqlMovs)) {
+			ps.setString(1, p.getTipo1().name());
+			ps.setString(2, p.getTipo2() != null ? p.getTipo2().name() : p.getTipo1().name());
+
+			try (ResultSet rs = ps.executeQuery()) {
+				LinkedList<Movimiento> lista = new LinkedList<>();
+
+				while (rs.next()) {
+					Movimiento m = new Movimiento();
+					m.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
+					m.setNombre(rs.getString("NOM_MOVIMIENTO"));
+					m.setPotencia(rs.getInt("POTENCIA"));
+					m.setNumPP(rs.getInt("PP"));
+					m.setPrecision(rs.getInt("PRECISION_MOV"));
+					m.setClaseMov(rs.getInt("CLASE_MOVIMIENTO"));
+
+					// --- CONVERSIÓN DE ESTADO (ENUM) ---
+					String estadoBD = rs.getString("ESTADO");
+					if (estadoBD != null && !estadoBD.isEmpty()) {
+						// Convertimos el String de la BD al Enum Estado
+						m.setEstado(Estado.valueOf(estadoBD.toUpperCase()));
+					} else {
+						// Si el movimiento no tiene estado (es solo daño), lo ponemos como VIVO o NULL
+						m.setEstado(Estado.VIVO);
+					}
+
+					// Conversión de Tipo (Enum)
+					String tipoBD = rs.getString("TIPO");
+					if (tipoBD != null) {
+						m.setTipo(Tipo.valueOf(tipoBD.toUpperCase()));
+					}
+
+					m.setMejora(rs.getString("MEJORA"));
+
+					lista.add(m);
+				}
+				p.setMovimientos(lista);
+			}
+		}
 	}
-	
+
 	public static boolean intentarEvolucionar(Connection con, Pokemon p) {
-	    // 1. Consulta para obtener el nivel de evolución de la especie
-	    String sql = "SELECT NIVEL_EVO FROM POKEDEX WHERE NUM_POKEDEX = ?";
-	    
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, p.getNum_pokedex());
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
-	                int nivelRequerido = rs.getInt("NIVEL_EVO");
-	                
-	                // Si el nivel_evo es > 0 y el pokemon cumple el requisito
-	                if (nivelRequerido > 0 && p.getNivel() >= nivelRequerido) {
-	                    
-	                    
-	                    // 3. RECARGA DE DATOS: 
-	                    // Como el nombre y tipos vienen de la Pokedex, al cambiar el NUM_POKEDEX
-	                    // necesitamos pedirle a la BD el nuevo nombre para que el objeto p esté al día.
-	                    String nombreAntes = p.getNombre(); // "Venonat"
-	                    ejecutarCambioPokedex(con, p);      // Ahora p.getNum_pokedex() es el de Venomoth
-	                    actualizarNombreYDatosEspecie(con, p, nombreAntes);
-	                    
-	                    System.out.println("¡" + p.getNombre() + " ha evolucionado!");
-	                    return true;
-	                }
-	            }
-	        }
-	    } catch (SQLException e) {
-	        System.err.println("Error en la lógica de evolución: " + e.getMessage());
-	        e.printStackTrace();
-	    }
-	    return false; // No cumple requisitos o error
+		// 1. Consulta para obtener el nivel de evolución de la especie
+		String sql = "SELECT NIVEL_EVO FROM POKEDEX WHERE NUM_POKEDEX = ?";
+
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, p.getNum_pokedex());
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					int nivelRequerido = rs.getInt("NIVEL_EVO");
+
+					// Si el nivel_evo es > 0 y el pokemon cumple el requisito
+					if (nivelRequerido > 0 && p.getNivel() >= nivelRequerido) {
+
+						// 3. RECARGA DE DATOS:
+						// Como el nombre y tipos vienen de la Pokedex, al cambiar el NUM_POKEDEX
+						// necesitamos pedirle a la BD el nuevo nombre para que el objeto p esté al día.
+						String nombreAntes = p.getNombre(); // "Venonat"
+						ejecutarCambioPokedex(con, p); // Ahora p.getNum_pokedex() es el de Venomoth
+						actualizarNombreYDatosEspecie(con, p, nombreAntes);
+
+						System.out.println("¡" + p.getNombre() + " ha evolucionado!");
+						return true;
+					}
+				}
+			}
+		} catch (SQLException e) {
+			System.err.println("Error en la lógica de evolución: " + e.getMessage());
+			e.printStackTrace();
+		}
+		return false; // No cumple requisitos o error
 	}
 
 	private static void ejecutarCambioPokedex(Connection con, Pokemon p) throws SQLException {
-	    String sql = "UPDATE POKEMON SET NUM_POKEDEX = NUM_POKEDEX + 1 WHERE ID_POKEMON = ?";
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, p.getId_pokemon());
-	        ps.executeUpdate();
-	        
-	        // Actualizamos el objeto en memoria para que la UI se entere
-	        p.setNum_pokedex(p.getNum_pokedex() + 1);
-	    }
-	}
-	
-	
-	private static void actualizarNombreYDatosEspecie(Connection con, Pokemon p, String nombreEspecieAnterior) throws SQLException {
-	    // 1. Buscamos los datos de la nueva especie tras la evolución
-	    String sql = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX = ?";
-	    
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setInt(1, p.getNum_pokedex());
-	        
-	        try (ResultSet rs = ps.executeQuery()) {
-	            if (rs.next()) {
-	                String nuevoNombreEspecie = rs.getString("NOM_POKEMON");
-	                
-	                // --- 2. LÓGICA DE NOMBRE / MOTE ---
-	                // Si no tiene mote, o el mote es igual al nombre de la especie anterior:
-	                if (p.getMote() == null || p.getMote().trim().isEmpty() || p.getMote().equalsIgnoreCase(nombreEspecieAnterior)) {
-	                    p.setNombre(nuevoNombreEspecie);
-	                    p.setMote(nuevoNombreEspecie);
-	                    // Actualizamos también el mote en la BD para que no se quede el antiguo
-	                    actualizarMoteEnBD(con, p.getId_pokemon(), nuevoNombreEspecie);
-	                }
+		String sql = "UPDATE POKEMON SET NUM_POKEDEX = NUM_POKEDEX + 1 WHERE ID_POKEMON = ?";
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, p.getId_pokemon());
+			ps.executeUpdate();
 
-	                // --- 3. ACTUALIZACIÓN DE TIPOS (Usando tu método) ---
-	                String t1BD = rs.getString("TIPO1");
-	                if (t1BD != null) {
-	                    // Invocamos tu método que limpia tildes y normaliza
-	                    p.setTipo1(Tipo.convertirTpoDesdeString(t1BD));
-	                }
-
-	                String t2BD = rs.getString("TIPO2");
-	                if (t2BD != null) {
-	                    p.setTipo2(Tipo.convertirTpoDesdeString(t2BD));
-	                } else {
-	                    p.setTipo2(null); // Limpiamos el segundo tipo si la evolución pierde uno
-	                }
-	                
-	                System.out.println("DEBUG: Datos de especie actualizados tras evolución.");
-	            }
-	        }
-	    }
+			// Actualizamos el objeto en memoria para que la UI se entere
+			p.setNum_pokedex(p.getNum_pokedex() + 1);
+		}
 	}
-	
+
+	private static void actualizarNombreYDatosEspecie(Connection con, Pokemon p, String nombreEspecieAnterior)
+			throws SQLException {
+		// 1. Buscamos los datos de la nueva especie tras la evolución
+		String sql = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX = ?";
+
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setInt(1, p.getNum_pokedex());
+
+			try (ResultSet rs = ps.executeQuery()) {
+				if (rs.next()) {
+					String nuevoNombreEspecie = rs.getString("NOM_POKEMON");
+
+					// --- 2. LÓGICA DE NOMBRE / MOTE ---
+					// Si no tiene mote, o el mote es igual al nombre de la especie anterior:
+					if (p.getMote() == null || p.getMote().trim().isEmpty()
+							|| p.getMote().equalsIgnoreCase(nombreEspecieAnterior)) {
+						p.setNombre(nuevoNombreEspecie);
+						p.setMote(nuevoNombreEspecie);
+						// Actualizamos también el mote en la BD para que no se quede el antiguo
+						actualizarMoteEnBD(con, p.getId_pokemon(), nuevoNombreEspecie);
+					}
+
+					// --- 3. ACTUALIZACIÓN DE TIPOS (Usando tu método) ---
+					String t1BD = rs.getString("TIPO1");
+					if (t1BD != null) {
+						// Invocamos tu método que limpia tildes y normaliza
+						p.setTipo1(Tipo.convertirTpoDesdeString(t1BD));
+					}
+
+					String t2BD = rs.getString("TIPO2");
+					if (t2BD != null) {
+						p.setTipo2(Tipo.convertirTpoDesdeString(t2BD));
+					} else {
+						p.setTipo2(null); // Limpiamos el segundo tipo si la evolución pierde uno
+					}
+
+					System.out.println("DEBUG: Datos de especie actualizados tras evolución.");
+				}
+			}
+		}
+	}
+
 	private static void actualizarMoteEnBD(Connection con, int idPokemon, String nuevoMote) throws SQLException {
-	    String sql = "UPDATE POKEMON SET MOTE = ? WHERE ID_POKEMON = ?";
-	    try (PreparedStatement ps = con.prepareStatement(sql)) {
-	        ps.setString(1, nuevoMote);
-	        ps.setInt(2, idPokemon);
-	        ps.executeUpdate();
-	    }
+		String sql = "UPDATE POKEMON SET MOTE = ? WHERE ID_POKEMON = ?";
+		try (PreparedStatement ps = con.prepareStatement(sql)) {
+			ps.setString(1, nuevoMote);
+			ps.setInt(2, idPokemon);
+			ps.executeUpdate();
+		}
 	}
-	
-	
+
 	public static boolean curarPokemonTotal(Connection con, Pokemon p) {
-	    // Queries actualizadas: ESTADO ahora recibe el String 'VIVO'
-	    String SQL_POKEMON = "UPDATE POKEMON SET VITALIDAD = VITALIDAD_MAX, ESTADO = 'VIVO' WHERE ID_POKEMON = ?";
-	    
-	    String SQL_PP = "UPDATE POKEMON_MOVIMIENTO PM " +
-	                    "SET PM.NUM_PP = (SELECT M.PP FROM MOVIMIENTO M WHERE M.ID_MOVIMIENTO = PM.ID_MOVIMIENTO) " +
-	                    "WHERE PM.ID_POKEMON = ?";
-	    
-	    try {
-	        con.setAutoCommit(false);
+		// Queries actualizadas: ESTADO ahora recibe el String 'VIVO'
+		String SQL_POKEMON = "UPDATE POKEMON SET VITALIDAD = VITALIDAD_MAX, ESTADO = 'VIVO' WHERE ID_POKEMON = ?";
 
-	        // 1. Restaurar Salud y poner estado en 'VIVO'
-	        try (PreparedStatement psPkm = con.prepareStatement(SQL_POKEMON)) {
-	            psPkm.setInt(1, p.getId_pokemon());
-	            psPkm.executeUpdate();
-	        }
+		String SQL_PP = "UPDATE POKEMON_MOVIMIENTO PM "
+				+ "SET PM.NUM_PP = (SELECT M.PP FROM MOVIMIENTO M WHERE M.ID_MOVIMIENTO = PM.ID_MOVIMIENTO) "
+				+ "WHERE PM.ID_POKEMON = ?";
 
-	        // 2. Restaurar PP
-	        try (PreparedStatement psMov = con.prepareStatement(SQL_PP)) {
-	            psMov.setInt(1, p.getId_pokemon());
-	            psMov.executeUpdate();
-	        }
+		try {
+			con.setAutoCommit(false);
 
-	        con.commit();
-	        
-	        // Sincronizar objeto Java
-	        p.setVitalidad(p.getVitalidadMax());
-	        p.setEstado(Estado.VIVO); // Asumiendo que tu Enum tiene VIVO
-	        
-	        if (p.getMovimientos() != null) {
-	            for (Movimiento m : p.getMovimientos()) {
-	                m.setNumPP(m.getNumPPMax()); 
-	            }
-	        }
-	        
-	        return true;
+			// 1. Restaurar Salud y poner estado en 'VIVO'
+			try (PreparedStatement psPkm = con.prepareStatement(SQL_POKEMON)) {
+				psPkm.setInt(1, p.getId_pokemon());
+				psPkm.executeUpdate();
+			}
 
-	    } catch (SQLException e) {
-	        try { con.rollback(); } catch (SQLException ex) { ex.printStackTrace(); }
-	        e.printStackTrace();
-	        return false;
-	    } finally {
-	        try { con.setAutoCommit(true); } catch (SQLException e) { e.printStackTrace(); }
-	    }
+			// 2. Restaurar PP
+			try (PreparedStatement psMov = con.prepareStatement(SQL_PP)) {
+				psMov.setInt(1, p.getId_pokemon());
+				psMov.executeUpdate();
+			}
+
+			con.commit();
+
+			// Sincronizar objeto Java
+			p.setVitalidad(p.getVitalidadMax());
+			p.setEstado(Estado.VIVO); // Asumiendo que tu Enum tiene VIVO
+
+			if (p.getMovimientos() != null) {
+				for (Movimiento m : p.getMovimientos()) {
+					m.setNumPP(m.getNumPPMax());
+				}
+			}
+
+			return true;
+
+		} catch (SQLException e) {
+			try {
+				con.rollback();
+			} catch (SQLException ex) {
+				ex.printStackTrace();
+			}
+			e.printStackTrace();
+			return false;
+		} finally {
+			try {
+				con.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 	}
-	
+
 }

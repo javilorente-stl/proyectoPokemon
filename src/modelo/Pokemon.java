@@ -4,6 +4,14 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Scanner;
 
+
+/**
+ * Representa la entidad principal del juego. Gestiona las estadísticas,
+ * el crecimiento por experiencia, el aprendizaje de movimientos y el cálculo 
+ * de efectividades en combate. Es el esqueleto para el resto de las clases alrededor
+ * @author Javier Lorente Rodríguez
+ * @version 1.0
+ */
 public class Pokemon {
 
 	Scanner sc = new Scanner(System.in);
@@ -33,6 +41,30 @@ public class Pokemon {
 	private int caja;
 	
 
+	/**
+	 * Constructor completo para instanciar un Pokémon con todos sus atributos definidos,
+	 * generalmente usado para cargar datos existentes o generar Pokémon de alto nivel.
+	 * @param num_pokedex Número identificador en la pokedex.
+	 * @param mote Nombre personalizado del espécimen.
+	 * @param nivel Nivel actual (1-100).
+	 * @param fertilidad Capacidad restante para la crianza.
+	 * @param sexo Género asignado.
+	 * @param estado Condición (VIVO, DEBILITADO, etc.).
+	 * @param vitalidad Salud actual.
+	 * @param vitalidadMax Límite máximo de vida.
+	 * @param ataque Potencia física.
+	 * @param defensa Resistencia física.
+	 * @param ataqueEspecial Potencia mágica/especial.
+	 * @param defensaEspecial Resistencia mágica/especial.
+	 * @param velocidad Determina el orden de turno.
+	 * @param experiencia Puntos acumulados en el nivel actual.
+	 * @param precision Probabilidad de acierto base.
+	 * @param tipo1 Atributo elemental primario.
+	 * @param tipo2 Atributo elemental secundario (opcional).
+	 * @param movimientos Lista de movimientos activos.
+	 * @param objeto Item equipado.
+	 * @param caja Almacenamiento donde se encuentra el Pokémon.
+	 */
 	public Pokemon(int num_pokedex, String mote, int nivel, int fertilidad, Sexo sexo, Estado estado, int vitalidad,
 			int vitalidadMax ,int ataque, int defensa, int ataqueEspecial, int defensaEspecial, int velocidad,
 			int experiencia, int precision, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> movimientos, Objeto objeto, int caja) {
@@ -61,7 +93,11 @@ public class Pokemon {
 	
 	
 	
-
+	/**
+	 * Constructor para Pokémon con todos los parámetros que no son fijos 
+	 * este finalmente no ha sido utilizado por la gestión final de la caja
+	 * Establece valores iniciales de nivel 1 y asigna sexo aleatoriamente.
+	 */
 	public Pokemon(String mote, Tipo tipo1, Tipo tipo2, LinkedList<Movimiento> ataquesHijo, int vitalidad, int vitalidadMax, int ataque,
 			int defensa, int ataqueEspecial, int defensaEspecial, int velocidad, int precision) {
 
@@ -90,6 +126,10 @@ public class Pokemon {
 		this.caja=2;
 	}
 	
+	/**
+	 * Crea un Pokémon base con valores mínimos, lo usamos para guardar el pokemon 
+	 * después de la captura
+	 */
 	public Pokemon() {
 	    this.movimientos = new LinkedList<>(); 
 	    this.movimientosPosibles = new LinkedList<>();
@@ -104,12 +144,17 @@ public class Pokemon {
 	}
 	
 	
+	/**
+	 * Constructor simplificado para crianza basado únicamente en el mote.
+	 * Genera estadísticas aleatorias bajas simulando un estado inicial débil.
+	 * @param mote Apodo del Pokémon.
+	 */
 	public Pokemon(String mote) {
 
-		// 1. Asignamos los valores heredados por crianza
+		// Asignamos los valores heredados por crianza
 		this.mote = mote;
-		this.tipo1 = tipo1;
-		this.tipo2 = tipo2;
+		//this.tipo1 = tipo1;
+		//this.tipo2 = tipo2;
 		this.vitalidad = (int)(Math.random() * 5) + 1;
 	    this.ataque = (int)(Math.random() * 5) + 1;
 	    this.defensa = (int)(Math.random() * 5) + 1;
@@ -126,19 +171,17 @@ public class Pokemon {
 		this.estado = Estado.VIVO;
 		this.sexo = (Math.random() < 0.5) ? Sexo.M : Sexo.H;
 		this.movimientosPosibles = new LinkedList<>();
-		// esto hay que arreglarlo
 		this.num_pokedex = 0;
 		this.precision=100;
 	}
 	
 	
 
+	// Métodos Getter y Setter
+	
 	public int getId_pokemon() {
 		return id_pokemon;
 	}
-
-
-
 
 	public void setId_pokemon(int id_pokemon) {
 		this.id_pokemon = id_pokemon;
@@ -278,9 +321,6 @@ public class Pokemon {
 		this.precision = precision;
 	}
 
-
-
-
 	public Tipo getTipo1() {
 		return tipo1;
 	}
@@ -336,7 +376,11 @@ public class Pokemon {
 
 
 
-
+	/**
+	 * Incrementa la experiencia y gestiona la subida de nivel. Al subir de nivel, 
+	 * las estadísticas aumentan de forma aleatoria y se recupera salud proporcionalmente.
+	 * @param puntosExp Cantidad de experiencia obtenida en combate.
+	 */
 	public void ganarExperiencia(int puntosExp) {
 	    this.experiencia += puntosExp;
 	    
@@ -360,11 +404,17 @@ public class Pokemon {
 	        System.out.println("¡" + this.nombre + " ha subido al nivel " + this.nivel + "!");
 	    }
 	}
-
+	
+	
+	/**
+	 * Gestiona el aprendizaje de nuevos ataques. Si el Pokémon ya conoce 4 movimientos,
+	 * permite intercambiar uno existente por el nuevo.
+	 * @param indiceOlvidar Posición del movimiento a descartar (0-3). Solo se usa si ya tiene 4 movimientos.
+	 */
 	public void aprenderMovimiento(int indiceOlvidar) {
 	    if (this.movimientosPosibles.isEmpty()) return;
 
-	    // 1. Elegimos el nuevo movimiento aleatorio (Índice corregido sin el +1)
+	    // Elegimos el nuevo movimiento aleatorio
 	    int r = (int) (Math.random() * this.movimientosPosibles.size());
 	    Movimiento nuevo = this.movimientosPosibles.get(r);
 
@@ -373,7 +423,7 @@ public class Pokemon {
 	        this.movimientos.add(nuevo);
 	        this.movimientosPosibles.remove(nuevo);
 	    } else {
-	        // Si está lleno, usamos el índice que nos pasa el Controller (elegido por el usuario en la UI)
+	        // Si está lleno, usamos el índice que nos pasa el Controller 
 	        if (indiceOlvidar >= 0 && indiceOlvidar < this.movimientos.size()) {
 	            Movimiento olvidado = this.movimientos.get(indiceOlvidar);
 	            
@@ -385,6 +435,12 @@ public class Pokemon {
 	    }
 	}
 
+	/**
+	 * Evalúa el daño potencial de un movimiento contra un defensor basándose en la tabla de tipos.
+	 * @param movElegido Ataque que se intenta ejecutar.
+	 * @param defensor Objetivo del ataque.
+	 * @return El multiplicador de daño final (0.0, 0.5, 1.0, 2.0, 4.0).
+	 */
 	public double calcularMultiplicadorFinal(Movimiento movElegido, Pokemon defensor) {
 		// Empezamos con un multiplicador de 1.0 (daño neutro)
 		double multiplicadorTotal = 1.0;
@@ -422,6 +478,11 @@ public class Pokemon {
 		return multiplicadorTotal;
 	}
 
+	/**
+	 * Compara los tipos del Pokémon actual contra los del rival para determinar
+	 * si existe una ventaja segun el tipo.
+	 * @param defensor Pokémon contra el que se compara.
+	 */
 	public void comprobarVentajaPorTipo(Pokemon defensor) {
 		boolean tieneVentaja = false;
 		boolean tieneDesventaja = false;
@@ -462,6 +523,13 @@ public class Pokemon {
 		}
 	}
 
+	
+	/**
+	 * Lógica central de la tabla de tipos. Define las debilidades,resistencias e inmunidades del juego.
+	 * @param ataque Tipo elemental del movimiento.
+	 * @param defensa Tipo elemental del receptor.
+	 * @return devuelve el multiplicador para calcular el daño de un ataque.
+	 */
 	public static double obtenerEfectividad(Tipo ataque, Tipo defensa) {
 		// Si el ataque o la defensa son nulos, por seguridad devolvemos daño neutral
 		if (ataque == null || defensa == null)
@@ -496,7 +564,7 @@ public class Pokemon {
 			if (defensa == Tipo.ELECTRICO || defensa == Tipo.PLANTA || defensa == Tipo.DRAGON)
 				return 0.5;
 			if (defensa == Tipo.TIERRA)
-				return 0.0; // ¡Inmunidad!
+				return 0.0; // Inmunidad
 			break;
 
 		case HIELO:
@@ -512,7 +580,7 @@ public class Pokemon {
 			if (defensa == Tipo.PLANTA || defensa == Tipo.BICHO)
 				return 0.5;
 			if (defensa == Tipo.VOLADOR)
-				return 0.0; // ¡Inmunidad!
+				return 0.0; // Inmunidad
 			break;
 
 		case VOLADOR:
@@ -526,7 +594,7 @@ public class Pokemon {
 			if (defensa == Tipo.ROCA)
 				return 0.5;
 			if (defensa == Tipo.FANTASMA)
-				return 0.0; // ¡Inmunidad!
+				return 0.0; // Inmunidad
 			break;
 
 		case LUCHA:
@@ -586,6 +654,11 @@ public class Pokemon {
 		return 1.0; // Caso por defecto si no entra en ningún 'if' dentro del switch
 	}
 
+	/**
+	 * Genera una cadena de texto formateada con la información básica para logs o resúmenes.
+	 * @param nombreEntrenador Nombre del dueño del Pokémon.
+	 * @return String con el formato: “Mote”, Nivel, Dueño, Estado.
+	 */
 	public String getInfoLog(String nombreEntrenador) {
 	    String status = (this.vitalidad > 0) ? "OK" : "KO";
 	    return String.format("“%s”, %d, %s, %s", this.getNombre(), this.getNivel(), nombreEntrenador, status);

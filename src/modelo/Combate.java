@@ -4,6 +4,14 @@ import java.time.LocalDateTime;
 import java.util.LinkedList;
 import java.util.Random;
 
+
+/**
+ * Gestiona la lógica de un enfrentamiento entre dos Pokémon en los combates y la liga
+ * Controla el flujo de turnos, el cálculo de daño, la aplicación de estados, las mejoras, limpiar estados
+ * y el registro de eventos en un historial que usaremos en el log
+ * @author Javier Lorente Rodríguez
+ * @version 2.0
+ */
 public class Combate {
 	private Pokemon pJugador;
 	private Pokemon pRival;
@@ -15,6 +23,12 @@ public class Combate {
 	private int turnosEstadoRival = 0;
 	private boolean combateFinalizado = false;
 
+	
+	/**
+	 * Inicia un nuevo combate determinando quién comienza según la velocidad.
+	 * @param pJugador Pokémon controlado por el usuario.
+	 * @param pRival Pokémon oponente.
+	 */
 	public Combate(Pokemon pJugador, Pokemon pRival) {
 		this.pJugador = pJugador;
 		this.pRival = pRival;
@@ -26,6 +40,7 @@ public class Combate {
 		this.turnosEstadoJugador = 0;
 		this.turnosEstadoRival = 0;
 
+		// He tenido que cambiar esto porque ponía a los pokemon en vida con 0 de vitalidad, esta mal
 		// Aseguramos que los Pokémon inicien en estado VIVO al comenzar la pelea
 		// this.pJugador.setEstado(Estado.VIVO);
 		// this.pRival.setEstado(Estado.VIVO);
@@ -38,6 +53,8 @@ public class Combate {
 		registrarSuceso("El primer turno es para: " + (esTurnoJugador ? pJugador.getNombre() : pRival.getNombre()));
 	}
 
+	
+	// Metodos Getter and Setter
 	public Pokemon getpJugador() {
 		return pJugador;
 	}
@@ -106,15 +123,25 @@ public class Combate {
 		this.historialLog = historialLog;
 	}
 
-	// Método interno para centralizar la escritura de frases
+	
+	/**
+	 * Añade un evento al log del combate con el número de turno actual.
+	 * Usamos este metodo para centralizar la escritura
+	 * @param frase Descripción del suceso ocurrido.
+	 */
 	public void registrarSuceso(String frase) {
 		String registro = "[Turno " + turno + "] " + frase;
 		historialLog.add(registro);
-		// Opcional: Imprimir por consola mientras programas para debuguear
+		// Imprimir por consola mientras programas para debuguear y ver que pasa
 		System.out.println(registro);
 	}
 
-	// Ejemplo de cómo se usaría al atacar
+	/**
+	 * cálculo de daño y verificación de debilitación, este metodo es de prueba antes del real
+	 * @param mov Movimiento seleccionado.
+	 * @param atacante Pokémon que ejecuta la acción.
+	 * @param defensor Pokémon que recibe el impacto.
+	 */
 	public void procesarAtaque(Movimiento mov, Pokemon atacante, Pokemon defensor) {
 		registrarSuceso(atacante.getNombre() + " usa " + mov.getNombre());
 
@@ -125,16 +152,26 @@ public class Combate {
 		registrarSuceso(defensor.getNombre() + " pierde " + danio + " puntos de vida.");
 
 		if (defensor.getVitalidad() <= 0) {
+			// para que no repita textos esto esta comentado
 			// registrarSuceso(defensor.getNombre() + " se ha debilitado.");
 
 		}
 	}
 
-	// Getters para que el Controller o un "LogWriter" pueda leer la lista al final
+	// Getter para que el Controller o un "LogWriter" pueda leer la lista al final
 	public LinkedList<String> getHistorialLog() {
 		return historialLog;
 	}
-
+	
+	
+	/**
+	 * Ejecuta la acción de ataque completa, gestionando precisión, tipo de movimiento,
+	 * cálculo de daño y verificación de debilitación.
+	 * Este es el metodo que se ha usado en todo el combate real
+	 * @param mov Movimiento seleccionado.
+	 * @param atacante Pokémon que ejecuta la acción.
+	 * @param defensor Pokémon que recibe el impacto.
+	 */
 	public void ejecutarTurno(Movimiento mov, Pokemon atacante, Pokemon defensor) {
 		registrarSuceso("--- Turno " + turno + ": " + atacante.getNombre() + " ---");
 
@@ -200,11 +237,17 @@ public class Combate {
 
 	}
 
+	/**
+	 * Verifica si el Pokémon está en condiciones de realizar un movimiento
+	 * basándose en su estado actual (Parálisis, Sueño, Confusión, etc.).
+	 * @param p Pokémon a evaluar.
+	 * @return true si puede realizar la acción, false si el estado se lo impide.
+	 */
 	public boolean puedeAtacar(Pokemon p) {
 		// Al ser Enum, usamos el operador == o el switch directo
 		Estado estadoActual = p.getEstado();
 
-		// Si está debilitado, nunca puede atacar
+		// Si está debilitado, nunca puede atacar, aunque no debería ni estar en el combate, pero por si acaso
 		if (estadoActual == Estado.DEBILITADO) {
 			return false;
 		}
@@ -219,7 +262,7 @@ public class Combate {
 
 		case DORMIDO:
 			registrarSuceso(p.getNombre() + " está profundamente dormido...");
-			// Lógica opcional: probabilidad de despertar
+			// probabilidad de despertar como en el juego real
 			if (Math.random() < 0.33) {
 				p.setEstado(Estado.VIVO);
 				registrarSuceso("¡" + p.getNombre() + " se ha despertado!");
@@ -235,7 +278,7 @@ public class Combate {
 		case CONFUSO:
 			registrarSuceso(p.getNombre() + " está confuso...");
 			if (Math.random() < 0.33) {
-				int danioAuto = (int) (p.getAtaque() * 0.1); // Se hiere un poco
+				int danioAuto = (int) (p.getAtaque() * 0.1); // Se hiere un poco si se cumple la condición
 				p.setVitalidad(p.getVitalidad() - danioAuto);
 				registrarSuceso("¡Tan confuso está que se ha herido a sí mismo!");
 				return false;
@@ -261,6 +304,11 @@ public class Combate {
 		return true;
 	}
 
+	/**
+	 * Aplica el daño residual al final del turno causado por estados persistentes
+	 * como Quemaduras, Veneno o Drenadoras. También gestiona la curación derivada de las drenadoras
+	 * @param p Pokémon que recibe el efecto final.
+	 */
 	public void aplicarEfectosFinales(Pokemon p) {
 		if (p.getVitalidad() <= 0 || p.getEstado() == Estado.VIVO)
 			return;
@@ -288,7 +336,7 @@ public class Combate {
 			}
 		}
 		int danioResidual = 0;
-
+		// con los datos reales del juego
 		switch (estado) {
 		case QUEMADO:
 			danioResidual = (int) (p.getVitalidadMax() * 0.06);
@@ -304,7 +352,7 @@ public class Combate {
 			danioResidual = (int) (p.getVitalidadMax() * 0.18);
 			registrarSuceso(p.getNombre() + " sufre mucho por el veneno grave.");
 			break;
-
+			// este ni lo uso porque ningún movimiento lo puede aplicar
 		case MALDITO:
 			danioResidual = (int) (p.getVitalidadMax() * 0.25);
 			registrarSuceso("La maldición consume a " + p.getNombre());
@@ -321,7 +369,7 @@ public class Combate {
 				int saludACurar = danioResidual;
 				int vidaAntes = beneficiario.getVitalidad();
 
-				// Curamos sin sobrepasar el máximo
+				// Curamos sin sobrepasar el máximo por si acaso
 				beneficiario.setVitalidad(
 						Math.min(beneficiario.getVitalidadMax(), beneficiario.getVitalidad() + saludACurar));
 
@@ -348,10 +396,10 @@ public class Combate {
 				danioResidual = 1;
 			}
 		}
-
+		// Aplicamos el daño
 		if (danioResidual > 0) {
 			p.setVitalidad(Math.max(0, p.getVitalidad() - danioResidual));
-
+			// Actualizamos estado por si muere por el efecto
 			if (p.getVitalidad() <= 0) {
 				p.setVitalidad(0);
 				p.setEstado(Estado.DEBILITADO);
@@ -360,6 +408,15 @@ public class Combate {
 		}
 	}
 
+	
+	/**
+	 * Con este metodo aplicamos las mejoras de los movimientos del tipo 1 que son de ataque
+	 * cosas como que se repita el movimiento en el mismo turno un numero aleatorio de veces, o 
+	 * que aplique daño fijo según nivel...
+	 * @param mov
+	 * @param atacante
+	 * @param defensor
+	 */
 	private void mejorasAtaque(Movimiento mov, Pokemon atacante, Pokemon defensor) {
 		String mejora = mov.getMejora();
 		Random rand = new Random();
@@ -442,10 +499,16 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Este aplica los estados de los ataques que puedan provocarlos, con un 15%
+	 * de probabilidad fija porque así lo he decidido
+	 * @param mov de ataque
+	 * @param defensor o quien lo recibe
+	 */
 	private void aplicarEstadoAtaque(Movimiento mov, Pokemon defensor) {
 		Random rand = new Random();
 
-		// 1. Probabilidad fija del 15% para aplicar el estado
+		// Probabilidad fija del 15% para aplicar el estado
 		if (rand.nextDouble() < 0.15) {
 
 			// Obtenemos el estado que intenta aplicar el movimiento
@@ -475,8 +538,7 @@ public class Combate {
 
 			// Lógica para el resto de estados persistentes
 			else {
-				// Solo aplicamos el estado si el Pokémon está VIVO (no sobreescribimos otros
-				// estados)
+				// Solo aplicamos el estado si el Pokémon está VIVO (no sobreescribimos otros estados)
 				if (defensor.getEstado() == Estado.VIVO) {
 					defensor.setEstado(estadoAAplicar);
 					registrarSuceso(
@@ -488,11 +550,16 @@ public class Combate {
 
 		} else {
 			// El 85% de las veces el estado no se aplica, pero el log no necesita registrar
-			// el fallo
-			// para no llenar el documento de mensajes irrelevantes.
+			// el fallo para no llenar el documento de mensajes irrelevantes.
 		}
 	}
 
+	/**
+	 * Para los movimientos de clase 2, que aplican cambios de estadisticas
+	 * y que estas estadísticas solo persistan durante el combate, no se actualizan en la base de datos
+	 * @param mov que lo aplica
+	 * @param defensor que recibe el cambio de estadísticas
+	 */
 	private void aplicarDebuffs(Movimiento mov, Pokemon defensor) {
 		String mejora = mov.getMejora();
 
@@ -531,6 +598,13 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Igual que tenemos el metodo de los movimientos de ataque que aplican estado
+	 * pues este es para los movimientos de tipo 2, con la misma probabilidad
+	 * ademas se tiene en cuenta la duración de los estados durante los turnos
+	 * @param mov que lo aplica
+	 * @param defensor que lo recibe
+	 */
 	private void aplicarEstadoClase2(Movimiento mov, Pokemon defensor) {
 		Estado estadoAAplicar = mov.getEstado();
 
@@ -552,7 +626,7 @@ public class Combate {
 			duracion = Math.max(2, Math.min(mov.getNumTurnos(), 5));
 		}
 
-		// 4. Aplicación de estados temporales (con contador)
+		// Aplicación de estados temporales (con contador)
 		if (duracion > 0) {
 			if (defensor == this.pJugador) {
 				this.turnosEstadoJugador = duracion;
@@ -563,7 +637,7 @@ public class Combate {
 			registrarSuceso(defensor.getNombre() + " sufre " + estadoAAplicar.name().toLowerCase() + " por " + duracion
 					+ " turnos.");
 		}
-		// 5. Aplicación de estados persistentes (sin contador)
+		// Aplicación de estados persistentes (sin contador)
 		else {
 			// Aquí entran Veneno, Parálisis, Quemado...
 			defensor.setEstado(estadoAAplicar);
@@ -571,6 +645,12 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Este es el último de los movimientos, que son de tipo 3
+	 * aplica las mejoras en el pokemon que lo usa
+	 * @param mov que aplica
+	 * @param atacante o el que recibe la mejora
+	 */
 	private void aplicarBuffs(Movimiento mov, Pokemon atacante) {
 		String mejora = mov.getMejora();
 
@@ -600,7 +680,6 @@ public class Combate {
 			break;
 
 		case "especial+1":
-			// Asumiendo que tu atributo se llama ataqueEspecial o similar
 			atacante.setAtaqueEspecial(atacante.getAtaqueEspecial() + 5);
 			registrarSuceso("¡El ataque especial de " + atacante.getNombre() + " ha subido!");
 			break;
@@ -610,7 +689,7 @@ public class Combate {
 			int cantidadCura = atacante.getVitalidadMax() / 2;
 			int vidaAnterior = atacante.getVitalidad();
 
-			// Sumamos la cura sin sobrepasar el máximo
+			// Sumamos la cura sin sobrepasar el máximo porque sino se pasa
 			atacante.setVitalidad(Math.min(atacante.getVitalidadMax(), atacante.getVitalidad() + cantidadCura));
 
 			int curadoReal = atacante.getVitalidad() - vidaAnterior;
@@ -623,6 +702,9 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Método usado para actualizar los contadores de los estados y limpiar el estado
+	 */
 	public void actualizarContadores() {
 		// Gestionar turnos del Jugador
 		if (turnosEstadoJugador > 0) {
@@ -643,6 +725,13 @@ public class Combate {
 		}
 	}
 
+	
+	/**
+	 * Determina si un tipo elemental debe atacar usando la estadística de 
+	 * Ataque (Físico) o Ataque Especial.
+	 * @param tipo El tipo elemental del movimiento.
+	 * @return "ESPECIAL" para tipos de la lista, "FISICO" para el resto.
+	 */
 	public String determinarClasePorTipo(Tipo tipo) {
 		switch (tipo) {
 		case FUEGO:
@@ -659,6 +748,15 @@ public class Combate {
 		}
 	}
 
+	/**
+	 * Calcula el daño final basándose en la fórmula del juego real
+	 * Daño = (((2*Nivel/5 + 2) * Potencia * (Atk/Def) / 50) + 2) * Multiplicadores
+	 * @param m Movimiento ejecutado
+	 * @param atacante Pokémon que ataca
+	 * @param defensor Pokémon que defiende
+	 * @param multCritico Multiplicador de golpe crítico (1.5 o 1.0)
+	 * @return Valor entero del daño causado
+	 */
 	public int calcularDanio(Movimiento m, Pokemon atacante, Pokemon defensor, double multCritico) {
 		int atkUso;
 		int defUso;
@@ -673,7 +771,7 @@ public class Combate {
 			defUso = defensor.getDefensa();
 		}
 
-		// Cálculo de Efectividad
+		// Cálculo de Efectividad con los métodos de pokemon
 
 		double efec = atacante.calcularMultiplicadorFinal(m, defensor);
 
@@ -698,6 +796,10 @@ public class Combate {
 		return danioFinal;
 	}
 
+	/**
+	 * Este método devuelve el pokemon que ha ganado
+	 * @return Pokémon que ha ganado el combate
+	 */
 	public Pokemon getGanador() {
 		if (pJugador.getVitalidad() > 0 && pRival.getVitalidad() <= 0)
 			return pJugador;
@@ -706,9 +808,15 @@ public class Combate {
 		return null; // Empate o combate no terminado
 	}
 
+	/**
+	 * Genera un reporte textual completo de todo el enfrentamiento, compila la fecha de inicio y 
+	 * cada uno de los sucesos registrados en el historial (turnos, daños, estados y resultados).
+	 * @return Un String con el registro cronológico del combate.
+	 */
 	public String getTextoLogCompleto() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("LOG DE COMBATE - ").append(fechaInicio).append("\n");
+		// Guarda múltiples líneas
 		for (String linea : historialLog) {
 			sb.append(linea).append("\n");
 		}

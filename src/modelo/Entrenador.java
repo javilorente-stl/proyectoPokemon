@@ -3,6 +3,14 @@ package modelo;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+
+/**
+ * Representa al usuario o entidad que posee y gestiona Pokémon.
+ * Contiene la información de perfil, el saldo de Pokédollars y los contenedores
+ * para el equipo activo, el almacenamiento (caja) y los objetos de la mochila, que al final no he implementado.
+ * @author Javier Lorente Rodríguez
+ * @version 1.2
+ */
 public class Entrenador {
 	private int idEntrenador;
 	private String nombre;
@@ -10,10 +18,16 @@ public class Entrenador {
 	private int pokedollars;
 	private String imagenEntrenador;
 	private int claseEntrenador;
+	// Contenedores para los datos
 	private LinkedList<Pokemon> equipo1 = new LinkedList<>();
 	private LinkedList<Pokemon> equipo2 = new LinkedList<>();
 	private LinkedList<Objeto> mochila = new LinkedList<>();
 
+	
+	/**
+	 * Constructor principal para la carga completa de un perfil de entrenador
+	 * desde la persistencia.
+	 */
 	public Entrenador(String nombre, String password, LinkedList<Pokemon> equipo1, LinkedList<Pokemon> equipo2,
 			int pokedollars, LinkedList<Objeto> mochila) {
 		super();
@@ -25,6 +39,11 @@ public class Entrenador {
 		this.mochila = mochila;
 	}
 
+	/**
+	 * Constructor simplificado para inicializar un nuevo entrenador con 
+	 * valores por defecto y sin fondos iniciales. Creo que este no hemos llegado
+	 * a usarlo específicamente
+	 */
 	public Entrenador(String nombre, String password, LinkedList<Pokemon> equipo1) {
 		super();
 		this.nombre = nombre;
@@ -32,7 +51,14 @@ public class Entrenador {
 		this.equipo1 = equipo1;
 
 	}
-
+	
+	/**
+	 * Este es el constructor que hemos usado en el login para crear a nuevos
+	 * usuarios, solo con el nombre y la contraseña
+	 * y el resto de valores por defecto
+	 * @param usuario
+	 * @param password
+	 */
 	public Entrenador(String usuario, String password) {
 		super();
 		this.idEntrenador = 0;
@@ -44,11 +70,13 @@ public class Entrenador {
 		this.mochila = new LinkedList<>();
 	}
 
+	// Un constructor vacío por si acaso
 	public Entrenador() {
 		super();
 
 	}
 
+	// Métodos Getter y Setter
 	public int getIdEntrenador() {
 		return idEntrenador;
 	}
@@ -121,6 +149,11 @@ public class Entrenador {
 		this.mochila = mochila;
 	}
 
+	/**
+	 * Método inicialmente creado para mover los pokemon, finalmente este método está 
+	 * obsoleto, no lo hemos usado
+	 * @param indice a la posición que movemos el pokemon
+	 */
 	public void moverPokemonACaja(int indice) {
 		// Validamos que el equipo principal tenga más de un Pokémon
 		if (equipo1.size() <= 1) {
@@ -147,8 +180,13 @@ public class Entrenador {
 		}
 	}
 
+	/**
+	 * El método contrario al anterior que saca al pokemon de la caja al equipo, igualmente
+	 * obsoleto y que no estamos finalmente usando en la vista de la caja
+	 * @param indiceCaja de donde sale
+	 */
 	public void sacarDeCajaAEquipo(int indiceCaja) {
-		// Validar si el equipo principal ya está lleno (máximo 4)
+		// Validar si el equipo principal ya está lleno (máximo 6)
 		if (equipo1.size() >= 4) {
 			System.out.println("Error: El equipo principal ya tiene 4 Pokémon. Debes mover uno a la caja primero.");
 			return;
@@ -172,67 +210,5 @@ public class Entrenador {
 			System.out.println("Error: No hay ningún Pokémon en esa posición de la caja.");
 		}
 	}
-
-	public void entrenarPokemon(Pokemon p, String tipo) {
-		int baseCoste = 0;
-		int nivel = p.getNivel();
-		int mejora = 5; // Los "Y" puntos que mencionas
-
-		// Determinamos el multiplicador de coste según el tipo
-		switch (tipo.toLowerCase()) {
-		case "pesado":
-			baseCoste = 20;
-			break;
-		case "furioso":
-			baseCoste = 30;
-			break;
-		case "funcional":
-			baseCoste = 40;
-			break;
-		case "onirico":
-			baseCoste = 40;
-			break;
-		default:
-			System.out.println("Tipo de entrenamiento no reconocido.");
-			return;
-		}
-
-		int costeTotal = baseCoste * nivel;
-
-		// Verificamos si el entrenador tiene dinero suficiente
-		if (this.pokedollars >= costeTotal) {
-			this.pokedollars -= costeTotal; // Cobramos
-
-			// Aplicamos las mejoras según el tipo de entrenamiento
-			switch (tipo.toLowerCase()) {
-			case "pesado":
-				p.setDefensa(p.getDefensa() + mejora);
-				p.setDefensaEspecial(p.getDefensaEspecial() + mejora);
-				p.setVitalidad(p.getVitalidad() + mejora);
-				break;
-			case "furioso":
-				p.setAtaque(p.getAtaque() + mejora);
-				p.setAtaqueEspecial(p.getAtaqueEspecial() + mejora);
-				p.setVelocidad(p.getVelocidad() + mejora);
-				break;
-			case "funcional":
-				p.setVelocidad(p.getVelocidad() + mejora);
-				p.setAtaque(p.getAtaque() + mejora);
-				p.setDefensa(p.getDefensa() + mejora);
-				p.setVitalidad(p.getVitalidad() + mejora);
-				break;
-			case "onirico":
-				p.setVelocidad(p.getVelocidad() + mejora);
-				p.setAtaqueEspecial(p.getAtaqueEspecial() + mejora);
-				p.setDefensaEspecial(p.getDefensaEspecial() + mejora);
-				p.setVitalidad(p.getVitalidad() + mejora);
-				break;
-			}
-			System.out.println("¡Entrenamiento " + tipo + " completado! Has gastado " + costeTotal + " pokédollars.");
-		} else {
-			System.out.println("No tienes suficiente dinero. Coste necesario: " + costeTotal);
-		}
-	}
-	
 
 }

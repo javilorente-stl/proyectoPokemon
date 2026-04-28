@@ -18,6 +18,12 @@ import modelo.Pokemon;
 import modelo.Sexo;
 import modelo.Tipo;
 
+/**
+ * Esta clase sirve para toda la gestion de datos que se envían o sacan de la base de datos
+ * relacionados con el pokemon
+ * @author Javier Lorente Rodríguez
+ * @version 2.5
+ */
 public class PokemonCrud {
 
 	/**
@@ -25,12 +31,11 @@ public class PokemonCrud {
 	 * insert dentro del entrenador que esta realizando la captura Se le dan los
 	 * datos aleatorios adecuados y se tratan valores como el sexo También se le
 	 * hace una llamada al método para asignarle un movimiento
-	 * 
-	 * @param con
+	 * @param con la conexion
 	 * @param numPokedex
-	 * @param ent
+	 * @param ent el entrenador al que se le guarda el pokemon
 	 * @param mote
-	 * @throws SQLException
+	 * @throws SQLException por si da error
 	 */
 	public static void guardarPokemon(Connection con, int numPokedex, Entrenador ent, String mote) throws SQLException {
 
@@ -42,7 +47,7 @@ public class PokemonCrud {
 
 		String sqlSelect = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX=?";
 
-		// Obtener el nuevo ID_POKEMON
+		// Obtener el nuevo ID_POKEMON para la base de datos
 		int nuevoId = 1;
 		try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
 				ResultSet rsMax = psMax.executeQuery()) {
@@ -149,17 +154,18 @@ public class PokemonCrud {
 
 	/**
 	 * Este metodo es para obtener los pokemon que están en el equipo principal
-	 * todos sus datos
-	 * 
+	 * lo usamos tanto en la vista del equipo como en la del combate
+	 * por eso se obtienen los que están en las 6 primeras posiciones de la caja
+	 * si hay alguno que no esté en esos 6 tenemos otro método para sacarlo
 	 * @param conexion
 	 * @param e
 	 * @throws SQLException
 	 */
 	public static void obtenerPokemon1(Connection conexion, Entrenador e) throws SQLException {
-		// 1. Limpieza inicial por seguridad
+		// Limpieza inicial por seguridad
 		e.getEquipo1().clear();
 
-		// Añadimos P.EXPERIENCIA a la consulta
+		
 		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, "
 				+ "P.VITALIDAD_MAX, P.ATAQUE, P.ATA_ESPECIAL, P.DEFENSA, P.DEF_ESPECIAL, P.VELOCIDAD, "
 				+ "P.NIVEL, P.EXPERIENCIA, P.FERTILIDAD, P.SEXO, P.ESTADO, P.CAJA, P.ID_OBJETO, "
@@ -222,6 +228,13 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Con este método sacamos a todos los pokemons de un entrenador de la base de datos con todos sus datos
+	 * este lo usamos para la crianza o el entrenamiento, que se pueda elegir cualquier pokemon
+	 * @param conexion
+	 * @param e
+	 * @throws SQLException
+	 */
 	public static void obtenerTodosLosPokemon(Connection conexion, Entrenador e) throws SQLException {
 		// Eliminamos el filtro de CAJA para traer a todos
 		String sql = "SELECT P.ID_POKEMON, PX.NUM_POKEDEX, PX.NOM_POKEMON, P.MOTE, P.VITALIDAD, " + "P.VITALIDAD_MAX, "
@@ -268,16 +281,12 @@ public class PokemonCrud {
 				p.setEstado(Estado.convertirEstadoDesdeString(rs.getString("ESTADO").toUpperCase()));
 			}
 
-			// Cargamos sus movimientos (reutilizando tu método existente)
+			// Cargamos sus movimientos reutilizando el método
 			cargarMovimientosPokemon(conexion, p);
 
 			listadoCompleto.add(p);
 		}
 
-		// OPCIÓN A: Guardarlos en una lista general del entrenador (si la tienes)
-		// e.setTodosLosPokemon(listadoCompleto);
-
-		// OPCIÓN B: Si quieres que sustituya al equipo actual
 		e.setEquipo1(listadoCompleto);
 
 		rs.close();
@@ -286,8 +295,8 @@ public class PokemonCrud {
 
 	/**
 	 * Este es el mismo metodo de obtener pokemon, pero se usa para los pokemon de
-	 * la caja También se cargan los movimientos
-	 * 
+	 * la caja, con todos sus datos y también se cargan los movimientos
+	 * Por eso se cogen los pokemon con caja>6, se usa en la vista de la caja
 	 * @param conexion
 	 * @param e
 	 * @throws SQLException
@@ -335,21 +344,26 @@ public class PokemonCrud {
 						p.setTipo2(Tipo.convertirTpoDesdeString(rs.getString("TIPO2").toUpperCase()));
 					}
 
+					// Aqui cargamos también los movimientos, que se muestran en una parte de la vista
 					cargarMovimientosPokemon(conexion, p);
+					// Y se añaden
 					listadoCaja.add(p);
 				}
+				// Aqui se setean los datos
 				e.setEquipo2(listadoCaja);
 			}
 		}
 	}
 
 	/**
-	 * Carga los movimientos de un Pokémon específico desde la base de datos,
-	 * obteniendo los datos estáticos del movimiento y los PP actuales del Pokémon.
+	 * Carga los movimientos de un Pokemon específico desde la base de datos,
+	 * obteniendo los datos estáticos del movimiento y los PP actuales del Pokemon.
+	 * @param conexion con la base de datos
+	 * @param p el pokemon del que se sacan los movimientos
 	 */
 	public static void cargarMovimientosPokemon(Connection conexion, Pokemon p) {
 		// Definimos la consulta con un JOIN para traer datos de ambas tablas
-		// M.PP es el valor base (máximo) y PM.NUM_PP es lo que le queda al Pokémon
+		// M.PP es el valor base (máximo) y PM.NUM_PP es lo que le queda al Pokemon
 		String sql = "SELECT M.ID_MOVIMIENTO, M.NOM_MOVIMIENTO, M.POTENCIA, "
 				+ "M.CLASE_MOVIMIENTO, M.PRECISION_MOV, M.MEJORA, M.TIPO, M.ESTADO, "
 				+ "M.PP AS PP_MAXIMO, PM.NUM_PP AS PP_ACTUAL " + "FROM MOVIMIENTO M "
@@ -364,7 +378,7 @@ public class PokemonCrud {
 				while (rs.next()) {
 					Movimiento m = new Movimiento();
 
-					// 1. Datos de identificación y combate
+					// Datos de identificación y combate
 					m.setIdMovimiento(rs.getInt("ID_MOVIMIENTO"));
 					m.setNombre(rs.getString("NOM_MOVIMIENTO"));
 					m.setPotencia(rs.getInt("POTENCIA"));
@@ -372,13 +386,13 @@ public class PokemonCrud {
 					m.setPrecision(rs.getInt("PRECISION_MOV"));
 					m.setMejora(rs.getString("MEJORA"));
 
-					// 2. Gestión de PPs (Diferenciando Max de Actual)
+					// Gestión de PPs (Diferenciando Max de Actual)
 					// Asegúrate de que en tu clase Movimiento tengas setPpMax o similar para el
 					// total
 					m.setNumPPMax(rs.getInt("PP_MAXIMO"));
 					m.setNumPP(rs.getInt("PP_ACTUAL"));
 
-					// 3. Cargar el Estado que puede aplicar el movimiento
+					// Cargar el Estado que puede aplicar el movimiento
 					String estadoBD = rs.getString("ESTADO");
 					if (estadoBD != null && !estadoBD.isEmpty()) {
 						try {
@@ -388,7 +402,7 @@ public class PokemonCrud {
 						}
 					}
 
-					// 4. Cargar el Tipo (importante para lógica de daño y UI)
+					// Cargar el Tipo (importante para lógica de daño y UI)
 					String tipoBD = rs.getString("TIPO");
 					if (tipoBD != null) {
 						try {
@@ -414,14 +428,12 @@ public class PokemonCrud {
 	/**
 	 * Dejando el primero en un lugar inaccesible y luego actualizadolo ya que los
 	 * valores de CAJA en la base de datos es UNIQUE y puede dar conflicto.
-	 * 
-	 * @param con
-	 * @param idEntrenador
-	 * @param posA
-	 * @param posB
+	 * @param con es la conexion
+	 * @param idEntrenador para identificar de donde vienen los pokemon
+	 * @param posA posición inicial
+	 * @param posB posición final
 	 * @throws SQLException
 	 */
-
 	public static void intercambiarPosicion(Connection con, int idEntrenador, int posA, int posB) throws SQLException {
 		String sql1 = "UPDATE POKEMON SET CAJA = -1 WHERE ID_ENTRENADOR = ? AND CAJA = ?";
 		String sql2 = "UPDATE POKEMON SET CAJA = ? WHERE ID_ENTRENADOR = ? AND CAJA = ?";
@@ -455,6 +467,15 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Parecido al método de intercambiar, pero en este se tiene en cuenta que puede no haber
+	 * ningún pokemon en la posición deseada, y se llama al metodo intercambiar si no es así
+	 * @param con conexion
+	 * @param idEntrenador dueño de los pokemon
+	 * @param posOrigen
+	 * @param posDestino
+	 * @throws SQLException
+	 */
 	public static void moverPokemon(Connection con, int idEntrenador, int posOrigen, int posDestino)
 			throws SQLException {
 
@@ -481,7 +502,14 @@ public class PokemonCrud {
 			System.out.println("Movimiento realizado con éxito.");
 		}
 	}
-
+	
+	/**
+	 * Con este método compactamos el equipo para que no quéden huecos en la vista y actualizamos
+	 * el valor con un update en la base de datos
+	 * @param con
+	 * @param idEntrenador
+	 * @throws SQLException
+	 */
 	public static void compactarEquipo(Connection con, int idEntrenador) throws SQLException {
 
 		String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA BETWEEN 1 AND 6 ORDER BY CAJA ASC";
@@ -500,25 +528,33 @@ public class PokemonCrud {
 
 			PreparedStatement psUpd = con.prepareStatement(sqlUpdate);
 			int nuevaPosicion = 1;
-
+			// Usamos un bucle que actualiza las posiciones directamente
 			for (int id : ids) {
 				psUpd.setInt(1, nuevaPosicion);
 				psUpd.setInt(2, id);
 				psUpd.executeUpdate();
 				nuevaPosicion++;
 			}
-
+			// Usamos el commit si no ha habido ningún error porque hemos parado el autocommit
 			con.commit();
 			System.out.println("Equipo compactado: se han reordenado " + ids.size() + " pokémon.");
-
+		// Tratamos la excepción del los errores del sql
 		} catch (SQLException e) {
 			con.rollback();
 			throw e;
+		// Volvemos a poner el autocommit en true para el resto de las querys
 		} finally {
 			con.setAutoCommit(true);
 		}
 	}
 
+	/**
+	 * Igual que el método de compactar el equipo, solo que este se usa en la vista
+	 * de la caja, por eso es con la caja mayor que 6
+	 * @param con
+	 * @param idEntrenador
+	 * @throws SQLException
+	 */
 	public static void compactarCaja(Connection con, int idEntrenador) throws SQLException {
 		// Buscamos solo los que tienen caja mayor a 6
 		String sqlSelect = "SELECT ID_POKEMON FROM POKEMON WHERE ID_ENTRENADOR = ? AND CAJA > 6 ORDER BY CAJA ASC";
@@ -529,7 +565,7 @@ public class PokemonCrud {
 		try {
 			con.setAutoCommit(false);
 
-			// Obtenemos los IDs de los pokémon que están en la caja
+			// Obtenemos los IDs de los pokemon que están en la caja
 			PreparedStatement psSel = con.prepareStatement(sqlSelect);
 			psSel.setInt(1, idEntrenador);
 			ResultSet rs = psSel.executeQuery();
@@ -562,6 +598,14 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * En vez de usar el max, y que aunque se eliminen pokemon, deje huecos,
+	 * hacemos este método para buscar el próximo sitio disponible dentro de la caja
+	 * @param conexion
+	 * @param idEntrenador
+	 * @return el entero que será el número de la caja disponible
+	 * @throws SQLException
+	 */
 	public static int obtenerSiguienteHuecoCaja(Connection conexion, int idEntrenador) throws SQLException {
 		// Buscamos el valor máximo de la columna CAJA para este entrenador
 		String sql = "SELECT MAX(CAJA) AS ultimo_hueco FROM POKEMON WHERE ID_ENTRENADOR = ?";
@@ -572,7 +616,7 @@ public class PokemonCrud {
 			try (ResultSet rs = ps.executeQuery()) {
 				if (rs.next()) {
 					int ultimoHueco = rs.getInt("ultimo_hueco");
-					// Si la consulta devuelve 0 o un valor menor a 6 (porque no hay pokémon en la
+					// Si la consulta devuelve 0 o un valor menor a 6 (porque no hay pokemon en la
 					// caja),
 					// el siguiente hueco disponible debe ser el 7.
 					if (ultimoHueco < 6) {
@@ -585,7 +629,15 @@ public class PokemonCrud {
 		// Por si acaso falla algo
 		return 7;
 	}
-
+	/**
+	 * Método para actualizar la posición del pokemon, es decir, modificar la caja
+	 * este método ya esta obsoleto, porque lo hicimimos antes de cambiar el valor 
+	 * de la caja entre 1 o 2, a que sea un int de la posición
+	 * @param con
+	 * @param idPokemon identificador del pokemon que queremos mover
+	 * @param nuevaCaja la nueva posición
+	 * @throws SQLException por si hay algún error
+	 */
 	public static void actualizarPosicionPokemon(Connection con, int idPokemon, int nuevaCaja) throws SQLException {
 		String sql = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -595,9 +647,19 @@ public class PokemonCrud {
 		}
 	}
 
+	
+	/**
+	 * Registra un nuevo movimiento para un Pokemon específico en la base de datos.
+	 * Antes de insertar, verifica que el Pokemon no supere el límite de 4 movimientos activos.
+	 * @param con Conexión activa a la base de datos SQL.
+	 * @param idPokemon Identificador único del Pokemon en la tabla correspondiente.
+	 * @param idMovimiento Identificador del movimiento que se desea asignar.
+	 * @param ppMax Cantidad inicial de los PP con los que contará el movimiento que sale de la tabla movimiento
+	 * @throws SQLException Si ocurre un error durante la consulta o la inserción en la base de datos.
+	 */
 	public static void asignarMovimiento(Connection con, int idPokemon, int idMovimiento, int ppMax)
 			throws SQLException {
-		// 1. Contar cuántos movimientos tiene ya el pokemon
+		// Contar cuántos movimientos tiene ya el pokemon
 		String sqlContar = "SELECT COUNT(*) FROM POKEMON_MOVIMIENTO WHERE ID_POKEMON = ?";
 
 		int totalMovimientos = 0;
@@ -609,13 +671,13 @@ public class PokemonCrud {
 			}
 		}
 
-		// 2. Comprobar el límite
+		// Comprobar el límite
 		if (totalMovimientos >= 4) {
 			System.out.println("Error: El Pokémon ya tiene 4 movimientos. Debes olvidar uno primero.");
 			return; // Salimos sin insertar
 		}
 
-		// 3. Si tiene menos de 4, procedemos al INSERT
+		// Si tiene menos de 4, procedemos al INSERT
 		String sqlInsert = "INSERT INTO POKEMON_MOVIMIENTO (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, ?)";
 		try (PreparedStatement psInsert = con.prepareStatement(sqlInsert)) {
 			psInsert.setInt(1, idPokemon);
@@ -627,10 +689,19 @@ public class PokemonCrud {
 
 	}
 
+	/**
+	 * Método para borrar un pokemon, que es una de las opciones de la vista de la caja
+	 * y lo elimina de la base de datos
+	 * @param con, la conexión
+	 * @param idPokemon
+	 * @param idEntrenador
+	 * @return devuelve si lo ha eliminado true o sino, false, para saber en el programa que ha pasado
+	 * @throws SQLException para los errores
+	 */
 	public static boolean eliminarPokemon(Connection con, int idPokemon, int idEntrenador) throws SQLException {
 		String sqlDelete = "DELETE FROM POKEMON WHERE ID_POKEMON = ?";
 
-		// FASE 1: Borrado atómico
+		// Borrado
 		try (PreparedStatement ps = con.prepareStatement(sqlDelete)) {
 			ps.setInt(1, idPokemon);
 			int filasAfec = ps.executeUpdate();
@@ -640,7 +711,6 @@ public class PokemonCrud {
 				if (!con.getAutoCommit())
 					con.commit();
 
-				// FASE 2: Llamadas independientes
 				// Como no queremos tocar estos métodos, los llamamos por separado.
 				// Cada uno gestionará su propio setAutoCommit y Commit internamente.
 				compactarEquipo(con, idEntrenador);
@@ -655,33 +725,37 @@ public class PokemonCrud {
 		return false;
 	}
 
+
 	/**
-	 * Este metodo busca la pareja del pokemon del hueco uno, si no hay pareja pues
-	 * me salta un mensaje
-	 * 
-	 * @param con
-	 * @param idEntrenador
-	 * @param p
-	 * @throws SQLException
+	 * Evalúa si dos Pokemon cumplen con los requisitos para poder criar 
+	 * necesarios para la reproducción
+	 * Para que la compatibilidad sea exitosa, deben cumplirse las siguientes reglas:
+	 * No pueden ser la misma instancia o el mismo ejemplar (identificados por ID).
+	 * Deben tener el mismo número de la pokedex.
+	 * Deben tener sexos opuestos.
+	 * Ambos deben poseer al menos un punto de fertilidad restante.
+	 * @param p1 Primer ejemplar para la crianza
+	 * @param p2 Segundo ejemplar para la crianza
+	 * @return true si ambos ejemplares pueden criar; false en caso contrario.
 	 */
 	public static boolean sonCompatibles(Pokemon p1, Pokemon p2) {
-		// 1. No pueden ser el mismo Pokémon físicamente
+		// No pueden ser el mismo Pokemon físicamente
 		if (p1.getId_pokemon() == p2.getId_pokemon()) {
 			return false;
 		}
 
-		// 2. Deben ser de la misma especie (mismo número de Pokédex)
+		//  Deben ser de la misma especie (mismo número de Pokedex)
 		if (p1.getNum_pokedex() != p2.getNum_pokedex()) {
 			return false;
 		}
 
-		// 3. Deben ser de distinto sexo
+		// Deben ser de distinto sexo
 		// Asumiendo que usas un Enum o String para el sexo
 		if (p1.getSexo() == p2.getSexo()) {
 			return false;
 		}
 
-		// 4. Deben tener fertilidad mayor a 0
+		// Deben tener fertilidad mayor a 0
 		if (p1.getFertilidad() <= 0 || p2.getFertilidad() <= 0) {
 			return false;
 		}
@@ -690,13 +764,28 @@ public class PokemonCrud {
 		return true;
 	}
 
+	
+	/**
+	 * Gestiona el proceso integral de crianza, creando un nuevo ejemplar a partir de dos padres, para la vista crianza
+	 * El proceso incluye:
+	 * Generación de un mote híbrido combinando los nombres de los padres.
+	 * Herencia de las mejores estadísticas base (HP, Ataque, Defensa, etc.).
+	 * Herencia aleatoria de hasta 2 movimientos por cada padre.
+	 * Asignación automática al primer hueco libre en las cajas del entrenador.
+	 * Reducción de la fertilidad de los progenitores.
+	 * @param con Conexión activa a la base de datos.
+	 * @param entrenador El propietario que recibirá al nuevo Pokemon.
+	 * @param p1 Primer padre.
+	 * @param p2 Segundo madre.
+	 * @return Una instancia del nuevo objeto {@code Pokemon} generado, o null si falla la transacción.
+	 */
 	public static Pokemon pokemonCriado(Connection con, Entrenador entrenador, Pokemon p1, Pokemon p2) {
 		Pokemon hijo = null;
 		try {
 			// Desactivamos el auto-commit para manejar la transacción manualmente
 			con.setAutoCommit(false);
 
-			// 1. GENERAR MOTE MEZCLADO
+			// GENERAR MOTE MEZCLADO
 			String moteHijo;
 			int mitad1 = p1.getMote().length() / 2;
 			int mitad2 = p2.getMote().length() / 2;
@@ -707,7 +796,7 @@ public class PokemonCrud {
 				moteHijo = p2.getMote().substring(0, mitad2) + p1.getMote().substring(mitad1);
 			}
 
-			// 2. OBTENER EL NUEVO ID_POKEMON (Manual)
+			// OBTENER EL NUEVO ID_POKEMON (Manual)
 			int nuevoId = 1;
 			try (PreparedStatement psMax = con.prepareStatement("SELECT MAX(ID_POKEMON) FROM POKEMON");
 					ResultSet rsMax = psMax.executeQuery()) {
@@ -716,7 +805,7 @@ public class PokemonCrud {
 				}
 			}
 
-			// 3. OBTENER EL PRIMER HUECO LIBRE EN LA CAJA PARA ESTE ENTRENADOR
+			// OBTENER EL PRIMER HUECO LIBRE EN LA CAJA PARA ESTE ENTRENADOR
 			int proximaPosicion = 1;
 			String sqlHuecos = "SELECT CAJA FROM POKEMON WHERE ID_ENTRENADOR = ? ORDER BY CAJA ASC";
 			try (PreparedStatement psHuecos = con.prepareStatement(sqlHuecos)) {
@@ -733,7 +822,7 @@ public class PokemonCrud {
 				}
 			}
 
-			// 4. MEJORES CARACTERÍSTICAS
+			// MEJORES CARACTERÍSTICAS
 			int hp = Math.max(p1.getVitalidad(), p2.getVitalidad());
 			int ataque = Math.max(p1.getAtaque(), p2.getAtaque());
 			int ataqueEsp = Math.max(p1.getAtaqueEspecial(), p2.getAtaqueEspecial());
@@ -741,7 +830,7 @@ public class PokemonCrud {
 			int defensaEsp = Math.max(p1.getDefensaEspecial(), p2.getDefensaEspecial());
 			int velocidad = Math.max(p1.getVelocidad(), p2.getVelocidad());
 
-			// 5. INSERTAR EL POKÉMON EN LA TABLA POKEMON
+			// INSERTAR EL POKEMON EN LA TABLA POKEMON
 			String sqlPoke = "INSERT INTO POKEMON (ID_POKEMON, NUM_POKEDEX, ID_ENTRENADOR, MOTE, VITALIDAD, VITALIDAD_MAX, "
 					+ "ATAQUE, ATA_ESPECIAL, DEFENSA, DEF_ESPECIAL, VELOCIDAD, NIVEL, EXPERIENCIA, "
 					+ "FERTILIDAD, SEXO, ESTADO, CAJA) "
@@ -786,7 +875,7 @@ public class PokemonCrud {
 				hijo.setTipo2(p1.getTipo2());
 			}
 
-			// 6. LÓGICA DE HERENCIA DE MOVIMIENTOS (De los padres al hijo)
+			// LÓGICA DE HERENCIA DE MOVIMIENTOS (De los padres al hijo)
 			List<Integer> movimientosHijo = new ArrayList<>();
 			String sqlGetMovs = "SELECT ID_MOVIMIENTO FROM pokemon_movimiento WHERE ID_POKEMON = ? AND ACTIVO = 1";
 
@@ -817,7 +906,7 @@ public class PokemonCrud {
 				}
 			}
 
-			// 7. INSERTAR MOVIMIENTOS AL HIJO
+			// INSERTAR MOVIMIENTOS AL HIJO
 			String sqlInsMov = "INSERT INTO pokemon_movimiento (ID_POKEMON, ID_MOVIMIENTO, ACTIVO, NUM_PP) VALUES (?, ?, 1, 15)";
 			try (PreparedStatement psInsMov = con.prepareStatement(sqlInsMov)) {
 				for (Integer idMov : movimientosHijo) {
@@ -828,7 +917,7 @@ public class PokemonCrud {
 				psInsMov.executeBatch();
 			}
 
-			// 8. RESTAR FERTILIDAD A LOS PADRES
+			// RESTAR FERTILIDAD A LOS PADRES
 			String sqlUpdate = "UPDATE POKEMON SET FERTILIDAD = FERTILIDAD - 1 WHERE ID_POKEMON = ?";
 			try (PreparedStatement psUp = con.prepareStatement(sqlUpdate)) {
 				psUp.setInt(1, p1.getId_pokemon());
@@ -862,8 +951,21 @@ public class PokemonCrud {
 		return hijo;
 	}
 
+	
+	/**
+	 * Realiza una subida de nivel y estadísticas a cambio de una cantidad de dinero.
+	 * El coste se calcula dinámicamente: 20 * Nivel actual del Pokemon.
+	 * El pokemon no puede superar el nivel 100.
+	 * La mejora es defensiva: aumenta en 5 puntos la Defensa, Defensa Especial y Vitalidad.
+	 * Se gestiona mediante una transacción SQL para asegurar que el cobro y la mejora ocurran simultáneamente.
+	 * @param con conexión activa a la base de datos.
+	 * @param entrenador el propietario que paga el entrenamiento.
+	 * @param p el Pokemon que recibirá la mejora.
+	 * @return true si el entrenamiento se realizó con éxito; false si hay fondos insuficientes, 
+	 * nivel máximo alcanzado o error en la transacción.
+	 */
 	public static boolean entrenamientoPesado(Connection con, Entrenador entrenador, Pokemon p) {
-		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		// COMPROBACIÓN DE NIVEL MÁXIMO
 		if (p.getNivel() >= 100) {
 			System.out.println("El Pokémon ya está al nivel máximo (100).");
 			return false;
@@ -881,7 +983,7 @@ public class PokemonCrud {
 		try {
 			con.setAutoCommit(false);
 
-			// 1. Descontar dinero al entrenador
+			// Descontar dinero al entrenador
 			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
 			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
 				psDinero.setInt(1, coste);
@@ -889,7 +991,7 @@ public class PokemonCrud {
 				psDinero.executeUpdate();
 			}
 
-			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Aumentar estadísticas (+5) y subir NIVEL (+1)
 			// Usamos LEAST(NIVEL + 1, 100) en SQL por seguridad, aunque ya lo controlamos
 			// en Java
 			String sqlStats = "UPDATE POKEMON SET DEFENSA = DEFENSA + 5, DEF_ESPECIAL = DEF_ESPECIAL + 5, "
@@ -902,7 +1004,7 @@ public class PokemonCrud {
 
 			con.commit();
 
-			// 3. Actualizamos los objetos en memoria
+			// Actualizamos los objetos en memoria
 			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
 			p.setDefensa(p.getDefensa() + 5);
 			p.setDefensaEspecial(p.getDefensaEspecial() + 5);
@@ -932,8 +1034,18 @@ public class PokemonCrud {
 		}
 	}
 
+	
+	/**
+	 * Igual que el metodo anterior, se trata de un entrenamiento que sube unas estadísticas
+	 * específicas del pokemon, sube un nivel y trata que no pueda subir más del nivel 100
+	 * o que haya dinero suficiente
+	 * @param con la conexion
+	 * @param entrenador para saber cuanto dinero dispone y cual es su pokemon
+	 * @param p el pokemon que quiere entrenar
+	 * @return true si se ha realizado el entrenamiento, false si no se ha podido hacer
+	 */
 	public static boolean entrenamientoFurioso(Connection con, Entrenador entrenador, Pokemon p) {
-		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		// COMPROBACIÓN DE NIVEL MÁXIMO
 		if (p.getNivel() >= 100) {
 			System.out.println("El Pokémon ya está al nivel máximo (100).");
 			return false;
@@ -952,7 +1064,7 @@ public class PokemonCrud {
 			// Desactivamos auto-commit para manejar la transacción
 			con.setAutoCommit(false);
 
-			// 1. Descontar dinero al entrenador
+			// Descontar dinero al entrenador
 			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
 			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
 				psDinero.setInt(1, coste);
@@ -960,7 +1072,7 @@ public class PokemonCrud {
 				psDinero.executeUpdate();
 			}
 
-			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Aumentar estadísticas (+5) y subir NIVEL (+1)
 			// Estadísticas afectadas: ATAQUE, ATA_ESPECIAL, VELOCIDAD
 			String sqlStats = "UPDATE POKEMON SET ATAQUE = ATAQUE + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, "
 					+ "VELOCIDAD = VELOCIDAD + 5, NIVEL = NIVEL + 1 " + "WHERE ID_POKEMON = ?";
@@ -972,13 +1084,13 @@ public class PokemonCrud {
 			// Confirmar cambios
 			con.commit();
 
-			// 3. Actualizamos los objetos en memoria para que la interfaz se vea al día
+			// Actualizamos los objetos en memoria para que la interfaz se vea al día
 			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
 			p.setAtaque(p.getAtaque() + 5);
 			p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
 			p.setVelocidad(p.getVelocidad() + 5);
 			p.setNivel(p.getNivel() + 1);
-
+			// Para poder ver si se cumple el proceso por consola
 			System.out.println(
 					"[LOG] Entrenamiento furioso completado. " + p.getMote() + " ahora es nivel " + p.getNivel());
 			return true;
@@ -1004,8 +1116,17 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Igual que los dos métodos anteriores, se usa en la vista entrenamiento y sube
+	 * de nivel al pokemon subiendo unas estadísticas específicas
+	 * y tratando tanto el nivel como el dinero del entrenador
+	 * @param con conexion con la base de datos
+	 * @param entrenador que entrena el pokemon
+	 * @param p que va a ser entrenado
+	 * @return true si se realiza correctamente y false si no se puede realizar
+	 */
 	public static boolean entrenamientoFuncional(Connection con, Entrenador entrenador, Pokemon p) {
-		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		// COMPROBACIÓN DE NIVEL MÁXIMO
 		if (p.getNivel() >= 100) {
 			System.out.println("El Pokémon ya está al nivel máximo (100).");
 			return false;
@@ -1023,7 +1144,7 @@ public class PokemonCrud {
 		try {
 			con.setAutoCommit(false);
 
-			// 1. Descontar dinero al entrenador
+			// Descontar dinero al entrenador
 			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
 			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
 				psDinero.setInt(1, coste);
@@ -1031,7 +1152,7 @@ public class PokemonCrud {
 				psDinero.executeUpdate();
 			}
 
-			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Aumentar estadísticas (+5) y subir NIVEL (+1)
 			// Afecta a: VELOCIDAD, ATAQUE, DEFENSA, VITALIDAD y VITALIDAD_MAX
 			String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATAQUE = ATAQUE + 5, "
 					+ "DEFENSA = DEFENSA + 5, VITALIDAD = VITALIDAD + 5, "
@@ -1043,7 +1164,7 @@ public class PokemonCrud {
 
 			con.commit();
 
-			// 3. Actualizamos los objetos en memoria
+			// Actualizamos los objetos en memoria
 			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
 			p.setVelocidad(p.getVelocidad() + 5);
 			p.setAtaque(p.getAtaque() + 5);
@@ -1051,7 +1172,7 @@ public class PokemonCrud {
 			p.setVitalidad(p.getVitalidad() + 5);
 			p.setVitalidadMax(p.getVitalidadMax() + 5);
 			p.setNivel(p.getNivel() + 1);
-
+			// Para ver que ocurre en la parte de la consola
 			System.out.println("[LOG] Entrenamiento funcional completado para " + p.getMote());
 			return true;
 
@@ -1074,8 +1195,17 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * el último de los métodos de entrenamiento para el pokemon
+	 * que igual que los anteriores, sube de nivel teniendo en cuenta que no 
+	 * sea nivel 100 y que el entrenador tenga dinero suficiente
+	 * @param con conexion con la base de datos
+	 * @param entrenador que va a entrenar un pokemon
+	 * @param p pokemon que va a ser entrenado
+	 * @return
+	 */
 	public static boolean entrenamientoOnirico(Connection con, Entrenador entrenador, Pokemon p) {
-		// 0. COMPROBACIÓN DE NIVEL MÁXIMO
+		//  COMPROBACIÓN DE NIVEL MÁXIMO
 		if (p.getNivel() >= 100) {
 			System.out.println("El Pokémon ya está al nivel máximo (100).");
 			return false;
@@ -1093,7 +1223,7 @@ public class PokemonCrud {
 		try {
 			con.setAutoCommit(false);
 
-			// 1. Descontar dinero al entrenador
+			// Descontar dinero al entrenador
 			String sqlDinero = "UPDATE ENTRENADOR SET POKEDOLLARS = POKEDOLLARS - ? WHERE ID_ENTRENADOR = ?";
 			try (PreparedStatement psDinero = con.prepareStatement(sqlDinero)) {
 				psDinero.setInt(1, coste);
@@ -1101,7 +1231,7 @@ public class PokemonCrud {
 				psDinero.executeUpdate();
 			}
 
-			// 2. Aumentar estadísticas (+5) y subir NIVEL (+1)
+			// Aumentar estadísticas (+5) y subir NIVEL (+1)
 			// Afecta a: VELOCIDAD, ATA_ESPECIAL, DEF_ESPECIAL, VITALIDAD y VITALIDAD_MAX
 			String sqlStats = "UPDATE POKEMON SET VELOCIDAD = VELOCIDAD + 5, ATA_ESPECIAL = ATA_ESPECIAL + 5, "
 					+ "DEF_ESPECIAL = DEF_ESPECIAL + 5, VITALIDAD = VITALIDAD + 5, "
@@ -1113,7 +1243,7 @@ public class PokemonCrud {
 
 			con.commit();
 
-			// 3. Actualizamos los objetos en memoria
+			// Actualizamos los objetos en memoria
 			entrenador.setPokedollars(entrenador.getPokedollars() - coste);
 			p.setVelocidad(p.getVelocidad() + 5);
 			p.setAtaqueEspecial(p.getAtaqueEspecial() + 5);
@@ -1144,6 +1274,13 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Sirve para poder modificar todas las stats de los pokemon a voluntad
+	 * sobre todo para hacer algunas pruebas
+	 * @param con conexion con la base de datos
+	 * @param p pokemon que suben las estats
+	 * @throws SQLException
+	 */
 	public static void actualizarNivelStats(Connection con, Pokemon p) throws SQLException {
 		String sql = "UPDATE POKEMON SET NIVEL = ?, VITALIDAD = ?, ATAQUE = ?, DEFENSA = ?, "
 				+ "ATAQUE_ESPECIAL = ?, DEFENSA_ESPECIAL = ?, VELOCIDAD = ? " + "WHERE ID_POKEMON = ?";
@@ -1162,10 +1299,20 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Con este método generamos un pokemon aleatorio para los combates
+	 * seleccionamos un numero de la pokedex y sacamos los datos del tipo
+	 * le damos unos valores genericos segun el nivel que queremos, lo vamos a hacer
+	 * con niveles medianamente altos para comprobar las subidas de nivel
+	 * ademas le damos unos movimientos con otro método
+	 * @param con conexion con la base de datos
+	 * @return devuelve el pokemon en cuestion
+	 * @throws SQLException por si hay algun error en el select
+	 */
 	public static Pokemon generarPokemonAleatorio(Connection con) throws SQLException {
 		Pokemon enemigo = null;
 
-		// 1. Consultamos la tabla POKEDEX (que es la que tiene la info de la especie)
+		// Consultamos la tabla POKEDEX (que es la que tiene la info de la especie)
 		String sqlRandom = "SELECT * FROM POKEDEX ORDER BY RAND() LIMIT 1";
 
 		try (Statement st = con.createStatement(); ResultSet rs = st.executeQuery(sqlRandom)) {
@@ -1209,13 +1356,24 @@ public class PokemonCrud {
 				enemigo.setSexo(Math.random() > 0.5 ? Sexo.M : Sexo.H);
 				enemigo.setEstado(Estado.VIVO);
 
-				// 2. Asignar movimientos en memoria
+				// Asignar movimientos en memoria
 				asignarMovimientosEnMemoria(con, enemigo);
 			}
 		}
 		return enemigo;
 	}
 
+	
+	/**
+	 * Con este método sacamos de la base de datos 4 movimientos segun el tipo del
+	 * pokemon para poder lacar una lista y asignarselos y que sus movimientos
+	 * tengan sentido con el tipo que tiene
+	 * por defecto he puesto que pueda tener movimientos de tipo normal que son los que
+	 * más hay en la primera generación
+	 * @param con conexion con la base de datos
+	 * @param p pokemon que va a aprender los movimientos
+	 * @throws SQLException por si hay algun error en el select
+	 */
 	private static void asignarMovimientosEnMemoria(Connection con, Pokemon p) throws SQLException {
 		// Buscamos 4 movimientos de sus tipos o Normal al azar
 		String sqlMovs = "SELECT * FROM MOVIMIENTO WHERE TIPO IN (?, ?, 'NORMAL') ORDER BY RAND() LIMIT 4";
@@ -1261,8 +1419,20 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Método para comprobar las evoluciones de los pokemon, sacamos el valor que tenemos en
+	 * la base de datos que tiene el nivel al que evolucionan y como la base de datos está en
+	 * orden, solo hay que subir en uno el número de la pokedex y con ello ya cambia el tipo
+	 * y la imagen del pokemon
+	 * Este método está puesto en la vista de los entrenamiento, porque hay se producen las subidas 
+	 * de nivel mayoritariamente.
+	 * Ademas si el pokemon no tiene mote, le actualizamos el nombre al de su evolución
+	 * @param con conexión con la base de datos
+	 * @param p pokemon que intenta evolucionar
+	 * @return true si ha podido evolucionar, false si no
+	 */
 	public static boolean intentarEvolucionar(Connection con, Pokemon p) {
-		// 1. Consulta para obtener el nivel de evolución de la especie
+		// Consulta para obtener el nivel de evolución de la especie
 		String sql = "SELECT NIVEL_EVO FROM POKEDEX WHERE NUM_POKEDEX = ?";
 
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -1275,7 +1445,6 @@ public class PokemonCrud {
 					// Si el nivel_evo es > 0 y el pokemon cumple el requisito
 					if (nivelRequerido > 0 && p.getNivel() >= nivelRequerido) {
 
-						// 3. RECARGA DE DATOS:
 						// Como el nombre y tipos vienen de la Pokedex, al cambiar el NUM_POKEDEX
 						// necesitamos pedirle a la BD el nuevo nombre para que el objeto p esté al día.
 						String nombreAntes = p.getNombre(); // "Venonat"
@@ -1294,6 +1463,14 @@ public class PokemonCrud {
 		return false; // No cumple requisitos o error
 	}
 
+	
+	/**
+	 * Metodo que va dentro de intentarEvolucionar que actualiza el número de la pokedex en uno más
+	 * Mediante un update en la base de datos.
+	 * @param con conexión con la base de datos
+	 * @param p pokemon que va a ser actualizado
+	 * @throws SQLException por si hay algún erro en la query
+	 */
 	private static void ejecutarCambioPokedex(Connection con, Pokemon p) throws SQLException {
 		String sql = "UPDATE POKEMON SET NUM_POKEDEX = NUM_POKEDEX + 1 WHERE ID_POKEMON = ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -1305,9 +1482,20 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * El otro método que va dentro de intentarEvolucionar que cambia el nombre
+	 * si el pokemon no tenína ningun mote, lo que pasa es que yo use el mote para todo,
+	 * así que hay que comprobar si el mote es igual que el pokemon del que evoluciona para que
+	 * lo cambie
+	 * y No solo el nombre, también actualiza los tipos del pokemon por si cambian entre evoluciones
+	 * @param con conexion con la base de datos
+	 * @param p pokemon a actualizar
+	 * @param nombreEspecieAnterior para comprobar si actualiza el nombre o no
+	 * @throws SQLException por si hay algún error
+	 */
 	private static void actualizarNombreYDatosEspecie(Connection con, Pokemon p, String nombreEspecieAnterior)
 			throws SQLException {
-		// 1. Buscamos los datos de la nueva especie tras la evolución
+		//  Buscamos los datos de la nueva especie tras la evolución
 		String sql = "SELECT NOM_POKEMON, TIPO1, TIPO2 FROM POKEDEX WHERE NUM_POKEDEX = ?";
 
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -1317,7 +1505,7 @@ public class PokemonCrud {
 				if (rs.next()) {
 					String nuevoNombreEspecie = rs.getString("NOM_POKEMON");
 
-					// --- 2. LÓGICA DE NOMBRE / MOTE ---
+					// ---  LÓGICA DE NOMBRE / MOTE ---
 					// Si no tiene mote, o el mote es igual al nombre de la especie anterior:
 					if (p.getMote() == null || p.getMote().trim().isEmpty()
 							|| p.getMote().equalsIgnoreCase(nombreEspecieAnterior)) {
@@ -1327,7 +1515,7 @@ public class PokemonCrud {
 						actualizarMoteEnBD(con, p.getId_pokemon(), nuevoNombreEspecie);
 					}
 
-					// --- 3. ACTUALIZACIÓN DE TIPOS (Usando tu método) ---
+					// --- ACTUALIZACIÓN DE TIPOS (Usando tu método) ---
 					String t1BD = rs.getString("TIPO1");
 					if (t1BD != null) {
 						// Invocamos tu método que limpia tildes y normaliza
@@ -1347,6 +1535,14 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Este es el método que va dentro del método anterior para ser un pelín más limpios
+	 * y que se encarga explícitamente de actualizar la base de datos
+	 * @param con
+	 * @param idPokemon
+	 * @param nuevoMote
+	 * @throws SQLException
+	 */
 	private static void actualizarMoteEnBD(Connection con, int idPokemon, String nuevoMote) throws SQLException {
 		String sql = "UPDATE POKEMON SET MOTE = ? WHERE ID_POKEMON = ?";
 		try (PreparedStatement ps = con.prepareStatement(sql)) {
@@ -1356,6 +1552,14 @@ public class PokemonCrud {
 		}
 	}
 
+	/**
+	 * Creamos un método que recupera a un pokemon, este nos servirá para hacer pruebas
+	 * y para la vista de la liga pokemon que pueda ser una opción curar los pokemon entre los combates
+	 * además limpia estados y restaura los pp de los movimientos
+	 * @param con conexion con la base de datos
+	 * @param p pokemon que queremos curar
+	 * @return devuelve true si ha podido curarlo, false si no ha sido posible
+	 */
 	public static boolean curarPokemonTotal(Connection con, Pokemon p) {
 		// Queries actualizadas: ESTADO ahora recibe el String 'VIVO'
 		String SQL_POKEMON = "UPDATE POKEMON SET VITALIDAD = VITALIDAD_MAX, ESTADO = 'VIVO' WHERE ID_POKEMON = ?";
@@ -1367,13 +1571,13 @@ public class PokemonCrud {
 		try {
 			con.setAutoCommit(false);
 
-			// 1. Restaurar Salud y poner estado en 'VIVO'
+			// Restaurar Salud y poner estado en 'VIVO'
 			try (PreparedStatement psPkm = con.prepareStatement(SQL_POKEMON)) {
 				psPkm.setInt(1, p.getId_pokemon());
 				psPkm.executeUpdate();
 			}
 
-			// 2. Restaurar PP
+			// Restaurar PP
 			try (PreparedStatement psMov = con.prepareStatement(SQL_PP)) {
 				psMov.setInt(1, p.getId_pokemon());
 				psMov.executeUpdate();

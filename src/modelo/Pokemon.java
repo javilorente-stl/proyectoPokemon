@@ -437,9 +437,11 @@ public class Pokemon {
 
 	/**
 	 * Evalúa el daño potencial de un movimiento contra un defensor basándose en la tabla de tipos.
+	 * También le he incluido el metodo obtenerEfectividad para el cálculo
 	 * @param movElegido Ataque que se intenta ejecutar.
 	 * @param defensor Objetivo del ataque.
 	 * @return El multiplicador de daño final (0.0, 0.5, 1.0, 2.0, 4.0).
+	 * @see #obtenerEfectividad(Tipo, Tipo)
 	 */
 	public double calcularMultiplicadorFinal(Movimiento movElegido, Pokemon defensor) {
 		// Empezamos con un multiplicador de 1.0 (daño neutro)
@@ -480,8 +482,9 @@ public class Pokemon {
 
 	/**
 	 * Compara los tipos del Pokémon actual contra los del rival para determinar
-	 * si existe una ventaja segun el tipo.
+	 * si existe una ventaja segun el tipo. He usado el metodo de obtenerEfectividad 
 	 * @param defensor Pokémon contra el que se compara.
+	 * @see #obtenerEfectividad(Tipo, Tipo)
 	 */
 	public void comprobarVentajaPorTipo(Pokemon defensor) {
 		boolean tieneVentaja = false;
@@ -526,6 +529,7 @@ public class Pokemon {
 	
 	/**
 	 * Lógica central de la tabla de tipos. Define las debilidades,resistencias e inmunidades del juego.
+	 * Compara el tipo del ataque con el que se defiende del ataque
 	 * @param ataque Tipo elemental del movimiento.
 	 * @param defensa Tipo elemental del receptor.
 	 * @return devuelve el multiplicador para calcular el daño de un ataque.

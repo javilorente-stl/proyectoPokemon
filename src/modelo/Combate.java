@@ -6,7 +6,7 @@ import java.util.Random;
 
 
 /**
- * Gestiona la lógica de un enfrentamiento entre dos Pokémon en los combates y la liga
+ * Gestiona la lógica de un enfrentamiento entre dos Pokémon en los combates y la liga pokemon
  * Controla el flujo de turnos, el cálculo de daño, la aplicación de estados, las mejoras, limpiar estados
  * y el registro de eventos en un historial que usaremos en el log
  * @author Javier Lorente Rodríguez
@@ -25,7 +25,9 @@ public class Combate {
 
 	
 	/**
-	 * Inicia un nuevo combate determinando quién comienza según la velocidad.
+	 * Inicia un nuevo combate determinando quién comienza según la velocidad. Por eso le pasamos 
+	 * los dos pokemon por parámetro, además inicializa el turno en 1 y reinicia los turnos de estado.
+	 * También inicia el combate en el log con el registro del suceso.
 	 * @param pJugador Pokémon controlado por el usuario.
 	 * @param pRival Pokémon oponente.
 	 */
@@ -126,7 +128,7 @@ public class Combate {
 	
 	/**
 	 * Añade un evento al log del combate con el número de turno actual.
-	 * Usamos este metodo para centralizar la escritura
+	 * Usamos este metodo para centralizar la escritura y mantener un poco el orden
 	 * @param frase Descripción del suceso ocurrido.
 	 */
 	public void registrarSuceso(String frase) {
@@ -141,6 +143,7 @@ public class Combate {
 	 * @param mov Movimiento seleccionado.
 	 * @param atacante Pokémon que ejecuta la acción.
 	 * @param defensor Pokémon que recibe el impacto.
+	 * @deprecated ya que no es el que usamos en el combate oficial
 	 */
 	public void procesarAtaque(Movimiento mov, Pokemon atacante, Pokemon defensor) {
 		registrarSuceso(atacante.getNombre() + " usa " + mov.getNombre());
@@ -167,7 +170,8 @@ public class Combate {
 	/**
 	 * Ejecuta la acción de ataque completa, gestionando precisión, tipo de movimiento,
 	 * cálculo de daño y verificación de debilitación.
-	 * Este es el metodo que se ha usado en todo el combate real
+	 * Este es el metodo que se ha usado en todo el combate real y que contiene todas las llamadas
+	 * al resto de los métodos que forman parte de la clase Combate
 	 * @param mov Movimiento seleccionado.
 	 * @param atacante Pokémon que ejecuta la acción.
 	 * @param defensor Pokémon que recibe el impacto.
@@ -240,6 +244,9 @@ public class Combate {
 	/**
 	 * Verifica si el Pokémon está en condiciones de realizar un movimiento
 	 * basándose en su estado actual (Parálisis, Sueño, Confusión, etc.).
+	 * Registra el suceso en el log según lo que ocurra, y hace el cálculo de 
+	 * las probabilidades de poder atacar si está por ejemplo, paralizado.
+	 * Cada estado tiene su probabilidad de permitir atacar o no
 	 * @param p Pokémon a evaluar.
 	 * @return true si puede realizar la acción, false si el estado se lo impide.
 	 */
@@ -307,6 +314,9 @@ public class Combate {
 	/**
 	 * Aplica el daño residual al final del turno causado por estados persistentes
 	 * como Quemaduras, Veneno o Drenadoras. También gestiona la curación derivada de las drenadoras
+	 * y que dicha curación se aplique al pokemon contrario, y que la curación no supere la vitalidad máxima
+	 * También actualiza el contador de los estados que no son persistentes y los limpia si han 
+	 * pasado los turnos necesarios
 	 * @param p Pokémon que recibe el efecto final.
 	 */
 	public void aplicarEfectosFinales(Pokemon p) {
@@ -412,10 +422,10 @@ public class Combate {
 	/**
 	 * Con este metodo aplicamos las mejoras de los movimientos del tipo 1 que son de ataque
 	 * cosas como que se repita el movimiento en el mismo turno un numero aleatorio de veces, o 
-	 * que aplique daño fijo según nivel...
-	 * @param mov
-	 * @param atacante
-	 * @param defensor
+	 * que aplique daño fijo según nivel, o tengan mayor probabilidad de crítico
+	 * @param mov usado y que se comprueba si tiene alguna mejora
+	 * @param atacante el que usa el movimiento
+ 	 * @param defensor el que recibe el daño del movimiento si acierta
 	 */
 	private void mejorasAtaque(Movimiento mov, Pokemon atacante, Pokemon defensor) {
 		String mejora = mov.getMejora();
@@ -501,9 +511,11 @@ public class Combate {
 
 	/**
 	 * Este aplica los estados de los ataques que puedan provocarlos, con un 15%
-	 * de probabilidad fija porque así lo he decidido
+	 * de probabilidad fija para todos los estados
+	 * Actualiza el estado del defensor e inicializa el contador de turnos de estado
+	 * Además de registrar el suceso en log.
 	 * @param mov de ataque
-	 * @param defensor o quien lo recibe
+	 * @param defensor o quien recibe el estado
 	 */
 	private void aplicarEstadoAtaque(Movimiento mov, Pokemon defensor) {
 		Random rand = new Random();
@@ -555,8 +567,10 @@ public class Combate {
 	}
 
 	/**
-	 * Para los movimientos de clase 2, que aplican cambios de estadisticas
+	 * Método para los movimientos de clase 2, que aplican cambios de estadisticas
 	 * y que estas estadísticas solo persistan durante el combate, no se actualizan en la base de datos
+	 * he hecho que registre cada suceso y luego en el combate he hecho que muestre las stats para
+	 * poder debugear y ver que aplica los cambios correctamente
 	 * @param mov que lo aplica
 	 * @param defensor que recibe el cambio de estadísticas
 	 */
@@ -602,6 +616,7 @@ public class Combate {
 	 * Igual que tenemos el metodo de los movimientos de ataque que aplican estado
 	 * pues este es para los movimientos de tipo 2, con la misma probabilidad
 	 * ademas se tiene en cuenta la duración de los estados durante los turnos
+	 * y que el pokemon defensor no tenga ningun estado activo
 	 * @param mov que lo aplica
 	 * @param defensor que lo recibe
 	 */
@@ -647,7 +662,8 @@ public class Combate {
 
 	/**
 	 * Este es el último de los movimientos, que son de tipo 3
-	 * aplica las mejoras en el pokemon que lo usa
+	 * aplica las mejoras en el pokemon que lo usa, aumentando las estadísticas del mismo
+	 * Registramos el suceso también en log
 	 * @param mov que aplica
 	 * @param atacante o el que recibe la mejora
 	 */
@@ -704,6 +720,7 @@ public class Combate {
 
 	/**
 	 * Método usado para actualizar los contadores de los estados y limpiar el estado
+	 * @deprecated no lo he usado, lo he incluido en los métodos de aplicar estados
 	 */
 	public void actualizarContadores() {
 		// Gestionar turnos del Jugador
@@ -728,7 +745,8 @@ public class Combate {
 	
 	/**
 	 * Determina si un tipo elemental debe atacar usando la estadística de 
-	 * Ataque (Físico) o Ataque Especial.
+	 * Ataque (Físico) o Ataque Especial. He sido fiel al juego original de 
+	 * la primera generación que hacia esta división por el tipo del movimiento
 	 * @param tipo El tipo elemental del movimiento.
 	 * @return "ESPECIAL" para tipos de la lista, "FISICO" para el resto.
 	 */
@@ -750,7 +768,8 @@ public class Combate {
 
 	/**
 	 * Calcula el daño final basándose en la fórmula del juego real
-	 * Daño = (((2*Nivel/5 + 2) * Potencia * (Atk/Def) / 50) + 2) * Multiplicadores
+	 * Daño = (((2*Nivel/5 + 2) * Potencia del movimiento * (Atk/Def) / 50) + 2) * Multiplicadores (es decir,
+	 * efectividad del movimiento sobre el tipo del pokemon que lo recibe)
 	 * @param m Movimiento ejecutado
 	 * @param atacante Pokémon que ataca
 	 * @param defensor Pokémon que defiende
@@ -811,7 +830,7 @@ public class Combate {
 	/**
 	 * Genera un reporte textual completo de todo el enfrentamiento, compila la fecha de inicio y 
 	 * cada uno de los sucesos registrados en el historial (turnos, daños, estados y resultados).
-	 * @return Un String con el registro cronológico del combate.
+	 * @return Un String con el registro cronológico y completo del combate.
 	 */
 	public String getTextoLogCompleto() {
 		StringBuilder sb = new StringBuilder();

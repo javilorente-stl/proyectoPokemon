@@ -8,6 +8,8 @@ import java.util.LinkedList;
  * Representa al usuario o entidad que posee y gestiona Pokémon.
  * Contiene la información de perfil, el saldo de Pokédollars y los contenedores
  * para el equipo activo, el almacenamiento (caja) y los objetos de la mochila, que al final no he implementado.
+ * No cuenta con muchos métodos, ya que la mayoría eran de cambios en la base de datos así que solo lo 
+ * he usado como esqueleto para su clase EntrenadorCrud
  * @author Javier Lorente Rodríguez
  * @version 1.2
  */
@@ -153,6 +155,7 @@ public class Entrenador {
 	 * Método inicialmente creado para mover los pokemon, finalmente este método está 
 	 * obsoleto, no lo hemos usado
 	 * @param indice a la posición que movemos el pokemon
+	 * @deprecated No ha sido utilizado finalmente
 	 */
 	public void moverPokemonACaja(int indice) {
 		// Validamos que el equipo principal tenga más de un Pokémon
@@ -184,6 +187,7 @@ public class Entrenador {
 	 * El método contrario al anterior que saca al pokemon de la caja al equipo, igualmente
 	 * obsoleto y que no estamos finalmente usando en la vista de la caja
 	 * @param indiceCaja de donde sale
+	 * @deprecated No ha sido el que he usado finalmente
 	 */
 	public void sacarDeCajaAEquipo(int indiceCaja) {
 		// Validar si el equipo principal ya está lleno (máximo 6)

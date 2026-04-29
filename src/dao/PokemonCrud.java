@@ -20,21 +20,24 @@ import modelo.Tipo;
 
 /**
  * Esta clase sirve para toda la gestion de datos que se envían o sacan de la base de datos
- * relacionados con el pokemon
+ * relacionados con el pokemon o con sus movimientos o estadísticas
+ * Es el método principal para el juego y de donde se sacan y actualizan todos los datos 
+ * en el combate, en la crianza, el equipo, la caja, o el entrenamiento
  * @author Javier Lorente Rodríguez
  * @version 2.5
+ * @see Pokemon
  */
 public class PokemonCrud {
 
 	/**
 	 * Este metodo guarda un pokemon, se usa en la vista de la captura genera el
-	 * insert dentro del entrenador que esta realizando la captura Se le dan los
-	 * datos aleatorios adecuados y se tratan valores como el sexo También se le
-	 * hace una llamada al método para asignarle un movimiento
+	 * insert dentro del entrenador que esta realizando la captura Se le dan los datos aleatorios adecuados
+	 * y se tratan valores como el sexo También se le hace una llamada al método para asignarle un 
+	 * movimiento inicial con un método creado en MovimientoCrud
 	 * @param con la conexion
 	 * @param numPokedex
 	 * @param ent el entrenador al que se le guarda el pokemon
-	 * @param mote
+	 * @param mote del pokemon si tiene, sino se coge el nombre de la pokedex
 	 * @throws SQLException por si da error
 	 */
 	public static void guardarPokemon(Connection con, int numPokedex, Entrenador ent, String mote) throws SQLException {
@@ -157,9 +160,11 @@ public class PokemonCrud {
 	 * lo usamos tanto en la vista del equipo como en la del combate
 	 * por eso se obtienen los que están en las 6 primeras posiciones de la caja
 	 * si hay alguno que no esté en esos 6 tenemos otro método para sacarlo
+	 * Además se guardan los movimientos del pokemon que usaremos en el combate
 	 * @param conexion
-	 * @param e
-	 * @throws SQLException
+	 * @param e el entrenador asignado del pokemon
+	 * @see #cargarMovimientosPokemon(Connection, Pokemon)
+	 * @throws SQLException por si hay algun error en la query o en la base de datos
 	 */
 	public static void obtenerPokemon1(Connection conexion, Entrenador e) throws SQLException {
 		// Limpieza inicial por seguridad
@@ -231,9 +236,10 @@ public class PokemonCrud {
 	/**
 	 * Con este método sacamos a todos los pokemons de un entrenador de la base de datos con todos sus datos
 	 * este lo usamos para la crianza o el entrenamiento, que se pueda elegir cualquier pokemon
-	 * @param conexion
-	 * @param e
-	 * @throws SQLException
+	 * @param conexion con la base de datos
+	 * @param e entrenador asignado del pokemon
+	 * @see #cargarMovimientosPokemon(Connection, Pokemon)
+	 * @throws SQLException por si hay algún error con la base de datos
 	 */
 	public static void obtenerTodosLosPokemon(Connection conexion, Entrenador e) throws SQLException {
 		// Eliminamos el filtro de CAJA para traer a todos
@@ -297,8 +303,9 @@ public class PokemonCrud {
 	 * Este es el mismo metodo de obtener pokemon, pero se usa para los pokemon de
 	 * la caja, con todos sus datos y también se cargan los movimientos
 	 * Por eso se cogen los pokemon con caja>6, se usa en la vista de la caja
-	 * @param conexion
-	 * @param e
+	 * @param conexion con la base de datos
+	 * @param e entrenador de los pokemon 
+	 * @see #cargarMovimientosPokemon(Connection, Pokemon)
 	 * @throws SQLException
 	 */
 	public static void obtenerPokemon2(Connection conexion, Entrenador e) throws SQLException {
@@ -358,6 +365,8 @@ public class PokemonCrud {
 	/**
 	 * Carga los movimientos de un Pokemon específico desde la base de datos,
 	 * obteniendo los datos estáticos del movimiento y los PP actuales del Pokemon.
+	 * Este es el metodo que hemos usado para cargar los movimientos en los métodos
+	 * de obtener los pokemon
 	 * @param conexion con la base de datos
 	 * @param p el pokemon del que se sacan los movimientos
 	 */
@@ -426,7 +435,8 @@ public class PokemonCrud {
 	}
 
 	/**
-	 * Dejando el primero en un lugar inaccesible y luego actualizadolo ya que los
+	 * Método que intercambia de posición dos pokemon dejando el primero en un lugar 
+	 * inaccesible y luego actualizadolo ya que los
 	 * valores de CAJA en la base de datos es UNIQUE y puede dar conflicto.
 	 * @param con es la conexion
 	 * @param idEntrenador para identificar de donde vienen los pokemon
@@ -474,6 +484,7 @@ public class PokemonCrud {
 	 * @param idEntrenador dueño de los pokemon
 	 * @param posOrigen
 	 * @param posDestino
+	 * @see #intercambiarPosicion(Connection, int, int, int)
 	 * @throws SQLException
 	 */
 	public static void moverPokemon(Connection con, int idEntrenador, int posOrigen, int posDestino)
@@ -505,10 +516,10 @@ public class PokemonCrud {
 	
 	/**
 	 * Con este método compactamos el equipo para que no quéden huecos en la vista y actualizamos
-	 * el valor con un update en la base de datos
-	 * @param con
-	 * @param idEntrenador
-	 * @throws SQLException
+	 * el valor con un update en la base de datos, organizando también la base de datos
+	 * @param con conexion con la base de datos
+	 * @param idEntrenador para saber los pokemon que se han de organizar
+	 * @throws SQLException por si hay algun error con la base de datos
 	 */
 	public static void compactarEquipo(Connection con, int idEntrenador) throws SQLException {
 
@@ -551,9 +562,9 @@ public class PokemonCrud {
 	/**
 	 * Igual que el método de compactar el equipo, solo que este se usa en la vista
 	 * de la caja, por eso es con la caja mayor que 6
-	 * @param con
-	 * @param idEntrenador
-	 * @throws SQLException
+	 * @param con conexion con la base de datos
+	 * @param idEntrenador para saber los pokemon que se han de organizar
+	 * @throws SQLException por si hay algun error con la base de datos
 	 */
 	public static void compactarCaja(Connection con, int idEntrenador) throws SQLException {
 		// Buscamos solo los que tienen caja mayor a 6
@@ -601,10 +612,10 @@ public class PokemonCrud {
 	/**
 	 * En vez de usar el max, y que aunque se eliminen pokemon, deje huecos,
 	 * hacemos este método para buscar el próximo sitio disponible dentro de la caja
-	 * @param conexion
-	 * @param idEntrenador
+	 * @param conexion con la base de datos
+	 * @param idEntrenador para poder buscar los huecos en su tabla pokemon
 	 * @return el entero que será el número de la caja disponible
-	 * @throws SQLException
+	 * @throws SQLException por si hay algun error con la base de datos
 	 */
 	public static int obtenerSiguienteHuecoCaja(Connection conexion, int idEntrenador) throws SQLException {
 		// Buscamos el valor máximo de la columna CAJA para este entrenador
@@ -637,6 +648,7 @@ public class PokemonCrud {
 	 * @param idPokemon identificador del pokemon que queremos mover
 	 * @param nuevaCaja la nueva posición
 	 * @throws SQLException por si hay algún error
+	 * @deprecated
 	 */
 	public static void actualizarPosicionPokemon(Connection con, int idPokemon, int nuevaCaja) throws SQLException {
 		String sql = "UPDATE POKEMON SET CAJA = ? WHERE ID_POKEMON = ?";
@@ -691,10 +703,12 @@ public class PokemonCrud {
 
 	/**
 	 * Método para borrar un pokemon, que es una de las opciones de la vista de la caja
-	 * y lo elimina de la base de datos
+	 * y lo elimina de la base de datos y compacta tanto el equipo como la caja
 	 * @param con, la conexión
 	 * @param idPokemon
 	 * @param idEntrenador
+	 * @see #compactarCaja(Connection, int)
+	 * @see #compactarEquipo(Connection, int)
 	 * @return devuelve si lo ha eliminado true o sino, false, para saber en el programa que ha pasado
 	 * @throws SQLException para los errores
 	 */
@@ -1429,6 +1443,8 @@ public class PokemonCrud {
 	 * Ademas si el pokemon no tiene mote, le actualizamos el nombre al de su evolución
 	 * @param con conexión con la base de datos
 	 * @param p pokemon que intenta evolucionar
+	 * @see #ejecutarCambioPokedex(Connection, Pokemon)
+	 * @see #actualizarNombreYDatosEspecie(Connection, Pokemon, String)
 	 * @return true si ha podido evolucionar, false si no
 	 */
 	public static boolean intentarEvolucionar(Connection con, Pokemon p) {
@@ -1491,6 +1507,7 @@ public class PokemonCrud {
 	 * @param con conexion con la base de datos
 	 * @param p pokemon a actualizar
 	 * @param nombreEspecieAnterior para comprobar si actualiza el nombre o no
+	 * @see #actualizarMoteEnBD(Connection, int, String)
 	 * @throws SQLException por si hay algún error
 	 */
 	private static void actualizarNombreYDatosEspecie(Connection con, Pokemon p, String nombreEspecieAnterior)
